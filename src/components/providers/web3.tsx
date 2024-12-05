@@ -46,7 +46,7 @@ const singularEnv =
 export const storage =
   typeof window !== "undefined" && window.localStorage
     ? createStorage({
-        key: `start3r-${singularEnv}`,
+        key: `telescope-${singularEnv}`,
         storage: window.localStorage,
       })
     : null;

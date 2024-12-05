@@ -11,19 +11,19 @@ export default async function Image() {
   return new ImageResponse(
     (
       <div
-        tw="flex flex-col items-center justify-center w-full h-full text-white"
+        className="flex flex-col items-center justify-center w-full h-full text-white"
         style={{
           background:
             "linear-gradient(to right bottom, rgb(17, 24, 39), rgb(75, 85, 99))",
         }}
       >
-        <h1 tw="text-8xl">{siteConfig.name}</h1>
-        <h2 tw="text-4xl">{siteConfig.description}</h2>
-        <div tw="flex flex-col items-center justify-center mt-8">
-          <div tw="text-xl">
+        <h1 className="text-8xl">{siteConfig.name}</h1>
+        <h2 className="text-4xl">{siteConfig.description}</h2>
+        <div className="flex flex-col items-center justify-center mt-8">
+          <div className="text-xl">
             Next.js · Ethereum · Viem · Wagmi · Web3Modal · SIWE
           </div>
-          <div tw="text-xl mt-2">Tailwind · Shadcn UI · and more..</div>
+          <div className="text-xl mt-2">Tailwind · Shadcn UI · and more..</div>
         </div>
       </div>
     )

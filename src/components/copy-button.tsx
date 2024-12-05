@@ -133,7 +133,7 @@ export const CopyButton = ({
       onClick={handleCopy}
     >
       {variant !== "icon" && (
-        <motion.div 
+        <motion.div
           layout="position"
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="relative h-5 gap-2 flex items-center justify-center"
@@ -183,7 +183,10 @@ export const CopyButton = ({
         viewBox="0 0 25 25"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className={cn("shrink-0 transition-colors focus:outline-none", iconColorVariants[variant])}
+        className={cn(
+          "shrink-0 transition-colors focus:outline-none",
+          iconColorVariants[variant]
+        )}
       >
         <motion.path
           d="M20.8511 9.46338H11.8511C10.7465 9.46338 9.85107 10.3588 9.85107 11.4634V20.4634C9.85107 21.5679 10.7465 22.4634 11.8511 22.4634H20.8511C21.9556 22.4634 22.8511 21.5679 22.8511 20.4634V11.4634C22.8511 10.3588 21.9556 9.46338 20.8511 9.46338Z"
