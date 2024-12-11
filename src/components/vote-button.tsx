@@ -8,17 +8,20 @@ import { useState, useEffect } from "react";
 interface VoteButtonProps {
   projectId: string;
   onVoteSuccess?: () => void;
+  isGloballyDisabled?: boolean;
 }
 
-export function VoteButton({ projectId, onVoteSuccess }: VoteButtonProps) {
+export function VoteButton({ projectId, onVoteSuccess, isGloballyDisabled }: VoteButtonProps) {
   const { address, isConnected } = useAccount();
   const [isLoading, setIsLoading] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
 
   // Fetch if the user has already voted for this project
   useEffect(() => {
     const checkVoteStatus = async () => {
       if (isConnected && address) {
+        setIsCheckingStatus(true);
         try {
           const response = await fetch(
             `/api/projects/${projectId}/vote/status?walletAddress=${address}`,
@@ -32,7 +35,11 @@ export function VoteButton({ projectId, onVoteSuccess }: VoteButtonProps) {
           }
         } catch (error) {
           console.error("Failed to fetch vote status:", error);
+        } finally {
+          setIsCheckingStatus(false);
         }
+      } else {
+        setIsCheckingStatus(false);
       }
     };
 
@@ -80,19 +87,29 @@ export function VoteButton({ projectId, onVoteSuccess }: VoteButtonProps) {
         description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const buttonText = isCheckingStatus 
+    ? "Vote" 
+    : isLoading 
+      ? "Voting..." 
+      : hasVoted 
+        ? "Voted" 
+        : isGloballyDisabled 
+          ? "Vote" 
+          : "Vote";
+
   return (
     <Button
       size="sm"
-      disabled={!isConnected || isLoading || hasVoted}
+      disabled={!isConnected || isLoading || hasVoted || isGloballyDisabled || isCheckingStatus}
       onClick={handleVote}
     >
-      {isLoading ? "Voting..." : hasVoted ? "Voted" : "Vote"}
+      {buttonText}
     </Button>
   );
 }

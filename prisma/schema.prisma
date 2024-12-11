@@ -17,7 +17,7 @@ datasource db {
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   address   String   @unique
-  username  String?  @unique
+  username  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   votes     Vote[]
@@ -30,9 +30,9 @@ model Project {
   avatar      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  votes       Vote[]
   social      Social?
   metadata    Json?
+  votes       Vote[]
 }
 
 model Vote {
@@ -43,8 +43,6 @@ model Vote {
   project    Project  @relation(fields: [projectId], references: [id])
   projectId  String   @db.ObjectId
   votedDate  DateTime @default(now())
-
-  @@unique([userId, votedDate], name: "userId_votedDate")
 }
 
 type Social {

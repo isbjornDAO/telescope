@@ -6,36 +6,49 @@ const querySchema = z.object({
   walletAddress: z
     .string()
     .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
+  projectId: z.string().regex(/^[a-fA-F0-9]{24}$/, "Invalid project ID"),
 });
 
 export async function GET(
-  req: NextRequest
-  // { params }: { params: { projectId: string } }
+  req: NextRequest,
+  { params }: { params: { projectId: string } }
 ) {
   try {
     const { searchParams } = new URL(req.url);
-    const query = {
-      walletAddress: searchParams.get("walletAddress"),
-    };
+    const walletAddress = searchParams.get("walletAddress");
 
     // Validate query parameters
-    const { walletAddress } = querySchema.parse(query);
+    const { walletAddress: validatedWalletAddress, projectId } = querySchema.parse({
+      walletAddress,
+      projectId: params.projectId,
+    });
+
+    if (!projectId) {
+      return NextResponse.json(
+        { error: "Project ID is required." },
+        { status: 400 }
+      );
+    }
 
     // Find the user
     const user = await prisma.user.findUnique({
-      where: { address: walletAddress },
+      where: { address: validatedWalletAddress },
     });
 
     if (!user) {
       return NextResponse.json({ hasVoted: false }, { status: 200 });
     }
 
-    // Check if a vote exists
-    const voteExists = await prisma.vote.findUnique({
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    // Check if a vote exists within the last 24 hours
+    const voteExists = await prisma.vote.findFirst({
       where: {
-        userId_votedDate: {
-          userId: user.id,
-          votedDate: new Date(),
+        userId: user.id,
+        projectId: projectId,
+        votedDate: {
+          gte: twentyFourHoursAgo,
         },
       },
     });
