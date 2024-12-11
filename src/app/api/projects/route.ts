@@ -1,29 +1,29 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { z } from "zod";
 import { LeaderboardItem } from "@/types";
+import { isItemMetadata } from "@/lib/utils";
 
-const projectSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().optional(),
-  avatar: z.string().optional(),
-  social: z
-    .object({
-      twitter: z.string().url().optional(),
-      discord: z.string().url().optional(),
-      telegram: z.string().url().optional(),
-      website: z.string().url().optional(),
-    })
-    .optional(),
-  metadata: z
-    .object({
-      votes: z.number(),
-      voters: z.number(),
-    })
-    .optional(),
-});
+// const projectSchema = z.object({
+//   name: z.string().min(1),
+//   description: z.string().optional(),
+//   avatar: z.string().optional(),
+//   social: z
+//     .object({
+//       twitter: z.string().url().optional(),
+//       discord: z.string().url().optional(),
+//       telegram: z.string().url().optional(),
+//       website: z.string().url().optional(),
+//     })
+//     .optional(),
+//   metadata: z
+//     .object({
+//       votes: z.number(),
+//       voters: z.number(),
+//     })
+//     .optional(),
+// });
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const projects = await prisma.project.findMany({
       where: {
@@ -43,17 +43,17 @@ export async function GET(req: NextRequest) {
       .map((project) => {
         const metadata = project.metadata;
 
-        // Ensure metadata conforms to ItemMetadata
-        const itemMetadata = metadata && typeof metadata === "object" && "votes" in metadata && "voters" in metadata
+        // Use the type guard instead of casting
+        const itemMetadata = isItemMetadata(metadata)
           ? {
-              votes: (metadata as any).votes,
-              voters: (metadata as any).voters,
+              votes: metadata.votes,
+              voters: metadata.voters,
             }
           : undefined;
 
         return {
           id: project.id,
-          rank: 0, // Placeholder, will be set after sorting
+          rank: 0, // Placeholder
           name: project.name,
           description: project.description || undefined,
           avatar: project.avatar || undefined,
@@ -67,11 +67,7 @@ export async function GET(req: NextRequest) {
           metadata: itemMetadata,
         };
       })
-      .sort((a, b) => {
-        const aVotes = a.metadata?.votes ?? 0;
-        const bVotes = b.metadata?.votes ?? 0;
-        return bVotes - aVotes;
-      })
+      .sort((a, b) => (b.metadata?.votes ?? 0) - (a.metadata?.votes ?? 0))
       .map((project, index) => ({
         ...project,
         rank: index + 1,

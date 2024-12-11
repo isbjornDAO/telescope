@@ -80,6 +80,7 @@ export function VoteButton({ projectId, onVoteSuccess }: VoteButtonProps) {
         description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
+      console.log(error);
     } finally {
       setIsLoading(false);
     }

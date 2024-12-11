@@ -5,7 +5,6 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import { VoteButton } from "@/components/vote-button";
 import { LeaderboardItem } from "@/types";
 import { Users } from "lucide-react";
-import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function Home() {

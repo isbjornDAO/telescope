@@ -3,12 +3,14 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const querySchema = z.object({
-  walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
+  walletAddress: z
+    .string()
+    .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
 });
 
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { projectId: string } }
+  req: NextRequest
+  // { params }: { params: { projectId: string } }
 ) {
   try {
     const { searchParams } = new URL(req.url);
@@ -25,10 +27,7 @@ export async function GET(
     });
 
     if (!user) {
-      return NextResponse.json(
-        { hasVoted: false },
-        { status: 200 }
-      );
+      return NextResponse.json({ hasVoted: false }, { status: 200 });
     }
 
     // Check if a vote exists
@@ -41,18 +40,12 @@ export async function GET(
       },
     });
 
-    return NextResponse.json(
-      { hasVoted: !!voteExists },
-      { status: 200 }
-    );
+    return NextResponse.json({ hasVoted: !!voteExists }, { status: 200 });
   } catch (error) {
     console.error(error);
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: error.errors }, { status: 400 });
     }
 
     return NextResponse.json(
@@ -60,4 +53,4 @@ export async function GET(
       { status: 500 }
     );
   }
-} 
+}

@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Globe } from "lucide-react";
 import { LeaderboardProps } from "@/types";
 import { XIcon } from "./icons/x";
 import { TelegramIcon } from "./icons/telegram";
 import { DiscordIcon } from "./icons/discord";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export const LeaderboardTable = ({
   items,

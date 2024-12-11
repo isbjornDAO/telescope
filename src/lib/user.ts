@@ -9,6 +9,7 @@ export async function findOrCreateUser(walletAddress: string) {
     user = await prisma.user.create({
       data: {
         address: walletAddress,
+        
         // Add more fields here if necessary
       },
     });

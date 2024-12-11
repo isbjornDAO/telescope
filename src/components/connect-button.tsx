@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -25,7 +24,6 @@ export const ConnectButton = () => {
       {({
         account,
         chain,
-        openAccountModal,
         openChainModal,
         openConnectModal,
         authenticationStatus,
