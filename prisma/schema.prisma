@@ -11,6 +11,7 @@ generator client {
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model User {
@@ -20,18 +21,15 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   votes     Vote[]
-  projects  Project[]
 }
 
 model Project {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
+  name        String   @unique
   description String?
   avatar      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  creator     User     @relation(fields: [creatorId], references: [id])
-  creatorId   String   @db.ObjectId
   votes       Vote[]
   social      Social?
   metadata    Json?
@@ -52,5 +50,6 @@ model Vote {
 type Social {
   twitter  String?
   discord  String?
+  telegram String?
   website  String?
 }

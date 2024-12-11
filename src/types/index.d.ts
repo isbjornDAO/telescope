@@ -14,12 +14,12 @@ export type SiteConfig = {
 };
 
 export interface LeaderboardItem {
-  id: number | string;
+  id: string;
   rank: number;
   avatar?: string;
   name: string;
   description?: string;
-  metadata?: Record<string, any>;
+  metadata?: ItemMetadata;
   social?: {
     twitter?: string;
     discord?: string;
@@ -28,9 +28,31 @@ export interface LeaderboardItem {
   };
 }
 
+export interface ItemMetadata {
+  votes: number;
+  voters: number;
+}
+
+export interface User {
+  id: string;
+  address: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Vote {
+  id: string;
+  userId: string;
+  projectId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface LeaderboardProps {
   items: LeaderboardItem[];
   renderMetadata?: (item: LeaderboardItem) => React.ReactNode;
   renderActions?: (item: LeaderboardItem) => React.ReactNode;
   showSocial?: boolean;
+  isLoading?: boolean;
+  isError?: boolean;
 }

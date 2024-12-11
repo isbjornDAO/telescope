@@ -2,7 +2,7 @@ import { LeaderboardItem } from "@/types";
 
 export const projects: LeaderboardItem[] = [
   {
-    id: 1,
+    id: "1",
     rank: 1,
     avatar: "",
     name: "Animalia",
@@ -18,7 +18,7 @@ export const projects: LeaderboardItem[] = [
     },
   },
   {
-    id: 2,
+    id: "2",
     rank: 2,
     avatar: "",
     name: "FerdyFlip",
@@ -35,7 +35,7 @@ export const projects: LeaderboardItem[] = [
     },
   },
   {
-    id: 3,
+    id: "3",
     rank: 3,
     avatar: "",
     name: "The Blokchain",
@@ -52,7 +52,7 @@ export const projects: LeaderboardItem[] = [
     },
   },
   {
-    id: 4,
+    id: "4",
     rank: 4,
     avatar: "",
     name: "Eclipse Chain L1",
@@ -69,7 +69,7 @@ export const projects: LeaderboardItem[] = [
     },
   },
   {
-    id: 5,
+    id: "5",
     rank: 5,
     avatar: "",
     name: "SaLtor",
@@ -86,7 +86,7 @@ export const projects: LeaderboardItem[] = [
     },
   },
   {
-    id: 6,
+    id: "6",
     rank: 6,
     avatar: "",
     name: "Memoria",
@@ -102,7 +102,7 @@ export const projects: LeaderboardItem[] = [
     },
   },
   {
-    id: 7,
+    id: "7",
     rank: 7,
     avatar: "",
     name: "Stable Jack",
@@ -120,7 +120,7 @@ export const projects: LeaderboardItem[] = [
     },
   },
   {
-    id: 8,
+    id: "8",
     rank: 8,
     avatar: "",
     name: "Apex DeFi",
@@ -136,7 +136,7 @@ export const projects: LeaderboardItem[] = [
     },
   },
   {
-    id: 9,
+    id: "9",
     rank: 9,
     avatar: "",
     name: "Hatchyverse",
@@ -152,7 +152,7 @@ export const projects: LeaderboardItem[] = [
     },
   },
   {
-    id: 10,
+    id: "10",
     rank: 10,
     avatar: "",
     name: "Juicy",
