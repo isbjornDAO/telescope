@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { findOrCreateUser } from "@/lib/user";
@@ -100,7 +99,7 @@ export async function POST(
       }));
 
       // Create a new vote record and update user XP
-      const [vote, updatedUser] = await Promise.all([
+      await Promise.all([
         prisma.vote.create({
           data: {
             userId: user.id,
