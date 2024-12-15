@@ -63,19 +63,21 @@ export function VoteButton({
       return;
     }
 
-    const previousProjects = queryClient.getQueryData<LeaderboardItem[]>(["projects"]);
+    const previousProjects = queryClient.getQueryData<LeaderboardItem[]>([
+      "projects",
+    ]);
 
     queryClient.setQueryData<LeaderboardItem[]>(["projects"], (old) => {
       if (!old) return old;
-      return old.map(project => {
+      return old.map((project) => {
         if (project.id === projectId) {
           return {
             ...project,
             metadata: {
               ...project.metadata,
               votes: (project.metadata?.votes || 0) + 1,
-              voters: (project.metadata?.voters || 0) + 1
-            }
+              voters: (project.metadata?.voters || 0) + 1,
+            },
           };
         }
         return project;
@@ -113,7 +115,8 @@ export function VoteButton({
           title: "Vote Successful",
           description: "Thank you for voting!",
           variant: "default",
-          className: "bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/50",
+          className:
+            "bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/50",
         });
         setHasVoted(true);
         onVoteSuccess?.();
@@ -128,6 +131,7 @@ export function VoteButton({
       }
     } catch (error) {
       queryClient.setQueryData(["projects"], previousProjects);
+      console.error("❌ Signature error:", error);
 
       toast({
         title: "Signature Failed",

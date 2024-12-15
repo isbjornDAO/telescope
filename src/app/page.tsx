@@ -65,7 +65,6 @@ export default function Home() {
     // Reduce cache time to ensure fresher data
     staleTime: 30 * 1000, // 30 seconds
     gcTime: 5 * 60 * 1000, // 5 minutes
-    // Add refetch configuration
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true
