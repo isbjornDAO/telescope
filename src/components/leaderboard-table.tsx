@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Globe } from "lucide-react";
 import { LeaderboardProps } from "@/types";
@@ -7,7 +8,7 @@ import { XIcon } from "./icons/x";
 import { TelegramIcon } from "./icons/telegram";
 import { DiscordIcon } from "./icons/discord";
 
-export const LeaderboardTable = ({
+export const LeaderboardTable = React.memo(({
   items,
   renderMetadata,
   renderActions,
@@ -51,9 +52,25 @@ export const LeaderboardTable = ({
         : items.map((item) => (
             <div
               key={item.id}
-              className="flex items-center gap-4 rounded-lg bg-white dark:bg-zinc-800 p-4 shadow transition-all hover:shadow-md"
+              className={`flex items-center gap-4 rounded-lg bg-white dark:bg-zinc-800 pl-4 pr-8 py-4 shadow transition-all hover:shadow-md border ${
+                item.rank === 1
+                  ? "border-yellow-400"
+                  : item.rank === 2
+                  ? "border-gray-300"
+                  : item.rank === 3
+                  ? "border-amber-600"
+                  : "border-zinc-200 dark:border-zinc-700"
+              }`}
             >
-              <div className="text-sm font-medium text-zinc-500 dark:text-zinc-200">
+              <div className={`text-sm font-medium ${
+                item.rank === 1
+                  ? "text-yellow-400"
+                  : item.rank === 2
+                  ? "text-gray-300"
+                  : item.rank === 3
+                  ? "text-amber-600"
+                  : "text-zinc-500 dark:text-zinc-200"
+              }`}>
                 #{item.rank}
               </div>
 
@@ -63,11 +80,11 @@ export const LeaderboardTable = ({
               </Avatar>
 
               <div className="flex min-w-[300px] max-w-[300px] flex-col">
-                <div className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
+                <div className="font-bold text-zinc-800 dark:text-zinc-200">
                   {item.name}
                 </div>
                 {item.description && (
-                  <div className="text-xs text-zinc-500 truncate dark:text-zinc-400">
+                  <div className="text-sm text-zinc-500 truncate dark:text-zinc-400">
                     {item.description}
                   </div>
                 )}
@@ -125,4 +142,4 @@ export const LeaderboardTable = ({
       )}
     </div>
   );
-};
+});

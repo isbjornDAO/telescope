@@ -53,7 +53,15 @@ export async function GET(
       },
     });
 
-    return NextResponse.json({ hasVoted: !!voteExists }, { status: 200 });
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { name: true }
+    });
+
+    return NextResponse.json({ 
+      hasVoted: !!voteExists,
+      projectName: project?.name 
+    }, { status: 200 });
   } catch (error) {
     console.error(error);
 

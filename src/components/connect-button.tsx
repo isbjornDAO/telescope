@@ -12,23 +12,33 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import { useDisconnect } from "wagmi";
+import { useUserStats } from "@/hooks/use-user-stats";
+import { calculateLevel, getXpForNextLevel } from "@/lib/xp";
 
 export const ConnectButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { disconnect } = useDisconnect();
+  const { data: userStats } = useUserStats();
 
   return (
     <RainbowConnectButton.Custom>
       {({
-        account,
+        account: rainbowAccount,
         chain,
         openChainModal,
         openConnectModal,
         authenticationStatus,
         mounted,
       }) => {
+        const account = {
+          ...rainbowAccount,
+          level: userStats?.level || 1,
+          xp: userStats?.xp || 0,
+          xpForNextLevel: userStats?.xpForNextLevel || 10,
+        };
+
         // Note: If your app doesn't use authentication, you
         // can remove all 'authenticationStatus' checks
         const ready = mounted && authenticationStatus !== "loading";
@@ -51,7 +61,11 @@ export const ConnectButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <Button onClick={openConnectModal} type="button">
+                  <Button
+                    onClick={openConnectModal}
+                    type="button"
+                    className="snow-button"
+                  >
                     Connect Wallet
                   </Button>
                 );
@@ -73,14 +87,9 @@ export const ConnectButton = () => {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="outline"
-                        className="w-full justify-between"
+                        className="snow-button w-full justify-between hover:text-white"
                       >
                         <div className="flex items-center gap-2">
-                          <div className="h-6 w-6 flex items-center justify-center">
-                            <Jazzicon
-                              seed={jsNumberForAddress(account.address)}
-                            />
-                          </div>
                           <span>{account.displayName}</span>
                         </div>
                         <ChevronDown
@@ -93,25 +102,34 @@ export const ConnectButton = () => {
                     <DropdownMenuContent align="end" className="w-56">
                       <DropdownMenuLabel>Connected Address</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <span>My Profile</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <span>Settings</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <span>Create NFT</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuLabel>Wallet</DropdownMenuLabel>
-                      <DropdownMenuItem>
-                        <span>AVAX</span>
-                        <span className="ml-auto">
-                          {account.displayBalance ? account.displayBalance : ""}
+                      <DropdownMenuItem className="flex flex-col items-start">
+                        <span className="font-medium">
+                          Level {account.level}
+                        </span>
+                        <div className="w-full mt-1 h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-green-500 transition-all duration-300"
+                            style={{
+                              width: `${
+                                (account.xp /
+                                  (account.xpForNextLevel + account.xp)) *
+                                100
+                              }%`,
+                            }}
+                          />
+                        </div>
+                        <span className="text-xs text-zinc-500 mt-1">
+                          {account.xp} XP / {account.xpForNextLevel} XP to next
+                          level
                         </span>
                       </DropdownMenuItem>
+
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => disconnect()}>
+                      <DropdownMenuItem
+                        onClick={() => disconnect()}
+                        className="flex items-center gap-2 text-zinc-500 hover:text-zinc-900 cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4" />
                         <span>Disconnect</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>

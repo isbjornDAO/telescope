@@ -35,7 +35,14 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ isLocked: !!recentVote }, { status: 200 });
+    const nextVoteTime = recentVote 
+      ? new Date(recentVote.votedDate.getTime() + 24 * 60 * 60 * 1000)
+      : null;
+
+    return NextResponse.json({ 
+      isLocked: !!recentVote,
+      nextVoteTime: recentVote ? nextVoteTime : null 
+    }, { status: 200 });
   } catch (error) {
     console.error(error);
     if (error instanceof z.ZodError) {

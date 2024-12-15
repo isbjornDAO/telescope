@@ -3,34 +3,69 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { findOrCreateUser } from "@/lib/user";
+import { Address, verifyMessage } from "viem";
+import { calculateLevel } from "@/lib/xp";
 
 const voteSchema = z.object({
   walletAddress: z
     .string()
     .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
+  signature: z.string(),
+  message: z.string(),
 });
 
 export async function POST(
   req: NextRequest,
   { params }: { params: { projectId: string } }
 ) {
+  console.log("🔵 Vote request received", { projectId: params.projectId });
+  
   const transaction = await prisma.$transaction(async (prisma) => {
     try {
       const body = await req.json();
-      const { walletAddress } = voteSchema.parse(body);
+      console.log("🔵 Request body received:", { 
+        walletAddress: body.walletAddress,
+        signatureLength: body.signature?.length,
+        messageLength: body.message?.length 
+      });
+
+      const { walletAddress, signature, message } = voteSchema.parse(body);
+      console.log("🔵 Request validation passed");
+
+      // Verify the signature
+      console.log("🔵 Verifying signature...");
+      const isValid = await verifyMessage({
+        address: walletAddress as Address,
+        message,
+        signature: signature as `0x${string}`,
+      });
+
+      if (!isValid) {
+        console.error("❌ Invalid signature");
+        return NextResponse.json(
+          { error: "Invalid signature" },
+          { status: 401 }
+        );
+      }
+      console.log("✅ Signature verified successfully");
+
       const user = await findOrCreateUser(walletAddress);
+      console.log("🔵 User found/created:", { userId: user.id });
 
       // Find the project by ID, selecting metadata
       const project = await prisma.project.findUnique({
         where: { id: params.projectId },
-        select: { 
+        select: {
           id: true,
-          metadata: true 
+          metadata: true,
         },
       });
 
       if (!project) {
-        return NextResponse.json({ error: "Project not found" }, { status: 404 });
+        return NextResponse.json(
+          { error: "Project not found" },
+          { status: 404 }
+        );
       }
 
       const now = new Date();
@@ -48,7 +83,10 @@ export async function POST(
 
       if (existingVote) {
         return NextResponse.json(
-          { error: "You have already voted for this project in the last 24 hours." },
+          {
+            error:
+              "You have already voted for this project in the last 24 hours.",
+          },
           { status: 400 }
         );
       }
@@ -61,17 +99,29 @@ export async function POST(
         },
       }));
 
-      // Create a new vote record
-      await prisma.vote.create({
-        data: {
-          userId: user.id,
-          projectId: project.id,
-          votedDate: now,
-        },
-      });
+      // Create a new vote record and update user XP
+      const [vote, updatedUser] = await Promise.all([
+        prisma.vote.create({
+          data: {
+            userId: user.id,
+            projectId: project.id,
+            votedDate: now,
+          },
+        }),
+        prisma.user.update({
+          where: { id: user.id },
+          data: {
+            xp: { increment: 1 },
+            level: { set: calculateLevel(user.xp + 1) }
+          },
+        })
+      ]);
 
       // Parse current metadata or initialize with default values
-      const currentMetadata = project.metadata as { votes: number; voters: number } || { votes: 0, voters: 0 };
+      const currentMetadata = (project.metadata as {
+        votes: number;
+        voters: number;
+      }) || { votes: 0, voters: 0 };
 
       // Update the project's metadata
       await prisma.project.update({
@@ -79,9 +129,16 @@ export async function POST(
         data: {
           metadata: {
             votes: (currentMetadata.votes || 0) + 1,
-            voters: isFirstVote ? (currentMetadata.voters || 0) + 1 : currentMetadata.voters,
+            voters: isFirstVote
+              ? (currentMetadata.voters || 0) + 1
+              : currentMetadata.voters,
           },
         },
+      });
+
+      console.log("✅ Vote successfully recorded", {
+        userId: user.id,
+        projectId: params.projectId,
       });
 
       return NextResponse.json(
@@ -89,7 +146,7 @@ export async function POST(
         { status: 201 }
       );
     } catch (error) {
-      console.error(error);
+      console.error("❌ Error processing vote:", error);
       if (error instanceof z.ZodError) {
         return NextResponse.json({ error: error.errors }, { status: 400 });
       }
