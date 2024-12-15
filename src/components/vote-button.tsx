@@ -139,7 +139,7 @@ export function VoteButton({
         isCheckingStatus
       }
       onClick={handleVote}
-      className="snow-button"
+      className="snow-button w-full md:w-auto"
     >
       {buttonText}
     </Button>

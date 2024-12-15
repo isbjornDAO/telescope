@@ -80,6 +80,14 @@ body {
   background-position: center;
 }
 
+@media screen and (max-width: 768px) {
+  .bg {
+    background-image: url("/bg.png");
+    background-size: cover;
+    background-position: center;
+  }
+}
+
 .snow-button {
   position: relative;
   border: 1px solid transparent;
@@ -88,8 +96,8 @@ body {
   min-width: 8em;
   text-align: center;
   color: #fff;
-  background-image: linear-gradient(to bottom, #4F8AAE, #416C99, #283470),
-    linear-gradient(to bottom, #416C99, #283470);
+  background-image: linear-gradient(to bottom, #4f8aae, #416c99, #283470),
+    linear-gradient(to bottom, #416c99, #283470);
   background-clip: padding-box, border-box;
   background-origin: padding-box, border-box;
   transition-property: transform, filter;
