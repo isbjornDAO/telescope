@@ -7,7 +7,7 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url().optional(),
-    NEXT_PUBLIC_ENVIRONMENT: z.string().min(3),
+    NEXT_PUBLIC_ENVIRONMENT: z.string().min(3).optional(),
     NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID: z.string().min(1),
   },
   runtimeEnv: {
