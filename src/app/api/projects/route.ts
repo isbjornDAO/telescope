@@ -79,7 +79,12 @@ export async function GET() {
 
     console.log(sortedProjects);
 
-    return NextResponse.json(sortedProjects, { status: 200 });
+    return NextResponse.json(sortedProjects, { 
+      status: 200,
+      headers: {
+        'Cache-Control': 'no-store', // Prevent caching
+      },
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

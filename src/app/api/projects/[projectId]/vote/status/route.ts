@@ -61,17 +61,32 @@ export async function GET(
     return NextResponse.json({ 
       hasVoted: !!voteExists,
       projectName: project?.name 
-    }, { status: 200 });
+    }, { 
+      status: 200,
+      headers: {
+        'Cache-Control': 'no-store',
+      },
+    });
   } catch (error) {
     console.error(error);
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors }, { status: 400 });
+      return NextResponse.json({ error: error.errors }, { 
+        status: 400,
+        headers: {
+          'Cache-Control': 'no-store',
+        },
+      });
     }
 
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store',
+        },
+      }
     );
   }
 }
