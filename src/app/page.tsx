@@ -41,6 +41,8 @@ const VotingStatusMessage = React.memo(({ isLocked, nextVoteTime }: VotingStatus
   return null;
 });
 
+VotingStatusMessage.displayName = "VotingStatusMessage";
+
 export default function Home() {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();

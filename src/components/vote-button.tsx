@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useAccount, useSignMessage } from "wagmi";
 import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { LeaderboardItem } from "@/types";
 
 interface VoteButtonProps {
   projectId: string;
@@ -22,6 +24,7 @@ export function VoteButton({
   const [projectName, setProjectName] = useState<string>("");
 
   const { signMessageAsync, isPending } = useSignMessage();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const checkVoteStatus = async () => {
@@ -60,10 +63,23 @@ export function VoteButton({
       return;
     }
 
-    toast({
-      title: "Processing Vote",
-      description: "Your vote is being recorded...",
-      variant: "default",
+    const previousProjects = queryClient.getQueryData<LeaderboardItem[]>(["projects"]);
+
+    queryClient.setQueryData<LeaderboardItem[]>(["projects"], (old) => {
+      if (!old) return old;
+      return old.map(project => {
+        if (project.id === projectId) {
+          return {
+            ...project,
+            metadata: {
+              ...project.metadata,
+              votes: (project.metadata?.votes || 0) + 1,
+              voters: (project.metadata?.voters || 0) + 1
+            }
+          };
+        }
+        return project;
+      });
     });
 
     console.log("🔵 Initiating vote process", { projectId, address });
@@ -74,7 +90,6 @@ export function VoteButton({
 
     try {
       const signature = await signMessageAsync({ message });
-      console.log("🔵 Signature successful:", { signature });
 
       const response = await fetch(`/api/projects/${projectId}/vote`, {
         method: "POST",
@@ -92,17 +107,19 @@ export function VoteButton({
       console.log("🔵 Vote response:", { status: response.status, data });
 
       if (response.ok) {
+        queryClient.invalidateQueries({ queryKey: ["projects"] });
+
         toast({
           title: "Vote Successful",
           description: "Thank you for voting!",
           variant: "default",
-          className:
-            "bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/50",
+          className: "bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/50",
         });
         setHasVoted(true);
         onVoteSuccess?.();
       } else {
-        console.error("❌ Vote failed:", data.error);
+        queryClient.setQueryData(["projects"], previousProjects);
+
         toast({
           title: "Vote Failed",
           description: data.error || "An error occurred while voting.",
@@ -110,27 +127,19 @@ export function VoteButton({
         });
       }
     } catch (error) {
-      console.error("❌ Signature error:", error);
+      queryClient.setQueryData(["projects"], previousProjects);
+
       toast({
         title: "Signature Failed",
         description: "You need to sign the message to vote.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  // The button should be disabled if:
-  // - It's still loading the vote status
-  // - The user is not connected
-  // - A vote transaction is pending
-  // - The user has already voted
-  // - Voting is globally disabled
   const isDisabled =
     isLoading || isPending || !isConnected || hasVoted || isGloballyDisabled;
 
-  // Determine the button text based on the current state
   const buttonText = isLoading
     ? "Loading..."
     : isPending
@@ -139,7 +148,6 @@ export function VoteButton({
     ? "Voted"
     : "Vote";
 
-  // Conditional Rendering: Show a loader or the button based on the loading state
   return isLoading ? (
     <Button size="sm" disabled className="snow-button w-full md:w-auto">
       Loading...
