@@ -6,7 +6,7 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
   },
   client: {
-    NEXT_PUBLIC_APP_URL: z.string().min(1),
+    NEXT_PUBLIC_APP_URL: z.string().url().optional(),
     NEXT_PUBLIC_ENVIRONMENT: z.string().min(3),
     NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID: z.string().min(1),
   },

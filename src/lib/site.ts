@@ -7,7 +7,7 @@ export const siteConfig: SiteConfig = {
   description: ".",
   keywords: ["web3", "crypto", "avalanche", "defi"],
   url: {
-    base: env.NEXT_PUBLIC_APP_URL,
+    base: env.NEXT_PUBLIC_APP_URL || "https://isbjorn.xyz",
     author: "https://gabrielrusso.me",
   },
   links: {

@@ -99,7 +99,7 @@ export default function Home() {
   return (
     <div className="w-full">
       <header className="w-full bg-white dark:bg-zinc-900 bg border-b-4 border-zinc-100 dark:border-zinc-700">
-        <div className="w-full max-w-screen-lg mx-auto pt-24 px-8 flex items-center justify-between">
+        <div className="w-full max-w-screen-lg mx-auto pt-24 px-8 flex items-center justify-between flex-col-reverse md:flex-row">
           <img
             src="/logo.png"
             alt="Telescope"
@@ -113,8 +113,8 @@ export default function Home() {
 
       <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16">
         <Tabs defaultValue="projects">
-          <div className="flex items-center justify-between mb-6">
-            <TabsList className="gap-4 bg-transparent">
+          <div className="flex items-start md:items-center justify-between mb-6 flex-col md:flex-row gap-4">
+            <TabsList className="gap-4 bg-transparent m-0 p-0">
               <TabsTrigger
                 value="projects"
                 className="px-4 py-2 font-bold text-md bg-white border-white border-2"
