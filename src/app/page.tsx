@@ -1,7 +1,6 @@
 "use client";
 import { ConnectButton } from "@/components/connect-button";
 import { LeaderboardTable } from "@/components/leaderboard-table";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { VoteButton } from "@/components/vote-button";
 import { LeaderboardItem } from "@/types";
 import { Users } from "lucide-react";

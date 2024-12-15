@@ -143,3 +143,5 @@ export const LeaderboardTable = React.memo(({
     </div>
   );
 });
+
+LeaderboardTable.displayName = "LeaderboardTable";

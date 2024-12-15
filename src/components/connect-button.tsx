@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,7 +14,6 @@ import {
 import { ChevronDown, LogOut } from "lucide-react";
 import { useDisconnect } from "wagmi";
 import { useUserStats } from "@/hooks/use-user-stats";
-import { calculateLevel, getXpForNextLevel } from "@/lib/xp";
 
 export const ConnectButton = () => {
   const [isOpen, setIsOpen] = useState(false);
