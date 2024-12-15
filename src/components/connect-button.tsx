@@ -121,6 +121,14 @@ export const ConnectButton = () => {
                           level
                         </span>
                       </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <a
+                          href="https://discord.gg/K4z7xxFVGc"
+                          target="_blank"
+                        >
+                          Collect Rewards
+                        </a>
+                      </DropdownMenuItem>
 
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
