@@ -99,7 +99,7 @@ export default function Home() {
   return (
     <div className="w-full">
       <header className="w-full bg-white dark:bg-zinc-900 bg border-b-4 border-zinc-100 dark:border-zinc-700">
-        <div className="w-full max-w-screen-lg mx-auto pt-24 px-8 flex items-start md:items-center justify-between  md:flex-row">
+        <div className="w-full max-w-screen-lg mx-auto pt-24 px-8 flex items-start justify-between  md:flex-row">
           <img
             src="/logo.png"
             alt="Telescope"

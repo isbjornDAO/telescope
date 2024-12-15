@@ -4,7 +4,7 @@ import { SiteConfig } from "@/types";
 export const siteConfig: SiteConfig = {
   name: "Telescope",
   author: "Isbjorn",
-  description: ".",
+  description: "",
   keywords: ["web3", "crypto", "avalanche", "defi"],
   url: {
     base: env.NEXT_PUBLIC_APP_URL || "https://isbjorn.xyz",
