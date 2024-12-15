@@ -4,7 +4,7 @@ import { ConnectButton } from "@/components/connect-button";
 import { LeaderboardTable } from "@/components/leaderboard-table";
 import { VoteButton } from "@/components/vote-button";
 import { LeaderboardItem } from "@/types";
-import { Users } from "lucide-react";
+import { HomeIcon, Users } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,31 +15,33 @@ interface VotingStatusProps {
   nextVoteTime: Date | null;
 }
 
-const VotingStatusMessage = React.memo(({ isLocked, nextVoteTime }: VotingStatusProps) => {
-  if (!isLocked) {
-    return (
-      <div className="text-sm text-zinc-900 font-medium bg-white px-4 py-2 rounded-lg border-white border-2 flex items-center gap-2 shadow">
-        You can vote now! 🎉
-      </div>
-    );
+const VotingStatusMessage = React.memo(
+  ({ isLocked, nextVoteTime }: VotingStatusProps) => {
+    if (!isLocked) {
+      return (
+        <div className="text-sm text-zinc-900 font-medium bg-white px-4 py-2 rounded-lg border-white border-2 flex items-center gap-2 shadow">
+          You can vote now! 🎉
+        </div>
+      );
+    }
+
+    if (nextVoteTime) {
+      const timeRemaining = nextVoteTime.getTime() - Date.now();
+      const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
+      const minutesRemaining = Math.floor(
+        (timeRemaining % (1000 * 60 * 60)) / (1000 * 60)
+      );
+
+      return (
+        <div className="text-sm text-zinc-900 font-medium bg-white px-4 py-2 rounded-lg border-white border-2 flex items-center gap-2 shadow">
+          You can vote again in {hoursRemaining}h {minutesRemaining}m ⏰
+        </div>
+      );
+    }
+
+    return null;
   }
-
-  if (nextVoteTime) {
-    const timeRemaining = nextVoteTime.getTime() - Date.now();
-    const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
-    const minutesRemaining = Math.floor(
-      (timeRemaining % (1000 * 60 * 60)) / (1000 * 60)
-    );
-
-    return (
-      <div className="text-sm text-zinc-900 font-medium bg-white px-4 py-2 rounded-lg border-white border-2 flex items-center gap-2 shadow">
-        You can vote again in {hoursRemaining}h {minutesRemaining}m ⏰
-      </div>
-    );
-  }
-
-  return null;
-});
+);
 
 VotingStatusMessage.displayName = "VotingStatusMessage";
 
@@ -67,7 +69,7 @@ export default function Home() {
     gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    refetchOnReconnect: true
+    refetchOnReconnect: true,
   });
 
   // Check global voting status when component mounts or address changes
@@ -119,23 +121,31 @@ export default function Home() {
       <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16">
         <Tabs defaultValue="projects">
           <div className="flex items-start md:items-center justify-between mb-6 flex-col md:flex-row gap-4">
-            <TabsList className="gap-4 bg-transparent m-0 p-0">
-              <TabsTrigger
-                value="projects"
-                className="px-4 py-2 font-bold text-md bg-white border-white border-2"
+            <div className="flex items-center gap-2">
+              <a
+                href="https://isbjorn.co.nz"
+                className="px-4 py-2 font-bold text-md bg-white border-white border-2 rounded-md shadow"
               >
-                Projects
-              </TabsTrigger>
-              <TabsTrigger
-                value="artists"
-                className="px-4 py-2 font-bold text-md bg-white relative border-white border-2"
-              >
-                <Badge className="absolute -top-3 -right-6 text-xs bg-sky-900 text-white hover:bg-sky-900 border-white">
-                  Soon
-                </Badge>
-                Artists
-              </TabsTrigger>
-            </TabsList>
+                <HomeIcon className="w-6 h-6" />
+              </a>
+              <TabsList className="gap-2 bg-transparent m-0 p-0">
+                <TabsTrigger
+                  value="projects"
+                  className="px-4 py-2 font-bold text-md bg-white border-white border-2"
+                >
+                  Projects
+                </TabsTrigger>
+                <TabsTrigger
+                  value="artists"
+                  className="px-4 py-2 font-bold text-md bg-white relative border-white border-2"
+                >
+                  <Badge className="absolute -top-3 -right-6 text-xs bg-sky-900 text-white hover:bg-sky-900 border-white">
+                    Soon
+                  </Badge>
+                  Artists
+                </TabsTrigger>
+              </TabsList>
+            </div>
             {isConnected ? (
               <VotingStatusMessage
                 isLocked={isVotingLocked}

@@ -61,6 +61,7 @@ export async function GET() {
             ? {
                 twitter: project.social.twitter || undefined,
                 discord: project.social.discord || undefined,
+                telegram: project.social.telegram || undefined,
                 website: project.social.website || undefined,
               }
             : undefined,

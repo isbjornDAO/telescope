@@ -51,6 +51,17 @@ export const LeaderboardTable = React.memo(
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
+    console.log(currentItems);
+
+    const getVisiblePages = (currentPage: number, totalPages: number) => {
+      if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+      
+      if (currentPage <= 3) return [1, 2, 3, 4, '...', totalPages];
+      if (currentPage >= totalPages - 2) return [1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+      
+      return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+    };
+
     return (
       <div className="space-y-4">
         {isLoading
@@ -149,15 +160,6 @@ export const LeaderboardTable = React.memo(
                               <XIcon className="w-[0.85rem] h-4 fill-zinc-500 hover:fill-blue-400" />
                             </a>
                           )}
-                          {item.social.discord && (
-                            <a
-                              href={item.social.discord}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <DiscordIcon className="h-4 w-4 fill-zinc-400 hover:fill-indigo-400" />
-                            </a>
-                          )}
                           {item.social.telegram && (
                             <a
                               href={item.social.telegram}
@@ -166,6 +168,15 @@ export const LeaderboardTable = React.memo(
                               className=""
                             >
                               <TelegramIcon className="h-4 w-4 fill-zinc-400 hover:fill-blue-400" />
+                            </a>
+                          )}
+                          {item.social.discord && (
+                            <a
+                              href={item.social.discord}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <DiscordIcon className="h-4 w-4 fill-zinc-400 hover:fill-indigo-400" />
                             </a>
                           )}
                         </div>
@@ -196,42 +207,38 @@ export const LeaderboardTable = React.memo(
 
         {!isLoading && !isError && items.length > ITEMS_PER_PAGE && (
           <Pagination className="mt-16">
-            <PaginationContent>
-              <PaginationItem>
+            <PaginationContent className="flex flex-wrap gap-2 justify-center">
+              <PaginationItem className="hidden sm:inline-block">
                 <PaginationPrevious
                   onClick={() => handlePageChange(currentPage - 1)}
-                  className={
-                    currentPage === 1
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer hover:shadow"
-                  }
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:shadow"}
                 />
               </PaginationItem>
 
-              {Array.from({ length: totalPages }).map((_, index) => (
-                <PaginationItem key={index + 1}>
-                  <PaginationLink
-                    isActive={currentPage === index + 1}
-                    onClick={() => handlePageChange(index + 1)}
-                    className={
-                      currentPage === index + 1
-                        ? "shadow"
-                        : "cursor-pointer hover:shadow"
-                    }
-                  >
-                    {index + 1}
-                  </PaginationLink>
+              {getVisiblePages(currentPage, totalPages).map((pageNum, index) => (
+                <PaginationItem key={index}>
+                  {pageNum === '...' ? (
+                    <span className="px-4 py-2">...</span>
+                  ) : (
+                    <PaginationLink
+                      isActive={currentPage === pageNum}
+                      onClick={() => handlePageChange(pageNum as number)}
+                      className={
+                        currentPage === pageNum
+                          ? "shadow"
+                          : "cursor-pointer hover:shadow"
+                      }
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  )}
                 </PaginationItem>
               ))}
 
-              <PaginationItem>
+              <PaginationItem className="hidden sm:inline-block">
                 <PaginationNext
                   onClick={() => handlePageChange(currentPage + 1)}
-                  className={
-                    currentPage === totalPages
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer hover:shadow"
-                  }
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:shadow"}
                 />
               </PaginationItem>
             </PaginationContent>

@@ -11,7 +11,7 @@
     },
     "social": {
       "twitter": "https://x.com/ferdyfishh?t=09",
-      "telegram": "t.me/ferdyflip",
+      "telegram": "https://t.me/ferdyflip",
       "discord": "https://discord.gg/YrcBw2SY2U",
       "website": "https://www.ferdyflip.xyz"
     }
@@ -28,9 +28,9 @@
     },
     "social": {
       "twitter": "https://x.com/MamboMakers",
-      "telegram": "N/A",
-      "discord": "discord.gg/humpingmambod",
-      "website": "mambomakers.com"
+      "telegram": "",
+      "discord": "https://discord.gg/humpingmambod",
+      "website": "https://mambomakers.com"
     }
   },
   {
@@ -45,9 +45,9 @@
     },
     "social": {
       "twitter": "https://x.com/QuasiToken?",
-      "telegram": "t.me/quasiavax",
-      "discord": "discord.gg/5dZc7HYYeV",
-      "website": "N/A"
+      "telegram": "https://t.me/quasiavax",
+      "discord": "https://discord.gg/5dZc7HYYeV",
+      "website": ""
     }
   },
   {
@@ -62,9 +62,9 @@
     },
     "social": {
       "twitter": "https://x.com/dripit_io?",
-      "telegram": "N/A",
-      "discord": "N/A",
-      "website": "dripit.io"
+      "telegram": "",
+      "discord": "",
+      "website": "https://dripit.io"
     }
   },
   {
@@ -79,7 +79,7 @@
     },
     "social": {
       "twitter": "https://x.com/RIPDAOAVAX?",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/Qq3sGuZMFQ",
       "website": "https://ripdao.xyz/"
     }
@@ -96,9 +96,9 @@
     },
     "social": {
       "twitter": "https://x.com/cozyversexyz?",
-      "telegram": "N/A",
-      "discord": "discord.gg/cozyverse",
-      "website": "cozyverse.xyz"
+      "telegram": "",
+      "discord": "https://discord.gg/cozyverse",
+      "website": "https://cozyverse.xyz"
     }
   },
   {
@@ -113,9 +113,9 @@
     },
     "social": {
       "twitter": "https://x.com/peonnft?",
-      "telegram": "N/A",
-      "discord": "discord.gg/tXdjCruG7W",
-      "website": "peonnft.com"
+      "telegram": "",
+      "discord": "https://discord.gg/tXdjCruG7W",
+      "website": "https://peonnft.com"
     }
   },
   {
@@ -130,9 +130,9 @@
     },
     "social": {
       "twitter": "https://x.com/nochillavax?",
-      "telegram": "t.me/NOCHILLAVAX",
-      "discord": "N/A",
-      "website": "nochill.lol"
+      "telegram": "https://t.me/NOCHILLAVAX",
+      "discord": "",
+      "website": "https://nochill.lol"
     }
   },
   {
@@ -146,10 +146,10 @@
       "voters": 0
     },
     "social": {
-      "twitter": "https://x.com/thecookoutclub?",
-      "telegram": "N/A",
-      "discord": "discord.gg/cookoutclub",
-      "website": "cookoutclub.substack.com"
+      "twitter": "https://x.com/cookoutclubxyz",
+      "telegram": "",
+      "discord": "https://discord.gg/cookoutclub",
+      "website": "https://cookoutclub.substack.com"
     }
   },
   {
@@ -164,9 +164,9 @@
     },
     "social": {
       "twitter": "https://x.com/salvor_io?t=MnwVwcOgsSfH86_GWZ1EoA&s=09",
-      "telegram": "N/A",
-      "discord": "discord.gg/salvor",
-      "website": "salvor.io"
+      "telegram": "",
+      "discord": "https://discord.gg/salvor",
+      "website": "https://salvor.io"
     }
   },
   {
@@ -181,8 +181,8 @@
     },
     "social": {
       "twitter": "https://x.com/AvaxHusky?",
-      "telegram": "t.me/Huskyavax",
-      "discord": "discord.gg/huskyavax",
+      "telegram": "https://t.me/Huskyavax",
+      "discord": "https://discord.gg/huskyavax",
       "website": "https://www.husky.space/"
     }
   },
@@ -198,9 +198,9 @@
     },
     "social": {
       "twitter": "https://x.com/TheKoroshi?",
-      "telegram": "N/A",
-      "discord": "discord.com/invite/koroshi",
-      "website": "N/A"
+      "telegram": "",
+      "discord": "https://discord.com/invite/koroshi",
+      "website": ""
     }
   },
   {
@@ -215,9 +215,9 @@
     },
     "social": {
       "twitter": "https://x.com/steakhut_fi?",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/PpFxXFXAan",
-      "website": "steakhut.finance"
+      "website": "https://steakhut.finance"
     }
   },
   {
@@ -232,9 +232,9 @@
     },
     "social": {
       "twitter": "https://x.com/dexalot?s=09",
-      "telegram": "t.me/dexalot_com",
-      "discord": "discord.gg/dexalot",
-      "website": "dexalot.com"
+      "telegram": "https://t.me/dexalot_com",
+      "discord": "https://discord.gg/dexalot",
+      "website": "https://dexalot.com"
     }
   },
   {
@@ -250,8 +250,8 @@
     "social": {
       "twitter": "https://x.com/yieldyak_?",
       "telegram": "https://t.me/yieldyak",
-      "discord": "discord.gg/qJ2wxEJ2h5",
-      "website": "yieldyak.com"
+      "discord": "https://discord.gg/qJ2wxEJ2h5",
+      "website": "https://yieldyak.com"
     }
   },
   {
@@ -266,9 +266,9 @@
     },
     "social": {
       "twitter": "https://x.com/BoneThugzPFPs?",
-      "telegram": "N/A",
-      "discord": "discord.gg/kq6X4Ekc",
-      "website": "N/A"
+      "telegram": "",
+      "discord": "https://discord.gg/kq6X4Ekc",
+      "website": ""
     }
   },
   {
@@ -283,9 +283,9 @@
     },
     "social": {
       "twitter": "https://x.com/dokyoworld?",
-      "telegram": "N/A",
-      "discord": "discord.gg/dokyo",
-      "website": "N/A"
+      "telegram": "",
+      "discord": "https://discord.gg/dokyo",
+      "website": ""
     }
   },
   {
@@ -300,9 +300,9 @@
     },
     "social": {
       "twitter": "https://x.com/PharaohExchange?",
-      "telegram": "N/A",
-      "discord": "discord.gg/Ynt6sNxHnq",
-      "website": "pharaoh.exchange/swap"
+      "telegram": "",
+      "discord": "https://discord.gg/Ynt6sNxHnq",
+      "website": "https://pharaoh.exchange/swap"
     }
   },
   {
@@ -317,9 +317,9 @@
     },
     "social": {
       "twitter": "https://x.com/spotlight404?",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/ugQm5trakT",
-      "website": "spotlight404.com"
+      "website": "https://spotlight404.com"
     }
   },
   {
@@ -334,7 +334,7 @@
     },
     "social": {
       "twitter": "https://x.com/DoggerinosNFT?",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/Sv9qTAE5Fp",
       "website": "https://doggerinos.com/"
     }
@@ -351,9 +351,9 @@
     },
     "social": {
       "twitter": "https://x.com/ThePitGame?",
-      "telegram": "N/A",
-      "discord": "discord.gg/thepitgame",
-      "website": "thepitgame.xyz"
+      "telegram": "",
+      "discord": "https://discord.gg/thepitgame",
+      "website": "https://thepitgame.xyz"
     }
   },
   {
@@ -368,9 +368,9 @@
     },
     "social": {
       "twitter": "https://x.com/enjoyjuicy?",
-      "telegram": "t.me/Enjoy_Juicy",
-      "discord": "discord.com/invite/7XxWrTP",
-      "website": "enjoyjuicy.com"
+      "telegram": "https://t.me/Enjoy_Juicy",
+      "discord": "https://discord.com/invite/7XxWrTP",
+      "website": "https://enjoyjuicy.com"
     }
   },
   {
@@ -385,9 +385,9 @@
     },
     "social": {
       "twitter": "https://x.com/ChanceMarkets?",
-      "telegram": "N/A",
-      "discord": "discord.gg/xMvaDRqCSg",
-      "website": "chance.markets"
+      "telegram": "",
+      "discord": "https://discord.gg/xMvaDRqCSg",
+      "website": "https://chance.markets"
     }
   },
   {
@@ -402,9 +402,9 @@
     },
     "social": {
       "twitter": "https://x.com/KINGSHIT_BRAND?",
-      "telegram": "N/A",
-      "discord": "discord.gg/ BJnQRmQNGZ",
-      "website": "kingshitbrand.com"
+      "telegram": "",
+      "discord": "https://discord.gg/ BJnQRmQNGZ",
+      "website": "https://kingshitbrand.com"
     }
   },
   {
@@ -419,9 +419,9 @@
     },
     "social": {
       "twitter": "https://x.com/CoqInuAvax?",
-      "telegram": "t.me/CoqInuAvax",
+      "telegram": "https://t.me/CoqInuAvax",
       "discord": "https://discord.gg/Ta8Tzw3ckt",
-      "website": "coqinu.com"
+      "website": "https://coqinu.com"
     }
   },
   {
@@ -436,9 +436,9 @@
     },
     "social": {
       "twitter": "https://x.com/KimboAvax?",
-      "telegram": "http://t.me/KimboAvax",
+      "telegram": "https://http://t.me/KimboAvax",
       "discord": "https://discord.gg/262YA7Sqse",
-      "website": "kimboavax.com"
+      "website": "https://kimboavax.com"
     }
   },
   {
@@ -453,9 +453,9 @@
     },
     "social": {
       "twitter": "https://x.com/TheArenaApp?",
-      "telegram": "N/A",
-      "discord": "N/A",
-      "website": "arena.social"
+      "telegram": "",
+      "discord": "",
+      "website": "https://arena.social"
     }
   },
   {
@@ -470,9 +470,9 @@
     },
     "social": {
       "twitter": "https://x.com/LANDWOLFONAVAX?",
-      "telegram": "t.me/LandwolfOnAvax",
-      "discord": "N/A",
-      "website": "Landwolfavax.com"
+      "telegram": "https://t.me/LandwolfOnAvax",
+      "discord": "",
+      "website": "https://Landwolfavax.com"
     }
   },
   {
@@ -487,9 +487,9 @@
     },
     "social": {
       "twitter": "https://x.com/MeowCatHQ?",
-      "telegram": "t.me/MeowCatHQ",
+      "telegram": "https://t.me/MeowCatHQ",
       "discord": "https://discord.gg/aBGuMRZq7j",
-      "website": "meowcat.xyz"
+      "website": "https://meowcat.xyz"
     }
   },
   {
@@ -504,9 +504,9 @@
     },
     "social": {
       "twitter": "https://x.com/TECHimproving?",
-      "telegram": "t.me/TECHimproving",
-      "discord": "N/A",
-      "website": "techimproving.com"
+      "telegram": "https://t.me/TECHimproving",
+      "discord": "",
+      "website": "https://techimproving.com"
     }
   },
   {
@@ -522,7 +522,7 @@
     "social": {
       "twitter": "https://x.com/STICKavax",
       "telegram": "https://t.me/Stick_portal",
-      "discord": "N/A",
+      "discord": "",
       "website": "https://stickavax.xyz"
     }
   },
@@ -538,8 +538,8 @@
     },
     "social": {
       "twitter": "https://x.com/KONGavax",
-      "telegram": "http://telegram.avakong.com ",
-      "discord": "http://discord.avakong.com",
+      "telegram": "https://http://telegram.avakong.com ",
+      "discord": "https://http://discord.avakong.com",
       "website": "https://www.avakong.com"
     }
   },
@@ -555,9 +555,9 @@
     },
     "social": {
       "twitter": "https://x.com/sqrcat4avax?",
-      "telegram": "t.me/sqrcat4avax",
-      "discord": "N/A",
-      "website": "sgrcat.io"
+      "telegram": "https://t.me/sqrcat4avax",
+      "discord": "",
+      "website": "https://sgrcat.io"
     }
   },
   {
@@ -570,10 +570,10 @@
       "voters": 0
     },
     "social": {
-      "twitter": "N/A",
-      "telegram": "N/A",
-      "discord": "N/A",
-      "website": "N/A"
+      "twitter": "https://x.com/vote9000",
+      "telegram": "https://t.me/vote9000",
+      "discord": "",
+      "website": "https://vote9000avax.io/"
     }
   },
   {
@@ -588,9 +588,9 @@
     },
     "social": {
       "twitter": "https://x.com/snowballdefi?",
-      "telegram": "t.me/throwsnowballs",
-      "discord": "discord.gg/MCVJmBb27w",
-      "website": "snowball.network"
+      "telegram": "https://t.me/throwsnowballs",
+      "discord": "https://discord.gg/MCVJmBb27w",
+      "website": "https://snowball.network"
     }
   },
   {
@@ -605,9 +605,9 @@
     },
     "social": {
       "twitter": "https://x.com/BenqiFinance?",
-      "telegram": "t.me/BENQIFinance",
+      "telegram": "https://t.me/BENQIFinance",
       "discord": "https://t.co/WkmdNK4Q0g",
-      "website": "benqi.fi"
+      "website": "https://benqi.fi"
     }
   },
   {
@@ -622,9 +622,9 @@
     },
     "social": {
       "twitter": "https://x.com/AvalaunchApp?",
-      "telegram": "t.me/avalaunch_app",
-      "discord": "N/A",
-      "website": "avalaunch.app"
+      "telegram": "https://t.me/avalaunch_app",
+      "discord": "",
+      "website": "https://avalaunch.app"
     }
   },
   {
@@ -641,7 +641,7 @@
       "twitter": "https://x.com/LFJ_gg?",
       "telegram": "https://t.me/lfj_gg",
       "discord": "https://discord.gg/lfj",
-      "website": "Ifj.gg"
+      "website": "https://Ifj.gg"
     }
   },
   {
@@ -656,9 +656,9 @@
     },
     "social": {
       "twitter": "https://x.com/O1O_NFT?",
-      "telegram": "N/A",
-      "discord": "N/A",
-      "website": "N/A"
+      "telegram": "",
+      "discord": "",
+      "website": ""
     }
   },
   {
@@ -673,9 +673,9 @@
     },
     "social": {
       "twitter": "https://x.com/XKOVAPAY?",
-      "telegram": "N/A",
-      "discord": "N/A",
-      "website": "xkova.com"
+      "telegram": "",
+      "discord": "",
+      "website": "https://xkova.com"
     }
   },
   {
@@ -690,9 +690,9 @@
     },
     "social": {
       "twitter": "https://x.com/StableJack_xyz?",
-      "telegram": "N/A",
-      "discord": "discord.gg/stablejack",
-      "website": "stablejack.xyz"
+      "telegram": "",
+      "discord": "https://discord.gg/stablejack",
+      "website": "https://stablejack.xyz"
     }
   },
   {
@@ -726,7 +726,7 @@
       "twitter": "https://twitter.com/apex314_defi",
       "telegram": "https://t.me/apexburst",
       "discord": "https://discord.gg/DUHvgCAtKy",
-      "website": "apexdefi.xyz"
+      "website": "https://apexdefi.xyz"
     }
   },
   {
@@ -743,7 +743,7 @@
       "twitter": "https://twitter.com/hatchyverse",
       "telegram": "https://t.me/HatchyPocket",
       "discord": "https://discord.com/invite/cW378HVjyY",
-      "website": "hatchyverse.com"
+      "website": "https://hatchyverse.com"
     }
   },
   {
@@ -759,8 +759,8 @@
     "social": {
       "twitter": "https://x.com/OnPlyr?",
       "telegram": "https://t.me/plyrchain",
-      "discord": "discord.gg/plyr",
-      "website": "plyr.network"
+      "discord": "https://discord.gg/plyr",
+      "website": "https://plyr.network"
     }
   },
   {
@@ -777,7 +777,7 @@
       "twitter": "https://x.com/amiavax",
       "telegram": "https://t.me/amiavax",
       "discord": "https://discord.com/invite/zxkTcFEE4U",
-      "website": "amiavax.com"
+      "website": "https://amiavax.com"
     }
   },
   {
@@ -792,9 +792,9 @@
     },
     "social": {
       "twitter": "https://x.com/iomarkr?",
-      "telegram": "t.me/iomarkr",
-      "discord": "discord.gg/CwXJyWcJE3",
-      "website": "markr.io"
+      "telegram": "https://t.me/iomarkr",
+      "discord": "https://discord.gg/CwXJyWcJE3",
+      "website": "https://markr.io"
     }
   },
   {
@@ -809,9 +809,9 @@
     },
     "social": {
       "twitter": "https://x.com/Tesseract_avax?",
-      "telegram": "N/A",
-      "discord": "discord.gg/44MRN24ksj",
-      "website": "docs.tesseract.finance"
+      "telegram": "",
+      "discord": "https://discord.gg/44MRN24ksj",
+      "website": "https://docs.tesseract.finance"
     }
   },
   {
@@ -826,9 +826,9 @@
     },
     "social": {
       "twitter": "https://x.com/snowpeerio?",
-      "telegram": "N/A",
-      "discord": "N/A",
-      "website": "snowpeer.io"
+      "telegram": "",
+      "discord": "",
+      "website": "https://snowpeer.io"
     }
   },
   {
@@ -843,8 +843,8 @@
     },
     "social": {
       "twitter": "https://twitter.com/MadSkullz_NFT",
-      "telegram": "N/A",
-      "discord": "http://discord.gg/MadSkullz",
+      "telegram": "",
+      "discord": "https://http://discord.gg/MadSkullz",
       "website": "https://www.madskullz.io/"
     }
   },
@@ -861,8 +861,8 @@
     "social": {
       "twitter": "https://x.com/BellumExchange?",
       "telegram": "https://t.me/bellumexchangeportal",
-      "discord": "N/A",
-      "website": "bellum.exchange"
+      "discord": "",
+      "website": "https://bellum.exchange"
     }
   },
   {
@@ -877,9 +877,9 @@
     },
     "social": {
       "twitter": "https://twitter.com/GoodonAvax",
-      "telegram": "http://t.me/goodcoq",
+      "telegram": "https://http://t.me/goodcoq",
       "discord": "https://discord.gg/FeXqMkSA2C",
-      "website": "linktr.ee/mobilizinggood"
+      "website": "https://linktr.ee/mobilizinggood"
     }
   },
   {
@@ -894,8 +894,8 @@
     },
     "social": {
       "twitter": "https://x.com/spellbornegame?",
-      "telegram": "N/A",
-      "discord": "discord.gg/spellborne",
+      "telegram": "",
+      "discord": "https://discord.gg/spellborne",
       "website": "https://monstudios.co/"
     }
   },
@@ -930,7 +930,7 @@
       "twitter": "https://x.com/_megaweapon_?",
       "telegram": "https://t.me/megaweaponofficial",
       "discord": "https://discord.gg/megaweapon",
-      "website": "http://www.megaweapon.gg/"
+      "website": "https://http://www.megaweapon.gg/"
     }
   },
   {
@@ -945,9 +945,9 @@
     },
     "social": {
       "twitter": "https://x.com/GunzillaGames?",
-      "telegram": "N/A",
-      "discord": "N/A",
-      "website": "gunzillagames.com"
+      "telegram": "",
+      "discord": "",
+      "website": "https://gunzillagames.com"
     }
   },
   {
@@ -962,7 +962,7 @@
     },
     "social": {
       "twitter": "https://x.com/playSHRAPNEL?",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/shrapnel",
       "website": "https://go.shrapnel.com/"
     }
@@ -981,7 +981,7 @@
       "twitter": "https://x.com/BloodLoopGAME?",
       "telegram": "https://t.me/joinbloodloop",
       "discord": "https://discord.gg/bloodloop-official",
-      "website": "bloodloop.com"
+      "website": "https://bloodloop.com"
     }
   },
   {
@@ -997,8 +997,8 @@
     "social": {
       "twitter": "https://x.com/DeFiKingdoms",
       "telegram": "https://t.me/defikingdoms",
-      "discord": "discord.gg/defikingdoms",
-      "website": "defikingdoms.com"
+      "discord": "https://discord.gg/defikingdoms",
+      "website": "https://defikingdoms.com"
     }
   },
   {
@@ -1013,7 +1013,7 @@
     },
     "social": {
       "twitter": "https://x.com/GONE__MONEY",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://gone.money/",
       "website": "https://gone.money/"
     }
@@ -1030,7 +1030,7 @@
     },
     "social": {
       "twitter": "https://twitter.com/TheEgoVerse",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/4Zuxh9jKu9",
       "website": "https://theegoverse.com/"
     }
@@ -1047,7 +1047,7 @@
     },
     "social": {
       "twitter": "https://twitter.com/MaplestoryU",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/4Zuxh9jKu9",
       "website": "https://msu.io/"
     }
@@ -1064,9 +1064,9 @@
     },
     "social": {
       "twitter": "https://x.com/SwolBeach?",
-      "telegram": "t.me/swolbeach",
-      "discord": "discord.gg/swolbeach",
-      "website": "swollyfe.ck.page/9139386d68"
+      "telegram": "https://t.me/swolbeach",
+      "discord": "https://discord.gg/swolbeach",
+      "website": "https://swollyfe.ck.page/9139386d68"
     }
   },
   {
@@ -1083,7 +1083,7 @@
       "twitter": "https://x.com/zero________one?",
       "telegram": "https://t.co/7vKVmFkJu8",
       "discord": "https://t.co/dSMvlX76j1",
-      "website": "market.zeroone.art"
+      "website": "https://market.zeroone.art"
     }
   },
   {
@@ -1098,9 +1098,9 @@
     },
     "social": {
       "twitter": "https://x.com/Looty_fi",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/kzs5jutR",
-      "website": "looty.fi"
+      "website": "https://looty.fi"
     }
   },
   {
@@ -1115,8 +1115,8 @@
     },
     "social": {
       "twitter": "https://twitter.com/cryptolidscom",
-      "telegram": "N/A",
-      "discord": "N/A",
+      "telegram": "",
+      "discord": "",
       "website": "https://www.cryptolids.com/"
     }
   },
@@ -1132,7 +1132,7 @@
     },
     "social": {
       "twitter": "https://x.com/0xNFTreasure?",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/RgeRcF75JV",
       "website": "https://nftreasure.com/"
     }
@@ -1149,7 +1149,7 @@
     },
     "social": {
       "twitter": "https://x.com/TEENSONACID?",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/acidverse",
       "website": "https://acidverse.io/"
     }
@@ -1166,9 +1166,9 @@
     },
     "social": {
       "twitter": "https://twitter.com/raffllrr",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.com/invite/jGstwGnvTT",
-      "website": "raffllrr.xyz"
+      "website": "https://raffllrr.xyz"
     }
   },
   {
@@ -1183,8 +1183,8 @@
     },
     "social": {
       "twitter": "https://x.com/SteadyNFT_?",
-      "telegram": "N/A",
-      "discord": "discord.gg/steady",
+      "telegram": "",
+      "discord": "https://discord.gg/steady",
       "website": "https://www.steadyyy.com/"
     }
   },
@@ -1200,9 +1200,9 @@
     },
     "social": {
       "twitter": "https://x.com/GoGoPool_?",
-      "telegram": "N/A",
-      "discord": "http://discord.gogopool.com/",
-      "website": "http://gogopool.com/"
+      "telegram": "",
+      "discord": "https://http://discord.gogopool.com/",
+      "website": "https://http://gogopool.com/"
     }
   },
   {
@@ -1217,9 +1217,9 @@
     },
     "social": {
       "twitter": "https://x.com/AVAXolotls?",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/sFFSvDkc9p",
-      "website": "avaxolotls.com"
+      "website": "https://avaxolotls.com"
     }
   },
   {
@@ -1251,9 +1251,9 @@
     },
     "social": {
       "twitter": "https://x.com/Mach1Swap_xyz?",
-      "telegram": "t.me/mach1swap",
-      "discord": "discord.gg/XEMAJd6Xj9",
-      "website": "mach1swap.xyz_"
+      "telegram": "https://t.me/mach1swap",
+      "discord": "https://discord.gg/XEMAJd6Xj9",
+      "website": "https://mach1swap.xyz_"
     }
   },
   {
@@ -1268,9 +1268,9 @@
     },
     "social": {
       "twitter": "https://x.com/BallnToken3?",
-      "telegram": "t.me/BALLN3",
-      "discord": "N/A",
-      "website": "BallnToken.com"
+      "telegram": "https://t.me/BALLN3",
+      "discord": "",
+      "website": "https://BallnToken.com"
     }
   },
   {
@@ -1285,7 +1285,7 @@
     },
     "social": {
       "twitter": "https://x.com/DEGENLABS_CO",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.com/invite/nnVMZ5tFtw",
       "website": "https://degenlabs.co/"
     }
@@ -1303,7 +1303,7 @@
     "social": {
       "twitter": "https://x.com/BootyAvax",
       "telegram": "https://t.me/BootyAVAX",
-      "discord": "N/A",
+      "discord": "",
       "website": "https://bootytoken.xyz/"
     }
   },
@@ -1319,9 +1319,9 @@
     },
     "social": {
       "twitter": "https://x.com/addicted2avax?",
-      "telegram": "t.me/addicted2avax",
-      "discord": "discord.gg/nfD2TeB8",
-      "website": "N/A"
+      "telegram": "https://t.me/addicted2avax",
+      "discord": "https://discord.gg/nfD2TeB8",
+      "website": ""
     }
   },
   {
@@ -1337,8 +1337,8 @@
     "social": {
       "twitter": "https://x.com/gauge_e1",
       "telegram": "https://t.me/gauge_e1",
-      "discord": "N/A",
-      "website": "gauge.fun"
+      "discord": "",
+      "website": "https://gauge.fun"
     }
   },
   {
@@ -1370,9 +1370,9 @@
     },
     "social": {
       "twitter": "https://x.com/SnowGuard_?",
-      "telegram": "N/A",
-      "discord": "N/A",
-      "website": "N/A"
+      "telegram": "",
+      "discord": "",
+      "website": ""
     }
   },
   {
@@ -1387,9 +1387,9 @@
     },
     "social": {
       "twitter": "https://x.com/WABBIT_AVAX?",
-      "telegram": "t.me/WABBIT_MEME",
-      "discord": "N/A",
-      "website": "wabbit.meme"
+      "telegram": "https://t.me/WABBIT_MEME",
+      "discord": "",
+      "website": "https://wabbit.meme"
     }
   },
   {
@@ -1404,9 +1404,9 @@
     },
     "social": {
       "twitter": "https://x.com/ThisIsFineAI?",
-      "telegram": "t.me/FineOnAvax",
-      "discord": "N/A",
-      "website": "thisisfine.tech"
+      "telegram": "https://t.me/FineOnAvax",
+      "discord": "",
+      "website": "https://thisisfine.tech"
     }
   },
   {
@@ -1421,9 +1421,9 @@
     },
     "social": {
       "twitter": "https://x.com/GAGMIWeb3?",
-      "telegram": "t.me/GAGMIweb3",
-      "discord": "N/A",
-      "website": "N/A"
+      "telegram": "https://t.me/GAGMIweb3",
+      "discord": "",
+      "website": ""
     }
   },
   {
@@ -1455,9 +1455,9 @@
     },
     "social": {
       "twitter": "https://x.com/AvaxCoins?",
-      "telegram": "t.me/+H1fNok9oGz5iZ...",
-      "discord": "discord.gg/ehe4nMc2XZ",
-      "website": "N/A"
+      "telegram": "https://t.me/+H1fNok9oGz5iZ...",
+      "discord": "https://discord.gg/ehe4nMc2XZ",
+      "website": ""
     }
   },
   {
@@ -1472,9 +1472,9 @@
     },
     "social": {
       "twitter": "https://x.com/ChainBois?",
-      "telegram": "N/A",
-      "discord": "N/A",
-      "website": "N/A"
+      "telegram": "",
+      "discord": "",
+      "website": ""
     }
   },
   {
@@ -1490,8 +1490,8 @@
     "social": {
       "twitter": "https://x.com/Catwifhandsavax",
       "telegram": "https://t.me/catwifhandsavax",
-      "discord": "N/A",
-      "website": "catwifhands.com"
+      "discord": "",
+      "website": "https://catwifhands.com"
     }
   },
   {
@@ -1506,9 +1506,9 @@
     },
     "social": {
       "twitter": "https://x.com/dogwifcrocs?",
-      "telegram": "t.me/dogwifcrocs",
-      "discord": "discord.gg/dogwifcrocs",
-      "website": "dogwifcrocs.net"
+      "telegram": "https://t.me/dogwifcrocs",
+      "discord": "https://discord.gg/dogwifcrocs",
+      "website": "https://dogwifcrocs.net"
     }
   },
   {
@@ -1540,9 +1540,9 @@
     },
     "social": {
       "twitter": "https://x.com/ceden_network?",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.com/invite/fGjn6UCCDf",
-      "website": "ceden.network"
+      "website": "https://ceden.network"
     }
   },
   {
@@ -1574,7 +1574,7 @@
     },
     "social": {
       "twitter": "https://x.com/TheEgoVerse?",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/4Zuxh9jKu9",
       "website": "https://theegoverse.com/"
     }
@@ -1583,17 +1583,17 @@
     "id": "94",
     "rank": 94,
     "avatar": "",
-    "name": "Orange Web3",
+    "name": "Shadow Universes",
     "description": "Chief Meme Officer (CMO)",
     "metadata": {
       "votes": 0,
       "voters": 0
     },
     "social": {
-      "twitter": "https://x.com/Orangeweb3CMO?",
-      "telegram": "https://t.me/Orange_Web3",
-      "discord": "https://discord.gg/orange-web3",
-      "website": "https://www.orangeweb3.com/"
+      "twitter": "https://x.com/ShadowUniverses",
+      "telegram": "",
+      "discord": "https://discord.gg/PpD94J7AqE",
+      "website": ""
     }
   },
   {
@@ -1607,10 +1607,10 @@
       "voters": 0
     },
     "social": {
-      "twitter": "https://x.com/0xmajin_?t=LqTpYR78A460i-ewF0i9FA",
-      "telegram": "N/A",
-      "discord": "discord.gg/WDSj4wNfhk",
-      "website": "majin.rip"
+      "twitter": "https://x.com/MajinAvax",
+      "telegram": "https://http://t.me/MajinToken",
+      "discord": "",
+      "website": "https://majintoken.xyz/"
     }
   },
   {
@@ -1642,7 +1642,7 @@
     },
     "social": {
       "twitter": "https://x.com/DCGgamefi?",
-      "telegram": "N/A",
+      "telegram": "",
       "discord": "https://discord.gg/dcg-entertainment",
       "website": "https://dcgentertainment.com/"
     }
@@ -1660,8 +1660,8 @@
     "social": {
       "twitter": "https://x.com/FreakAnonAvax?",
       "telegram": "https://t.co/yLIXBfpOB8",
-      "discord": "discord.gg/9nRG6vSXX3",
-      "website": "lucid-things.com/freakanon"
+      "discord": "https://discord.gg/9nRG6vSXX3",
+      "website": "https://lucid-things.com/freakanon"
     }
   },
   {
@@ -1676,8 +1676,8 @@
     },
     "social": {
       "twitter": "https://x.com/fraxfinance?",
-      "telegram": "t.me/fraxfinance",
-      "discord": "discord.gg/fraxfinance",
+      "telegram": "https://t.me/fraxfinance",
+      "discord": "https://discord.gg/fraxfinance",
       "website": "https://app.frax.finance/"
     }
   },
@@ -1692,10 +1692,10 @@
       "voters": 0
     },
     "social": {
-      "twitter": "N/A",
-      "telegram": "N/A",
+      "twitter": "https://x.com/D3gens",
+      "telegram": "",
       "discord": "https://discord.gg/fp8cdnJQ4Q",
-      "website": "N/A"
+      "website": ""
     }
   }
 ]
