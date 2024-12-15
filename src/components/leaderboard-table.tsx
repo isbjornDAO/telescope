@@ -1,12 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Globe } from "lucide-react";
 import { LeaderboardProps } from "@/types";
 import { XIcon } from "./icons/x";
 import { TelegramIcon } from "./icons/telegram";
 import { DiscordIcon } from "./icons/discord";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE = 10;
 
 export const LeaderboardTable = React.memo(
   ({
@@ -17,7 +28,28 @@ export const LeaderboardTable = React.memo(
     isLoading = false,
     isError = false,
   }: LeaderboardProps) => {
-    const skeletonCount = 5;
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [currentPage, setCurrentPage] = useState(1);
+    const skeletonCount = 10;
+
+    useEffect(() => {
+      const page = Number(searchParams.get("page")) || 1;
+      setCurrentPage(page);
+    }, [searchParams]);
+
+    const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const currentItems = items.slice(startIndex, endIndex);
+
+    const handlePageChange = (page: number) => {
+      const params = new URLSearchParams(searchParams);
+      params.set("page", page.toString());
+      router.push(`?${params.toString()}`);
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
 
     return (
       <div className="space-y-4">
@@ -50,7 +82,7 @@ export const LeaderboardTable = React.memo(
                 </div>
               </div>
             ))
-          : items.map((item) => (
+          : currentItems.map((item) => (
               <div
                 key={item.id}
                 className={`flex flex-col md:flex-row items-center gap-4 rounded-lg bg-white dark:bg-zinc-800 pl-4 pr-4 md:pr-8 py-4 shadow transition-all hover:shadow-md border ${
@@ -160,6 +192,50 @@ export const LeaderboardTable = React.memo(
             ))}
         {isError && (
           <div className="text-red-500">Failed to load leaderboard.</div>
+        )}
+
+        {!isLoading && !isError && items.length > ITEMS_PER_PAGE && (
+          <Pagination className="mt-16">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer hover:shadow"
+                  }
+                />
+              </PaginationItem>
+
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={index + 1}>
+                  <PaginationLink
+                    isActive={currentPage === index + 1}
+                    onClick={() => handlePageChange(index + 1)}
+                    className={
+                      currentPage === index + 1
+                        ? "shadow"
+                        : "cursor-pointer hover:shadow"
+                    }
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer hover:shadow"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
     );

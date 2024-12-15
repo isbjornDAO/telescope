@@ -1,4 +1,5 @@
 "use client";
+import React, { useState, useEffect, useCallback } from "react";
 import { ConnectButton } from "@/components/connect-button";
 import { LeaderboardTable } from "@/components/leaderboard-table";
 import { VoteButton } from "@/components/vote-button";
@@ -6,17 +7,15 @@ import { LeaderboardItem } from "@/types";
 import { Users } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
-import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
-const VotingStatusMessage = ({
-  isLocked,
-  nextVoteTime,
-}: {
+interface VotingStatusProps {
   isLocked: boolean;
   nextVoteTime: Date | null;
-}) => {
+}
+
+const VotingStatusMessage = React.memo(({ isLocked, nextVoteTime }: VotingStatusProps) => {
   if (!isLocked) {
     return (
       <div className="text-sm text-zinc-900 font-medium bg-white px-4 py-2 rounded-lg border-white border-2 flex items-center gap-2 shadow">
@@ -40,7 +39,7 @@ const VotingStatusMessage = ({
   }
 
   return null;
-};
+});
 
 export default function Home() {
   const queryClient = useQueryClient();
@@ -61,8 +60,13 @@ export default function Home() {
       }
       return response.json();
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    // Reduce cache time to ensure fresher data
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    // Add refetch configuration
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true
   });
 
   // Check global voting status when component mounts or address changes
@@ -91,10 +95,10 @@ export default function Home() {
     checkGlobalVotingStatus();
   }, [isConnected, address]);
 
-  const handleVoteSuccess = () => {
+  const handleVoteSuccess = useCallback(() => {
     setIsVotingLocked(true);
     queryClient.invalidateQueries({ queryKey: ["projects"] });
-  };
+  }, [queryClient]);
 
   return (
     <div className="w-full">

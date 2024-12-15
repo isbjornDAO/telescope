@@ -17,14 +17,12 @@ export function VoteButton({
   isGloballyDisabled,
 }: VoteButtonProps) {
   const { address, isConnected } = useAccount();
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasVoted, setHasVoted] = useState(false);
-  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasVoted, setHasVoted] = useState<boolean>(false);
   const [projectName, setProjectName] = useState<string>("");
 
   const { signMessageAsync, isPending } = useSignMessage();
 
-  // Fetch if the user has already voted for this project
   useEffect(() => {
     const checkVoteStatus = async () => {
       if (isConnected && address) {
@@ -39,12 +37,13 @@ export function VoteButton({
             const data = await response.json();
             setHasVoted(data.hasVoted);
             setProjectName(data.projectName);
+          } else {
+            console.error("Failed to fetch vote status:", response.statusText);
           }
         } catch (error) {
           console.error("Failed to fetch vote status:", error);
         }
       }
-      setIsCheckingStatus(false);
       setIsLoading(false);
     };
 
@@ -53,7 +52,6 @@ export function VoteButton({
 
   const handleVote = async () => {
     if (!isConnected || !address) {
-      console.log("❌ Wallet not connected");
       toast({
         title: "Not Connected",
         description: "Please connect your wallet to vote.",
@@ -62,10 +60,18 @@ export function VoteButton({
       return;
     }
 
+    toast({
+      title: "Processing Vote",
+      description: "Your vote is being recorded...",
+      variant: "default",
+    });
+
     console.log("🔵 Initiating vote process", { projectId, address });
     setIsLoading(true);
-    const message = `I confirm that I want to vote for ${projectName || `project #${projectId}`}.\n\nThis signature is only used to verify your vote and cannot be used for any other purpose.`;
-    
+    const message = `I confirm that I want to vote for ${
+      projectName || `project #${projectId}`
+    }.\n\nThis signature is only used to verify your vote and cannot be used for any other purpose.`;
+
     try {
       const signature = await signMessageAsync({ message });
       console.log("🔵 Signature successful:", { signature });
@@ -90,7 +96,8 @@ export function VoteButton({
           title: "Vote Successful",
           description: "Thank you for voting!",
           variant: "default",
-          className: "bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/50",
+          className:
+            "bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/50",
         });
         setHasVoted(true);
         onVoteSuccess?.();
@@ -114,23 +121,30 @@ export function VoteButton({
     }
   };
 
+  // The button should be disabled if:
+  // - It's still loading the vote status
+  // - The user is not connected
+  // - A vote transaction is pending
+  // - The user has already voted
+  // - Voting is globally disabled
   const isDisabled =
-    !isConnected ||
-    isLoading ||
-    isPending ||
-    hasVoted ||
-    isGloballyDisabled ||
-    isCheckingStatus;
+    isLoading || isPending || !isConnected || hasVoted || isGloballyDisabled;
 
-  const buttonText = isCheckingStatus || isLoading
-    ? "Vote..."
+  // Determine the button text based on the current state
+  const buttonText = isLoading
+    ? "Loading..."
     : isPending
     ? "Voting..."
     : hasVoted
     ? "Voted"
     : "Vote";
 
-  return (
+  // Conditional Rendering: Show a loader or the button based on the loading state
+  return isLoading ? (
+    <Button size="sm" disabled className="snow-button w-full md:w-auto">
+      Loading...
+    </Button>
+  ) : (
     <Button
       size="sm"
       disabled={isDisabled}

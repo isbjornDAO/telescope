@@ -7,6 +7,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { siteConfig } from "@/lib/site";
 import { ThemeProvider } from "next-themes";
 import { Web3Provider } from "@/components/providers/web3";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -71,7 +72,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="light">
-          <Web3Provider>{children}</Web3Provider>
+          <Web3Provider>
+            <Toaster />
+            {children}
+          </Web3Provider>
         </ThemeProvider>
       </body>
     </html>
