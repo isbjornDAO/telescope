@@ -17,7 +17,7 @@ export function VoteButton({
   isGloballyDisabled,
 }: VoteButtonProps) {
   const { address, isConnected } = useAccount();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [hasVoted, setHasVoted] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
   const [projectName, setProjectName] = useState<string>("");
@@ -28,7 +28,6 @@ export function VoteButton({
   useEffect(() => {
     const checkVoteStatus = async () => {
       if (isConnected && address) {
-        setIsCheckingStatus(true);
         try {
           const response = await fetch(
             `/api/projects/${projectId}/vote/status?walletAddress=${address}`,
@@ -43,12 +42,10 @@ export function VoteButton({
           }
         } catch (error) {
           console.error("Failed to fetch vote status:", error);
-        } finally {
-          setIsCheckingStatus(false);
         }
-      } else {
-        setIsCheckingStatus(false);
       }
+      setIsCheckingStatus(false);
+      setIsLoading(false);
     };
 
     checkVoteStatus();
@@ -117,11 +114,17 @@ export function VoteButton({
     }
   };
 
-  const buttonText = isCheckingStatus
+  const isDisabled =
+    !isConnected ||
+    isLoading ||
+    isPending ||
+    hasVoted ||
+    isGloballyDisabled ||
+    isCheckingStatus;
+
+  const buttonText = isCheckingStatus || isLoading
     ? "Vote..."
     : isPending
-    ? "Voting..."
-    : isLoading
     ? "Voting..."
     : hasVoted
     ? "Voted"
@@ -130,14 +133,7 @@ export function VoteButton({
   return (
     <Button
       size="sm"
-      disabled={
-        !isConnected ||
-        isLoading ||
-        isPending ||
-        hasVoted ||
-        isGloballyDisabled ||
-        isCheckingStatus
-      }
+      disabled={isDisabled}
       onClick={handleVote}
       className="snow-button w-full md:w-auto"
     >
