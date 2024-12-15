@@ -70,6 +70,7 @@ export default function Home() {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
+    refetchInterval: 1000,
   });
 
   // Check global voting status when component mounts or address changes

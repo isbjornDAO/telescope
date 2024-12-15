@@ -122,6 +122,8 @@ export async function POST(
         voters: number;
       }) || { votes: 0, voters: 0 };
 
+      console.log("Current metadata:", project.metadata);
+
       // Update the project's metadata
       await prisma.project.update({
         where: { id: project.id },
@@ -133,6 +135,11 @@ export async function POST(
               : currentMetadata.voters,
           },
         },
+      });
+
+      console.log("Updated metadata:", {
+        votes: (currentMetadata.votes || 0) + 1,
+        voters: isFirstVote ? (currentMetadata.voters || 0) + 1 : currentMetadata.voters,
       });
 
       console.log("✅ Vote successfully recorded", {

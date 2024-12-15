@@ -109,7 +109,10 @@ export function VoteButton({
       console.log("🔵 Vote response:", { status: response.status, data });
 
       if (response.ok) {
-        queryClient.invalidateQueries({ queryKey: ["projects"] });
+        await queryClient.invalidateQueries({
+          queryKey: ["projects"],
+          refetchType: "all",
+        });
 
         toast({
           title: "Vote Successful",

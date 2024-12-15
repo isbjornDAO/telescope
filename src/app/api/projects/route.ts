@@ -49,7 +49,10 @@ export async function GET() {
               votes: metadata.votes,
               voters: metadata.voters,
             }
-          : undefined;
+          : {
+              votes: 0,
+              voters: 0,
+            };
 
         return {
           id: project.id,
