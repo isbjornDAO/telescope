@@ -64,13 +64,13 @@ export default function Home() {
       }
       return response.json();
     },
-    // Reduce cache time to ensure fresher data
-    staleTime: 30 * 1000, // 30 seconds
+    // Increase stale time and reduce refetch frequency
+    staleTime: 2 * 1000, // 2 seconds
     gcTime: 10 * 1000, // 10 seconds
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
-    refetchInterval: 1000,
+    refetchInterval: 2000, // Change to 2 seconds
   });
 
   // Check global voting status when component mounts or address changes

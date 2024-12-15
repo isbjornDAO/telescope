@@ -109,9 +109,23 @@ export function VoteButton({
       console.log("🔵 Vote response:", { status: response.status, data });
 
       if (response.ok) {
-        await queryClient.invalidateQueries({
-          queryKey: ["projects"],
-          refetchType: "all",
+        await queryClient.cancelQueries({ queryKey: ["projects"] });
+
+        queryClient.setQueryData<LeaderboardItem[]>(["projects"], (old) => {
+          if (!old) return old;
+          return old.map((project) => {
+            if (project.id === projectId) {
+              return {
+                ...project,
+                metadata: {
+                  ...project.metadata,
+                  votes: (project.metadata?.votes || 0) + 1,
+                  voters: (project.metadata?.voters || 0) + 1,
+                },
+              };
+            }
+            return project;
+          });
         });
 
         toast({
