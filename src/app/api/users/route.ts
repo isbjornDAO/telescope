@@ -5,7 +5,9 @@ import { getXpForNextLevel } from "@/lib/xp";
 
 // Schema to validate the query parameters
 const userQuerySchema = z.object({
-  walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
+  walletAddress: z
+    .string()
+    .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
 });
 
 export async function GET(req: NextRequest) {
@@ -22,18 +24,18 @@ export async function GET(req: NextRequest) {
     const user = await findOrCreateUser(walletAddress);
     const xpForNextLevel = getXpForNextLevel(user.xp);
 
-    return NextResponse.json({
-      ...user,
-      xpForNextLevel
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        ...user,
+        xpForNextLevel,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error(error);
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: error.errors }, { status: 400 });
     }
 
     return NextResponse.json(
@@ -41,4 +43,6 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}
+
+export const revalidate = 0;

@@ -18,10 +18,11 @@ export async function GET(
     const walletAddress = searchParams.get("walletAddress");
 
     // Validate query parameters
-    const { walletAddress: validatedWalletAddress, projectId } = querySchema.parse({
-      walletAddress,
-      projectId: params.projectId,
-    });
+    const { walletAddress: validatedWalletAddress, projectId } =
+      querySchema.parse({
+        walletAddress,
+        projectId: params.projectId,
+      });
 
     if (!projectId) {
       return NextResponse.json(
@@ -55,38 +56,46 @@ export async function GET(
 
     const project = await prisma.project.findUnique({
       where: { id: projectId },
-      select: { name: true }
+      select: { name: true },
     });
 
-    return NextResponse.json({ 
-      hasVoted: !!voteExists,
-      projectName: project?.name 
-    }, { 
-      status: 200,
-      headers: {
-        'Cache-Control': 'no-store',
+    return NextResponse.json(
+      {
+        hasVoted: !!voteExists,
+        projectName: project?.name,
       },
-    });
+      {
+        status: 200,
+        headers: {
+          "Cache-Control": "no-store",
+        },
+      }
+    );
   } catch (error) {
     console.error(error);
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors }, { 
-        status: 400,
-        headers: {
-          'Cache-Control': 'no-store',
-        },
-      });
+      return NextResponse.json(
+        { error: error.errors },
+        {
+          status: 400,
+          headers: {
+            "Cache-Control": "no-store",
+          },
+        }
+      );
     }
 
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { 
+      {
         status: 500,
         headers: {
-          'Cache-Control': 'no-store',
+          "Cache-Control": "no-store",
         },
       }
     );
   }
 }
+
+export const revalidate = 0;

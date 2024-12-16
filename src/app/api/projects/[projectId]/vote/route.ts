@@ -18,14 +18,14 @@ export async function POST(
   { params }: { params: { projectId: string } }
 ) {
   console.log("🔵 Vote request received", { projectId: params.projectId });
-  
+
   const transaction = await prisma.$transaction(async (prisma) => {
     try {
       const body = await req.json();
-      console.log("🔵 Request body received:", { 
+      console.log("🔵 Request body received:", {
         walletAddress: body.walletAddress,
         signatureLength: body.signature?.length,
-        messageLength: body.message?.length 
+        messageLength: body.message?.length,
       });
 
       const { walletAddress, signature, message } = voteSchema.parse(body);
@@ -111,9 +111,9 @@ export async function POST(
           where: { id: user.id },
           data: {
             xp: { increment: 1 },
-            level: { set: calculateLevel(user.xp + 1) }
+            level: { set: calculateLevel(user.xp + 1) },
           },
-        })
+        }),
       ]);
 
       // Parse current metadata or initialize with default values
@@ -139,7 +139,9 @@ export async function POST(
 
       console.log("Updated metadata:", {
         votes: (currentMetadata.votes || 0) + 1,
-        voters: isFirstVote ? (currentMetadata.voters || 0) + 1 : currentMetadata.voters,
+        voters: isFirstVote
+          ? (currentMetadata.voters || 0) + 1
+          : currentMetadata.voters,
       });
 
       console.log("✅ Vote successfully recorded", {
@@ -149,13 +151,13 @@ export async function POST(
 
       return NextResponse.json(
         { message: "Vote successfully recorded." },
-        { 
+        {
           status: 201,
           headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            Pragma: "no-cache",
+            Expires: "0",
+          },
         }
       );
     } catch (error) {
@@ -172,3 +174,5 @@ export async function POST(
 
   return transaction;
 }
+
+export const revalidate = 0;
