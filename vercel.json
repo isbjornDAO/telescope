@@ -1,0 +1,36 @@
+{
+  "routes": [
+    {
+      "src": "/api/projects/(.*)",
+      "headers": {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+      }
+    },
+    {
+      "src": "/api/users/(.*)",
+      "headers": {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+      }
+    },
+    {
+      "src": "/api/projects/(.*)/vote/status",
+      "headers": {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+      }
+    },
+    {
+      "src": "/api/projects/(.*)/vote",
+      "headers": {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+      }
+    }
+  ]
+}
