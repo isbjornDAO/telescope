@@ -26,9 +26,6 @@ import { isItemMetadata } from "@/lib/utils";
 export async function GET() {
   try {
     const projects = await prisma.project.findMany({
-      where: {
-        // Add any necessary filters here
-      },
       select: {
         id: true,
         name: true,
@@ -43,7 +40,6 @@ export async function GET() {
       .map((project) => {
         const metadata = project.metadata;
 
-        // Use the type guard instead of casting
         const itemMetadata = isItemMetadata(metadata)
           ? {
               votes: metadata.votes,
@@ -79,10 +75,12 @@ export async function GET() {
 
     console.log(sortedProjects);
 
-    return NextResponse.json(sortedProjects, { 
+    return NextResponse.json(sortedProjects, {
       status: 200,
       headers: {
-        'Cache-Control': 'no-store', // Prevent caching
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
       },
     });
   } catch (error) {

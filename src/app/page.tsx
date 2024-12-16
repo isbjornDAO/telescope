@@ -58,19 +58,23 @@ export default function Home() {
   } = useQuery<LeaderboardItem[], Error>({
     queryKey: ["projects"],
     queryFn: async () => {
-      const response = await fetch("/api/projects");
+      const response = await fetch("/api/projects", {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (!response.ok) {
         throw new Error("Failed to fetch projects.");
       }
       return response.json();
     },
-    // Increase stale time and reduce refetch frequency
-    staleTime: 2 * 1000, // 2 seconds
-    gcTime: 10 * 1000, // 10 seconds
+    staleTime: 0, // Consider data stale immediately
+    gcTime: 0, // Remove data from cache immediately when unused
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
-    refetchInterval: 2000, // Change to 2 seconds
+    refetchInterval: 5000, // Poll every 5 seconds
   });
 
   // Check global voting status when component mounts or address changes

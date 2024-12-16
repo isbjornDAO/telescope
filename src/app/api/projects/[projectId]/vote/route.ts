@@ -149,7 +149,14 @@ export async function POST(
 
       return NextResponse.json(
         { message: "Vote successfully recorded." },
-        { status: 201 }
+        { 
+          status: 201,
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        }
       );
     } catch (error) {
       console.error("❌ Error processing vote:", error);
