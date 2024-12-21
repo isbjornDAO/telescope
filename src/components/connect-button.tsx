@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "@/components/ui/button";
+import { signIn, useSession } from "next-auth/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,11 +15,13 @@ import {
 import { ChevronDown, LogOut } from "lucide-react";
 import { useDisconnect } from "wagmi";
 import { useUserStats } from "@/hooks/use-user-stats";
+import { DiscordIcon } from "./icons/discord";
 
 export const ConnectButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { disconnect } = useDisconnect();
   const { data: userStats } = useUserStats();
+  const { data: session } = useSession();
 
   return (
     <RainbowConnectButton.Custom>
@@ -45,6 +48,7 @@ export const ConnectButton = () => {
           account &&
           chain &&
           (!authenticationStatus || authenticationStatus === "authenticated");
+
         return (
           <div
             {...(!ready && {
@@ -89,6 +93,11 @@ export const ConnectButton = () => {
                       >
                         <div className="flex items-center gap-2">
                           <span>{account.displayName}</span>
+                          {session?.user?.discordName && (
+                            <span className="text-xs text-white">
+                              ({session.user.discordName})
+                            </span>
+                          )}
                         </div>
                         <ChevronDown
                           className={`ml-2 h-4 w-4 transition-transform ${
@@ -100,6 +109,15 @@ export const ConnectButton = () => {
                     <DropdownMenuContent align="end" className="w-56">
                       <DropdownMenuLabel>Connected Address</DropdownMenuLabel>
                       <DropdownMenuSeparator />
+                      {!session?.discordUser && (
+                        <DropdownMenuItem
+                          onClick={() => signIn("discord")}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
+                          <DiscordIcon className="w-4 h-4" />
+                          <span>Connect Discord</span>
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem className="flex flex-col items-start">
                         <span className="font-medium">
                           Level {account.level}
@@ -122,10 +140,7 @@ export const ConnectButton = () => {
                         </span>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <a
-                          href="https://discord.gg/K4z7xxFVGc"
-                          target="_blank"
-                        >
+                        <a href="https://discord.gg/K4z7xxFVGc" target="_blank">
                           Collect Rewards
                         </a>
                       </DropdownMenuItem>

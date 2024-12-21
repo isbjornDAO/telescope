@@ -54,12 +54,29 @@ export const LeaderboardTable = React.memo(
     console.log(currentItems);
 
     const getVisiblePages = (currentPage: number, totalPages: number) => {
-      if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
-      
-      if (currentPage <= 3) return [1, 2, 3, 4, '...', totalPages];
-      if (currentPage >= totalPages - 2) return [1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
-      
-      return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+      if (totalPages <= 5)
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+
+      if (currentPage <= 3) return [1, 2, 3, 4, "...", totalPages];
+      if (currentPage >= totalPages - 2)
+        return [
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        ];
+
+      return [
+        1,
+        "...",
+        currentPage - 1,
+        currentPage,
+        currentPage + 1,
+        "...",
+        totalPages,
+      ];
     };
 
     return (
@@ -211,34 +228,44 @@ export const LeaderboardTable = React.memo(
               <PaginationItem className="hidden sm:inline-block">
                 <PaginationPrevious
                   onClick={() => handlePageChange(currentPage - 1)}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:shadow"}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer hover:shadow"
+                  }
                 />
               </PaginationItem>
 
-              {getVisiblePages(currentPage, totalPages).map((pageNum, index) => (
-                <PaginationItem key={index}>
-                  {pageNum === '...' ? (
-                    <span className="px-4 py-2">...</span>
-                  ) : (
-                    <PaginationLink
-                      isActive={currentPage === pageNum}
-                      onClick={() => handlePageChange(pageNum as number)}
-                      className={
-                        currentPage === pageNum
-                          ? "shadow"
-                          : "cursor-pointer hover:shadow"
-                      }
-                    >
-                      {pageNum}
-                    </PaginationLink>
-                  )}
-                </PaginationItem>
-              ))}
+              {getVisiblePages(currentPage, totalPages).map(
+                (pageNum, index) => (
+                  <PaginationItem key={index}>
+                    {pageNum === "..." ? (
+                      <span className="px-4 py-2">...</span>
+                    ) : (
+                      <PaginationLink
+                        isActive={currentPage === pageNum}
+                        onClick={() => handlePageChange(pageNum as number)}
+                        className={
+                          currentPage === pageNum
+                            ? "shadow"
+                            : "cursor-pointer hover:shadow"
+                        }
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                )
+              )}
 
               <PaginationItem className="hidden sm:inline-block">
                 <PaginationNext
                   onClick={() => handlePageChange(currentPage + 1)}
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:shadow"}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer hover:shadow"
+                  }
                 />
               </PaginationItem>
             </PaginationContent>

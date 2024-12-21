@@ -2,19 +2,16 @@ import { prisma } from "@/lib/prisma";
 
 export async function findOrCreateUser(walletAddress: string) {
   try {
-    // Try to find existing user
+    // Find user by walletAddress
     let user = await prisma.user.findUnique({
       where: { address: walletAddress },
     });
 
-    // If user doesn't exist, create new one
+    // If user doesn't exist, you might choose to handle it differently
+    // For example, return null or throw an error if you expect the user
+    // to be created via Discord sign-in first
     if (!user) {
-      user = await prisma.user.create({
-        data: {
-          address: walletAddress,
-          // Don't set username field at all
-        },
-      });
+      throw new Error("User not found. Please sign in first.");
     }
 
     return user;

@@ -73,8 +73,6 @@ export async function GET() {
         rank: index + 1,
       }));
 
-    console.log(sortedProjects);
-
     return NextResponse.json(sortedProjects, {
       status: 200,
       headers: {

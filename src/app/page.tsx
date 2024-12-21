@@ -1,14 +1,20 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { ConnectButton } from "@/components/connect-button";
 import { LeaderboardTable } from "@/components/leaderboard-table";
 import { VoteButton } from "@/components/vote-button";
 import { LeaderboardItem } from "@/types";
-import { HomeIcon, Users } from "lucide-react";
+import { AlertCircle, HomeIcon, Users } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { signIn } from "next-auth/react";
+import { DiscordConnect } from "@/components/discord-connect";
+import { useSession } from "next-auth/react";
+// import { Input } from "@/components/ui/input";
 
 interface VotingStatusProps {
   isLocked: boolean;
@@ -50,6 +56,8 @@ export default function Home() {
   const { address, isConnected } = useAccount();
   const [isVotingLocked, setIsVotingLocked] = useState(false);
   const [nextVoteTime, setNextVoteTime] = useState<Date | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { data: session, status } = useSession();
 
   const {
     data: projects,
@@ -60,9 +68,9 @@ export default function Home() {
     queryFn: async () => {
       const response = await fetch("/api/projects", {
         headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+        },
       });
       if (!response.ok) {
         throw new Error("Failed to fetch projects.");
@@ -76,6 +84,13 @@ export default function Home() {
     refetchOnReconnect: true,
     refetchInterval: 5000, // Poll every 5 seconds
   });
+
+  const filteredProjects = useMemo(() => {
+    if (!projects) return [];
+    return projects.filter((project) =>
+      project.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [projects, searchQuery]);
 
   // Check global voting status when component mounts or address changes
   useEffect(() => {
@@ -108,6 +123,36 @@ export default function Home() {
     queryClient.invalidateQueries({ queryKey: ["projects"] });
   }, [queryClient]);
 
+  useEffect(() => {
+    const associateWallet = async () => {
+      if (status === "authenticated" && address && session?.user?.id) {
+        try {
+          const response = await fetch("/api/users/associate-wallet", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: session.user.id,
+              walletAddress: address,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to associate wallet address");
+          }
+
+          const data = await response.json();
+          console.log(data.message);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+
+    associateWallet();
+  }, [status, address, session]);
+
   return (
     <div className="w-full">
       <header className="w-full bg-white dark:bg-zinc-900 bg border-b-4 border-zinc-100 dark:border-zinc-700">
@@ -118,6 +163,15 @@ export default function Home() {
             className="w-52 md:w-80 flex items-end"
           />
           <div className="flex items-center gap-2">
+            {/* <div className="mt-4 md:mt-0 md:ml-8 w-full md:w-64">
+              <Input
+                type="text"
+                placeholder="Search projects..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="px-4  bg-white border-white border-2 shadow-md"
+              />
+            </div> */}
             <ConnectButton />
           </div>
         </div>
@@ -151,6 +205,7 @@ export default function Home() {
                 </TabsTrigger>
               </TabsList>
             </div>
+
             {isConnected ? (
               <VotingStatusMessage
                 isLocked={isVotingLocked}
@@ -163,9 +218,10 @@ export default function Home() {
               </div>
             )}
           </div>
+          <DiscordConnect isConnected={isConnected} />
           <TabsContent value="projects" className="tab-content">
             <LeaderboardTable
-              items={projects || []}
+              items={filteredProjects || []}
               renderMetadata={(item) => {
                 if (!item.metadata) return null;
                 return (
