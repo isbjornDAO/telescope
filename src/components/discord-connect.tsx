@@ -19,8 +19,8 @@ export const DiscordConnect = ({ isConnected }: { isConnected: boolean }) => {
       // Request wallet signature
       await signMessageAsync({ message });
       
-      // If signature successful, redirect to Discord sign in
-      await signIn("discord", { callbackUrl: "/" });
+      // Proceed to sign in with Discord and include wallet address
+      signIn("discord", { callbackUrl: "/", walletAddress: address }); // Pass wallet address
     } catch (error) {
       console.error("Failed to sign message:", error);
       toast({

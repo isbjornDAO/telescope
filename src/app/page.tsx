@@ -4,15 +4,11 @@ import { ConnectButton } from "@/components/connect-button";
 import { LeaderboardTable } from "@/components/leaderboard-table";
 import { VoteButton } from "@/components/vote-button";
 import { LeaderboardItem } from "@/types";
-import { AlertCircle, HomeIcon, Users } from "lucide-react";
+import { HomeIcon, Users } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { signIn } from "next-auth/react";
-import { DiscordConnect } from "@/components/discord-connect";
 import { useSession } from "next-auth/react";
 // import { Input } from "@/components/ui/input";
 
@@ -218,7 +214,6 @@ export default function Home() {
               </div>
             )}
           </div>
-          <DiscordConnect isConnected={isConnected} />
           <TabsContent value="projects" className="tab-content">
             <LeaderboardTable
               items={filteredProjects || []}

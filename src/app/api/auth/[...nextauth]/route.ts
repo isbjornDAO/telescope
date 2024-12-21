@@ -1,19 +1,7 @@
-import NextAuth, {
-  DefaultSession,
-  NextAuthOptions,
-  Session,
-  Account,
-} from "next-auth";
-import { JWT } from "next-auth/jwt";
+import NextAuth, { DefaultSession, NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
-import { prisma } from "@/lib/prisma";
-import { Address } from "viem";
 
 declare module "next-auth" {
-  interface Account {
-    walletAddress?: Address;
-  }
-
   interface Session {
     user?: {
       id: string;
@@ -25,21 +13,6 @@ declare module "next-auth" {
       image_url: string;
       accentColor: number;
     };
-    accessToken?: string;
-    refreshToken?: string;
-    tokenType?: string;
-    walletAddress?: Address | null;
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    accessToken?: string;
-    refreshToken?: string;
-    tokenType?: string;
-    profile?: any;
-    walletAddress?: string;
-    userId?: string;
   }
 }
 
@@ -54,6 +27,7 @@ export const authOptions: NextAuthOptions = {
         },
       },
       profile(profile) {
+        console.log(profile);
         if (profile.avatar === null) {
           const defaultAvatarNumber = parseInt(profile.discriminator) % 5;
           profile.image_url = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNumber}.png`;
@@ -74,100 +48,29 @@ export const authOptions: NextAuthOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET as string,
   callbacks: {
-    jwt: async ({
-      token,
-      user,
-      account,
-      profile,
-      trigger,
-      session,
-    }: {
-      token: JWT;
-      user?: any;
-      account?: Account | null;
-      profile?: any;
-      trigger?: string;
-      session?: any;
-    }) => {
-      console.log("JWT Callback Trigger:", trigger);
-      console.log("User:", user);
-      console.log("Account:", account);
-      console.log("Profile:", profile);
-      console.log("Session:", session);
-
-      if (user) {
-        token.userId = user.id;
-      }
-
+    //@ts-ignore
+    jwt: async ({ token, account, profile }) => {
       if (account) {
         token.accessToken = account.access_token;
         token.tokenType = account.token_type;
-
-        if (typeof (account as any).walletAddress === "string") {
-          token.walletAddress = (account as any).walletAddress;
-          console.log("Wallet Address set in token:", token.walletAddress);
-        }
       }
-
       if (profile) {
         token.profile = profile;
-        console.log("Profile set in token:", token.profile);
       }
-
-      if (trigger === "signIn" && session?.walletAddress) {
-        token.walletAddress = session.walletAddress;
-        console.log("Wallet Address set from session:", token.walletAddress);
-      }
-
       return token;
     },
+    // @ts-ignore
+    session: async ({ session, token }) => {
+      // @ts-ignore
+      session.accessToken = token.accessToken;
+      // @ts-ignore
+      session.refreshToken = token.refreshToken;
+      // @ts-ignore
+      session.tokenType = token.tokenType;
+      // @ts-ignore
+      session.discordUser = token.profile;
 
-    session: async ({ session, token }: { session: Session; token: JWT }) => {
-      console.log("Session Callback Triggered", session);
-      console.log("Token:", token);
-
-      if (token.userId) {
-        session.user = {
-          ...session.user,
-          id: token.userId,
-        };
-      } else {
-        console.warn("No userId found in token");
-      }
-
-      if (session.user?.id) {
-        const user = await prisma.user.findUnique({
-          where: { address: token.walletAddress as Address },
-          select: { address: true },
-        });
-
-        const walletAddress = user?.address || null;
-        const profile = token.profile as {
-          id: string;
-          username: string;
-          discriminator: string;
-          image_url: string;
-          accentColor: number;
-        };
-
-        console.log("Wallet Address in Session:", walletAddress);
-        console.log("Profile in Session:", profile);
-
-        session.accessToken = token.accessToken as string;
-        session.refreshToken = token.refreshToken as string;
-        session.tokenType = token.tokenType as string;
-        session.discordUser = profile;
-        session.walletAddress = walletAddress as Address | null;
-
-        return session;
-      } else {
-        console.warn("Session user id is undefined");
-        return session;
-      }
-    },
-
-    signIn: async ({ user, account, profile, email, credentials }) => {
-      return true;
+      return session;
     },
   },
 };
