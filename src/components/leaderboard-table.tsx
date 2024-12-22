@@ -16,6 +16,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { getTextColorClass } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -54,12 +55,29 @@ export const LeaderboardTable = React.memo(
     console.log(currentItems);
 
     const getVisiblePages = (currentPage: number, totalPages: number) => {
-      if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
-      
-      if (currentPage <= 3) return [1, 2, 3, 4, '...', totalPages];
-      if (currentPage >= totalPages - 2) return [1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
-      
-      return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+      if (totalPages <= 5)
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+
+      if (currentPage <= 3) return [1, 2, 3, 4, "...", totalPages];
+      if (currentPage >= totalPages - 2)
+        return [
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        ];
+
+      return [
+        1,
+        "...",
+        currentPage - 1,
+        currentPage,
+        currentPage + 1,
+        "...",
+        totalPages,
+      ];
     };
 
     return (
@@ -96,7 +114,7 @@ export const LeaderboardTable = React.memo(
           : currentItems.map((item) => (
               <div
                 key={item.id}
-                className={`flex flex-col md:flex-row items-center gap-4 rounded-lg bg-white dark:bg-zinc-800 pl-4 pr-4 md:pr-8 py-4 shadow transition-all hover:shadow-md border ${
+                className={`flex flex-col md:flex-row items-center gap-4 rounded-lg dark:bg-zinc-800 pl-4 pr-4 md:pr-8 py-4 shadow transition-all hover:shadow-md border ${
                   item.rank === 1
                     ? "border-yellow-400"
                     : item.rank === 2
@@ -104,6 +122,15 @@ export const LeaderboardTable = React.memo(
                     : item.rank === 3
                     ? "border-amber-600"
                     : "border-zinc-200 dark:border-zinc-700"
+                }
+                ${
+                  item.rank === 1
+                    ? "bg-[#FFD451]"
+                    : item.rank === 2
+                    ? "bg-[#CACACA]"
+                    : item.rank === 3
+                    ? "bg-[#E1A253]"
+                    : "bg-white dark:bg-zinc-800"
                 }`}
               >
                 <div className="flex flex-row items-center justify-between gap-4 w-full md:w-auto">
@@ -111,19 +138,25 @@ export const LeaderboardTable = React.memo(
                     <div className="flex flex-row items-center gap-4">
                       <div
                         className={`text-sm font-medium ${
-                          item.rank === 1
-                            ? "text-yellow-400"
-                            : item.rank === 2
-                            ? "text-gray-300"
-                            : item.rank === 3
-                            ? "text-amber-600"
+                          [1, 2, 3].includes(item.rank)
+                            ? getTextColorClass(item.rank)
                             : "text-zinc-500 dark:text-zinc-200"
                         }`}
                       >
                         #{item.rank}
                       </div>
 
-                      <Avatar className="h-10 w-10 border-2 border-zinc-200">
+                      <Avatar
+                        className={`h-10 w-10 border-2 ${
+                          item.rank === 1
+                            ? "border-yellow-400"
+                            : item.rank === 2
+                            ? "border-gray-300"
+                            : item.rank === 3
+                            ? "border-amber-600"
+                            : "border-zinc-200 dark:border-zinc-700"
+                        }`}
+                      >
                         <AvatarImage src={item.avatar} alt={item.name} />
                         <AvatarFallback>
                           {item.name.substring(0, 2)}
@@ -132,11 +165,23 @@ export const LeaderboardTable = React.memo(
                     </div>
 
                     <div className="flex md:min-w-[300px] md:max-w-[300px] flex-col">
-                      <div className="font-bold text-zinc-800 dark:text-zinc-200">
+                      <div
+                        className={`font-bold ${
+                          [1, 2, 3].includes(item.rank)
+                            ? "text-zinc-800"
+                            : "text-zinc-800 dark:text-zinc-200"
+                        }`}
+                      >
                         {item.name}
                       </div>
                       {item.description && (
-                        <div className="text-sm text-zinc-500 truncate dark:text-zinc-400 hidden md:flex">
+                        <div
+                          className={`text-sm truncate dark:text-zinc-400 hidden md:flex ${
+                            [1, 2, 3].includes(item.rank)
+                              ? "text-zinc-700"
+                              : "text-zinc-500"
+                          }`}
+                        >
                           {item.description}
                         </div>
                       )}
@@ -148,7 +193,13 @@ export const LeaderboardTable = React.memo(
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              <Globe className="h-4 w-4 text-zinc-400 hover:text-green-400" />
+                              <Globe
+                                className={`h-4 w-4 ${
+                                  [1, 2, 3].includes(item.rank)
+                                    ? "text-zinc-700 hover:text-green-400"
+                                    : "text-zinc-400 hover:text-green-400"
+                                }`}
+                              />
                             </a>
                           )}
                           {item.social.twitter && (
@@ -157,7 +208,13 @@ export const LeaderboardTable = React.memo(
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              <XIcon className="w-[0.85rem] h-4 fill-zinc-500 hover:fill-blue-400" />
+                              <XIcon
+                                className={`w-[0.85rem] h-4 ${
+                                  [1, 2, 3].includes(item.rank)
+                                    ? "fill-zinc-700 hover:fill-blue-400"
+                                    : "fill-zinc-500 hover:fill-blue-400"
+                                }`}
+                              />
                             </a>
                           )}
                           {item.social.telegram && (
@@ -167,7 +224,13 @@ export const LeaderboardTable = React.memo(
                               rel="noopener noreferrer"
                               className=""
                             >
-                              <TelegramIcon className="h-4 w-4 fill-zinc-400 hover:fill-blue-400" />
+                              <TelegramIcon
+                                className={`h-4 w-4 ${
+                                  [1, 2, 3].includes(item.rank)
+                                    ? "fill-zinc-700 hover:fill-blue-400"
+                                    : "fill-zinc-400 hover:fill-blue-400"
+                                }`}
+                              />
                             </a>
                           )}
                           {item.social.discord && (
@@ -176,7 +239,13 @@ export const LeaderboardTable = React.memo(
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              <DiscordIcon className="h-4 w-4 fill-zinc-400 hover:fill-indigo-400" />
+                              <DiscordIcon
+                                className={`h-4 w-4 ${
+                                  [1, 2, 3].includes(item.rank)
+                                    ? "fill-zinc-700 hover:fill-indigo-400"
+                                    : "fill-zinc-400 hover:fill-indigo-400"
+                                }`}
+                              />
                             </a>
                           )}
                         </div>
@@ -192,7 +261,13 @@ export const LeaderboardTable = React.memo(
                   {renderActions && renderActions(item)}
                 </div>
                 {item.description && (
-                  <div className="text-sm text-zinc-500 truncate dark:text-zinc-400 flex md:hidden w-full text-wrap">
+                  <div
+                    className={`text-sm truncate dark:text-zinc-400 flex md:hidden w-full text-wrap ${
+                      [1, 2, 3].includes(item.rank)
+                        ? "text-zinc-700"
+                        : "text-zinc-500"
+                    }`}
+                  >
                     {item.description}
                   </div>
                 )}
@@ -211,34 +286,44 @@ export const LeaderboardTable = React.memo(
               <PaginationItem className="hidden sm:inline-block">
                 <PaginationPrevious
                   onClick={() => handlePageChange(currentPage - 1)}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:shadow"}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer hover:shadow"
+                  }
                 />
               </PaginationItem>
 
-              {getVisiblePages(currentPage, totalPages).map((pageNum, index) => (
-                <PaginationItem key={index}>
-                  {pageNum === '...' ? (
-                    <span className="px-4 py-2">...</span>
-                  ) : (
-                    <PaginationLink
-                      isActive={currentPage === pageNum}
-                      onClick={() => handlePageChange(pageNum as number)}
-                      className={
-                        currentPage === pageNum
-                          ? "shadow"
-                          : "cursor-pointer hover:shadow"
-                      }
-                    >
-                      {pageNum}
-                    </PaginationLink>
-                  )}
-                </PaginationItem>
-              ))}
+              {getVisiblePages(currentPage, totalPages).map(
+                (pageNum, index) => (
+                  <PaginationItem key={index}>
+                    {pageNum === "..." ? (
+                      <span className="px-4 py-2">...</span>
+                    ) : (
+                      <PaginationLink
+                        isActive={currentPage === pageNum}
+                        onClick={() => handlePageChange(pageNum as number)}
+                        className={
+                          currentPage === pageNum
+                            ? "shadow"
+                            : "cursor-pointer hover:shadow"
+                        }
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                )
+              )}
 
               <PaginationItem className="hidden sm:inline-block">
                 <PaginationNext
                   onClick={() => handlePageChange(currentPage + 1)}
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:shadow"}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer hover:shadow"
+                  }
                 />
               </PaginationItem>
             </PaginationContent>

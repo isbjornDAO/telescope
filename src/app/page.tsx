@@ -9,6 +9,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { FAQ } from "@/components/faq";
+import { Countdown } from "@/components/countdown";
+import { getTextColorClass } from "@/lib/utils";
 
 interface VotingStatusProps {
   isLocked: boolean;
@@ -60,9 +63,9 @@ export default function Home() {
     queryFn: async () => {
       const response = await fetch("/api/projects", {
         headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+        },
       });
       if (!response.ok) {
         throw new Error("Failed to fetch projects.");
@@ -117,13 +120,14 @@ export default function Home() {
             alt="Telescope"
             className="w-52 md:w-80 flex items-end"
           />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-4">
+            <FAQ />
             <ConnectButton />
           </div>
         </div>
       </header>
 
-      <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16">
+      <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16 gap-4">
         <Tabs defaultValue="projects">
           <div className="flex items-start md:items-center justify-between mb-6 flex-col md:flex-row gap-4">
             <div className="flex items-center gap-2">
@@ -163,17 +167,19 @@ export default function Home() {
               </div>
             )}
           </div>
+          <Countdown />
           <TabsContent value="projects" className="tab-content">
             <LeaderboardTable
               items={projects || []}
               renderMetadata={(item) => {
                 if (!item.metadata) return null;
+
                 return (
                   <div className="flex flex-col items-end mr-4">
                     <div className="text-base font-medium text-zinc-700 dark:text-zinc-200">
                       {item.metadata.votes.toLocaleString()} votes
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-zinc-400 dark:text-zinc-500">
+                    <div className={`flex items-center gap-1 text-xs ${getTextColorClass(item.rank)}`}>
                       <Users className="h-3 w-3" />
                       <span>
                         {item.metadata.voters.toLocaleString()} voters

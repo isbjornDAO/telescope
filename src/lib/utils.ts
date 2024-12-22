@@ -23,3 +23,10 @@ export function isItemMetadata(metadata: unknown): metadata is ItemMetadata {
     typeof meta.voters === "number"
   );
 }
+
+
+export const getTextColorClass = (rank: number) => {
+  return rank === 1 || rank === 2 || rank === 3
+    ? "text-zinc-700 dark:text-zinc-200"
+    : "text-zinc-400 dark:text-zinc-500";
+};
