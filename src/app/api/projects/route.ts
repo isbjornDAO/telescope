@@ -12,7 +12,7 @@ const querySchema = z.object({
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    let tag = searchParams.get("tag");
+    const tag = searchParams.get("tag");
 
     // Validate query parameters - make tag optional
     const validatedParams = querySchema.parse({ tag });
