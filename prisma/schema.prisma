@@ -35,6 +35,7 @@ model Project {
   social      Social?
   metadata    Json?
   votes       Vote[]
+  tags        String[] @default([])
 }
 
 model Vote {

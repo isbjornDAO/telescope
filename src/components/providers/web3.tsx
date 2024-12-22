@@ -14,6 +14,7 @@ import {
   argentWallet,
   trustWallet,
   ledgerWallet,
+  coreWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { avalanche, avalancheFuji } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -69,11 +70,11 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       wallets: [
         {
           groupName: "Most used",
-          wallets: [rainbowWallet, metaMaskWallet, coinbaseWallet],
+          wallets: [coreWallet, metaMaskWallet, rainbowWallet],
         },
         {
           groupName: "Other",
-          wallets: [argentWallet, trustWallet, ledgerWallet],
+          wallets: [coinbaseWallet, argentWallet, trustWallet, ledgerWallet],
         },
       ],
       chains: [avalanche, avalancheFuji],
