@@ -26,6 +26,7 @@ export interface LeaderboardItem {
     telegram?: string;
     website?: string;
   };
+  tags?: string[];
 }
 
 export interface ItemMetadata {

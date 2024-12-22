@@ -52,8 +52,6 @@ export const LeaderboardTable = React.memo(
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    console.log(currentItems);
-
     const getVisiblePages = (currentPage: number, totalPages: number) => {
       if (totalPages <= 5)
         return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -125,11 +123,11 @@ export const LeaderboardTable = React.memo(
                 }
                 ${
                   item.rank === 1
-                    ? "bg-[#FFD451]"
+                    ? "bg-[#fff0c3]"
                     : item.rank === 2
-                    ? "bg-[#CACACA]"
+                    ? "bg-[#f0f0f0]"
                     : item.rank === 3
-                    ? "bg-[#E1A253]"
+                    ? "bg-[#f8e1c4]"
                     : "bg-white dark:bg-zinc-800"
                 }`}
               >
