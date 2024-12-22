@@ -74,13 +74,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         },
         {
           groupName: "Other",
-          wallets: [
-            coinbaseWallet,
-            argentWallet,
-            trustWallet,
-            ledgerWallet,
-            coinbaseWallet,
-          ],
+          wallets: [coinbaseWallet, argentWallet, trustWallet, ledgerWallet],
         },
       ],
       chains: [avalanche, avalancheFuji],

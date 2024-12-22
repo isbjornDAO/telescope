@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { ConnectButton } from "@/components/connect-button";
 import { LeaderboardTable } from "@/components/leaderboard-table";
 import { VoteButton } from "@/components/vote-button";
@@ -12,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { FAQ } from "@/components/faq";
 import { Countdown } from "@/components/countdown";
 import { getTextColorClass } from "@/lib/utils";
+import { Categories } from "@/components/categories";
 
 interface VotingStatusProps {
   isLocked: boolean;
@@ -49,6 +51,9 @@ const VotingStatusMessage = React.memo(
 VotingStatusMessage.displayName = "VotingStatusMessage";
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const selectedTag = searchParams.get("tag") || undefined;
+
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
   const [isVotingLocked, setIsVotingLocked] = useState(false);
@@ -59,25 +64,27 @@ export default function Home() {
     isLoading,
     isError,
   } = useQuery<LeaderboardItem[], Error>({
-    queryKey: ["projects"],
+    queryKey: ["projects", selectedTag],
     queryFn: async () => {
-      const response = await fetch("/api/projects", {
-        headers: {
-          "Cache-Control": "no-cache",
-          Pragma: "no-cache",
-        },
-      });
+      const response = await fetch(
+        `/api/projects${selectedTag ? `?tag=${selectedTag}` : ""}`,
+        {
+          headers: {
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
+        }
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch projects.");
       }
       return response.json();
     },
-    staleTime: 0, // Consider data stale immediately
-    gcTime: 0, // Remove data from cache immediately when unused
+    staleTime: 0,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
-    refetchInterval: 5000, // Poll every 5 seconds
+    refetchInterval: 5000,
   });
 
   // Check global voting status when component mounts or address changes
@@ -127,9 +134,9 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16 gap-4">
-        <Tabs defaultValue="projects">
-          <div className="flex items-start md:items-center justify-between mb-6 flex-col md:flex-row gap-4">
+      <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16">
+        <Tabs defaultValue="projects" className="flex flex-col gap-4">
+          <div className="flex items-start md:items-center justify-between flex-col md:flex-row gap-4">
             <div className="flex items-center gap-2">
               <a
                 href="https://isbjorn.co.nz"
@@ -168,7 +175,14 @@ export default function Home() {
             )}
           </div>
           <Countdown />
-          <TabsContent value="projects" className="tab-content">
+          <TabsContent
+            value="projects"
+            className="tab-content gap-4 flex flex-col"
+          >
+            <div className="flex gap-1 flex-col">
+              <h3 className="font-bold">Categories</h3>
+              <Categories />
+            </div>
             <LeaderboardTable
               items={projects || []}
               renderMetadata={(item) => {
@@ -179,7 +193,11 @@ export default function Home() {
                     <div className="text-base font-medium text-zinc-700 dark:text-zinc-200">
                       {item.metadata.votes.toLocaleString()} votes
                     </div>
-                    <div className={`flex items-center gap-1 text-xs ${getTextColorClass(item.rank)}`}>
+                    <div
+                      className={`flex items-center gap-1 text-xs ${getTextColorClass(
+                        item.rank
+                      )}`}
+                    >
                       <Users className="h-3 w-3" />
                       <span>
                         {item.metadata.voters.toLocaleString()} voters

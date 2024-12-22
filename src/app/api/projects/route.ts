@@ -2,30 +2,31 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { LeaderboardItem } from "@/types";
 import { isItemMetadata } from "@/lib/utils";
+import { z } from "zod";
+import { Prisma } from "@prisma/client";
 
-// const projectSchema = z.object({
-//   name: z.string().min(1),
-//   description: z.string().optional(),
-//   avatar: z.string().optional(),
-//   social: z
-//     .object({
-//       twitter: z.string().url().optional(),
-//       discord: z.string().url().optional(),
-//       telegram: z.string().url().optional(),
-//       website: z.string().url().optional(),
-//     })
-//     .optional(),
-//   metadata: z
-//     .object({
-//       votes: z.number(),
-//       voters: z.number(),
-//     })
-//     .optional(),
-// });
+const querySchema = z.object({
+  tag: z.string().nullable().optional(),
+});
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const tag = searchParams.get("tag");
+
+    // Validate query parameters - make tag optional
+    const validatedParams = querySchema.parse({ tag });
+    const validatedTag = validatedParams.tag;
+
+    // Use Prisma's ProjectWhereInput type for better type safety
+    const filter: Prisma.ProjectWhereInput = {};
+    if (validatedTag) {
+      // Use the 'has' operator to filter projects that include the specified tag
+      filter.tags = { has: validatedTag };
+    }
+
     const projects = await prisma.project.findMany({
+      where: filter,
       select: {
         id: true,
         name: true,
@@ -33,6 +34,7 @@ export async function GET() {
         avatar: true,
         social: true,
         metadata: true,
+        tags: true,
       },
     });
 
@@ -65,6 +67,7 @@ export async function GET() {
               }
             : undefined,
           metadata: itemMetadata,
+          tags: project.tags,
         };
       })
       .sort((a, b) => (b.metadata?.votes ?? 0) - (a.metadata?.votes ?? 0))
