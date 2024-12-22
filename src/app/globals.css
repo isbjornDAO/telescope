@@ -92,7 +92,7 @@ body {
 .snow-button {
   position: relative;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: 0.5rem;
   padding: 8px 16px;
   min-width: 8em;
   text-align: center;
