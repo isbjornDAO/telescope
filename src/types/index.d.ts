@@ -57,3 +57,12 @@ export interface LeaderboardProps {
   isLoading?: boolean;
   isError?: boolean;
 }
+
+export interface DiscordProfile {
+  id: string;
+  username: string;
+  discriminator: string;
+  avatar: string | null;
+  accent_color: number | null;
+  global_name: string | null;
+}

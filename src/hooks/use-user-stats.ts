@@ -1,16 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAccount } from "wagmi";
 import { calculateLevel, getXpForNextLevel } from "@/lib/xp";
+import { Address } from "viem";
 
 interface UserStats {
   xp: number;
   level: number;
   xpForNextLevel: number;
+  discordId: string;
 }
 
-export function useUserStats() {
-  const { address, isConnected } = useAccount();
-
+export function useUserStats(address: Address, isConnected: boolean) {
   return useQuery<UserStats>({
     queryKey: ["userStats", address],
     queryFn: async () => {
@@ -21,11 +20,14 @@ export function useUserStats() {
         throw new Error("Failed to fetch user stats");
       }
 
-      const { xp } = await response.json();
+      const { xp, discordId } = await response.json();
+      console.log("🎮 xp", xp);
+      console.log("🎮 discordId", discordId);
       return {
         xp,
         level: calculateLevel(xp),
         xpForNextLevel: getXpForNextLevel(xp),
+        discordId,
       };
     },
     enabled: !!address && isConnected,

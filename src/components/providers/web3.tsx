@@ -34,6 +34,7 @@ interface BaseStorage {
 
 import { env } from "@/env";
 import { siteConfig } from "@/lib/site";
+import { SessionProvider } from "next-auth/react";
 
 export const noopStorage: BaseStorage = {
   getItem: () => null,
@@ -95,12 +96,14 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   if (!config) return null;
 
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider modalSize="compact" theme={darkTheme()}>
-          {children}
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <SessionProvider>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider modalSize="compact" theme={darkTheme()}>
+            {children}
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </SessionProvider>
   );
 }

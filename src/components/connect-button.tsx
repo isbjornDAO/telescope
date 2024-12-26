@@ -7,18 +7,20 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, LogOut } from "lucide-react";
-import { useDisconnect } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { useUserStats } from "@/hooks/use-user-stats";
+import Link from "next/link";
+import { Address } from "viem";
 
 export const ConnectButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { disconnect } = useDisconnect();
-  const { data: userStats } = useUserStats();
+  const { address, isConnected } = useAccount();
+  const { data: userStats } = useUserStats(address as Address, isConnected);
 
   return (
     <RainbowConnectButton.Custom>
@@ -98,15 +100,13 @@ export const ConnectButton = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
-                      <DropdownMenuLabel>Connected Address</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
                       <DropdownMenuItem className="flex flex-col items-start">
                         <span className="font-medium">
                           Level {account.level}
                         </span>
                         <div className="w-full mt-1 h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-green-500 transition-all duration-300"
+                            className="h-full bg-sky-600 transition-all duration-300"
                             style={{
                               width: `${
                                 (account.xp /
@@ -121,19 +121,21 @@ export const ConnectButton = () => {
                           level
                         </span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <a
-                          href="https://discord.gg/K4z7xxFVGc"
-                          target="_blank"
-                        >
+                      <Link href={`/profile`}>
+                        <DropdownMenuItem className="w-full cursor-pointer hover:bg-zinc-100">
+                          Profile
+                        </DropdownMenuItem>
+                      </Link>
+                      <a href="https://discord.gg/K4z7xxFVGc" target="_blank">
+                        <DropdownMenuItem className="w-full cursor-pointer hover:bg-zinc-100">
                           Collect Rewards
-                        </a>
-                      </DropdownMenuItem>
+                        </DropdownMenuItem>
+                      </a>
 
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => disconnect()}
-                        className="flex items-center gap-2 text-zinc-500 hover:text-zinc-900 cursor-pointer"
+                        className="flex items-center gap-2 text-zinc-500 hover:text-zinc-900 cursor-pointer hover:bg-zinc-100"
                       >
                         <LogOut className="w-4 h-4" />
                         <span>Disconnect</span>

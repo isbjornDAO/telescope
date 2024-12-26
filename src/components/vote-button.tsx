@@ -6,6 +6,8 @@ import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { LeaderboardItem } from "@/types";
+import { useUserStats } from "@/hooks/use-user-stats";
+import { Address } from "viem";
 
 interface VoteButtonProps {
   projectId: string;
@@ -22,6 +24,7 @@ export function VoteButton({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasVoted, setHasVoted] = useState<boolean>(false);
   const [projectName, setProjectName] = useState<string>("");
+  const { data: userStats } = useUserStats(address as Address, isConnected);
 
   const { signMessageAsync, isPending } = useSignMessage();
   const queryClient = useQueryClient();
@@ -58,6 +61,15 @@ export function VoteButton({
       toast({
         title: "Not Connected",
         description: "Please connect your wallet to vote.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!userStats?.discordId) {
+      toast({
+        title: "Discord Required",
+        description: "Please connect your Discord account to vote.",
         variant: "destructive",
       });
       return;
@@ -142,7 +154,12 @@ export function VoteButton({
   };
 
   const isDisabled =
-    isLoading || isPending || !isConnected || hasVoted || isGloballyDisabled;
+    isLoading ||
+    isPending ||
+    !isConnected ||
+    hasVoted ||
+    isGloballyDisabled ||
+    !userStats?.discordId;
 
   const buttonText = isLoading
     ? "Loading..."
@@ -150,6 +167,8 @@ export function VoteButton({
     ? "Voting..."
     : hasVoted
     ? "Voted"
+    : !userStats?.discordId
+    ? "Vote"
     : "Vote";
 
   return isLoading ? (

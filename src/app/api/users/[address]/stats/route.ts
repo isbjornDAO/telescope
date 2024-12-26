@@ -8,14 +8,17 @@ export async function GET(
   try {
     const user = await prisma.user.findUnique({
       where: { address: params.address },
-      select: { xp: true },
+      select: { xp: true, discordId: true },
     });
 
     if (!user) {
       return NextResponse.json({ xp: 0 }, { status: 200 });
     }
 
-    return NextResponse.json({ xp: user.xp }, { status: 200 });
+    return NextResponse.json(
+      { xp: user.xp, discordId: user.discordId },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Failed to fetch user stats:", error);
     return NextResponse.json(
