@@ -12,14 +12,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, LogOut } from "lucide-react";
-import { useDisconnect } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { useUserStats } from "@/hooks/use-user-stats";
 import Link from "next/link";
+import { Address } from "viem";
 
 export const ConnectButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { disconnect } = useDisconnect();
-  const { data: userStats } = useUserStats();
+  const { address, isConnected } = useAccount();
+  const { data: userStats } = useUserStats(address as Address, isConnected);
 
   return (
     <RainbowConnectButton.Custom>
@@ -120,7 +122,7 @@ export const ConnectButton = () => {
                           level
                         </span>
                       </DropdownMenuItem>
-                      <Link href="/profile">
+                      <Link href={`/profile`}>
                         <DropdownMenuItem className="w-full cursor-pointer hover:bg-zinc-100">
                           Profile
                         </DropdownMenuItem>

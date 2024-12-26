@@ -7,6 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
+import { AlertCircle } from "lucide-react";
 
 export function ConnectDiscordAlert() {
   const { address } = useAccount();
@@ -17,24 +18,26 @@ export function ConnectDiscordAlert() {
   useEffect(() => {
     const connectDiscordAccount = async () => {
       console.log("🔄 Checking for pending Discord connection...");
-      const pendingConnection = localStorage.getItem('pendingDiscordConnection');
+      const pendingConnection = localStorage.getItem(
+        "pendingDiscordConnection"
+      );
       console.log("📦 Pending connection data:", pendingConnection);
-      
+
       if (pendingConnection && session?.discordUser?.id) {
         console.log("🎮 Discord session found:", {
           discordUser: session.discordUser,
-          pendingConnection: JSON.parse(pendingConnection)
+          pendingConnection: JSON.parse(pendingConnection),
         });
-        
+
         try {
           const { signature, address, message } = JSON.parse(pendingConnection);
           console.log("🔐 Attempting to connect Discord with:", {
             address,
             discordId: session.discordUser.id,
             messageLength: message.length,
-            signatureLength: signature.length
+            signatureLength: signature.length,
           });
-          
+
           // Connect the Discord account
           const response = await fetch("/api/connect-discord", {
             method: "POST",
@@ -54,18 +57,18 @@ export function ConnectDiscordAlert() {
             console.error("❌ Discord connection failed:", {
               status: response.status,
               statusText: response.statusText,
-              error: errorData
+              error: errorData,
             });
-            throw new Error('Failed to connect Discord account');
+            throw new Error("Failed to connect Discord account");
           }
 
           const result = await response.json();
           console.log("✅ Discord connection successful:", result);
 
           // Clear the stored data
-          localStorage.removeItem('pendingDiscordConnection');
+          localStorage.removeItem("pendingDiscordConnection");
           console.log("🗑️ Cleared pending connection data");
-          
+
           toast({
             title: "Success",
             description: "Discord account connected successfully!",
@@ -81,7 +84,7 @@ export function ConnectDiscordAlert() {
       } else {
         console.log("ℹ️ No pending connection or Discord session:", {
           hasPendingConnection: !!pendingConnection,
-          hasDiscordSession: !!session?.discordUser?.id
+          hasDiscordSession: !!session?.discordUser?.id,
         });
       }
     };
@@ -103,7 +106,10 @@ export function ConnectDiscordAlert() {
 
       // Store the wallet data in localStorage
       const walletData = { signature, address, message };
-      localStorage.setItem('pendingDiscordConnection', JSON.stringify(walletData));
+      localStorage.setItem(
+        "pendingDiscordConnection",
+        JSON.stringify(walletData)
+      );
       console.log("💾 Stored wallet data in localStorage");
 
       // Redirect to Discord OAuth
@@ -122,17 +128,27 @@ export function ConnectDiscordAlert() {
   };
 
   return (
-    <Alert className="bg-white border-zinc-200 shadow-sm">
-      <AlertTitle className="text-lg font-semibold">
-        Connect your Discord account
-      </AlertTitle>
-      <AlertDescription className="mt-2 mb-4 text-zinc-600">
-        Link your Discord account to access exclusive features and keep track of
-        your activity.
-      </AlertDescription>
-      <Button onClick={handleConnectDiscord} className="snow-button">
-        Connect Discord
-      </Button>
-    </Alert>
+    <div>
+      <Alert
+        variant="default"
+        className="bg-white border-zinc-300 py-4 flex flex-col md:flex-row justify-between items-center"
+      >
+        <div className="flex flex-row gap-2">
+          <AlertCircle className="h-4 w-4 stroke-zinc-500" />
+          <div className="flex flex-col">
+            <AlertTitle className="font-bold">
+              Connect your Discord account
+            </AlertTitle>
+            <AlertDescription className="text-zinc-500">
+              Link your Discord account to access exclusive features and keep
+              track of your activity.
+            </AlertDescription>
+          </div>
+        </div>
+        <Button onClick={handleConnectDiscord} className="snow-button">
+          Connect Discord
+        </Button>
+      </Alert>
+    </div>
   );
 }

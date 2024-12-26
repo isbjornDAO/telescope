@@ -10,6 +10,7 @@ import { Web3Provider } from "@/components/providers/web3";
 import { Toaster } from "@/components/ui/toaster";
 import { FAQ } from "@/components/faq";
 import { ConnectButton } from "@/components/connect-button";
+import { BackButton } from "@/components/back-button";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -78,6 +79,9 @@ export default function RootLayout({
             <Toaster />
             <header className="w-full bg-white dark:bg-zinc-900 bg border-b-4 border-zinc-100 dark:border-zinc-700">
               <div className="w-full relative h-64 md:h-auto max-w-screen-lg mx-auto pt-24 px-8 flex items-start justify-end md:justify-between md:flex-row">
+                <div className="flex items-center gap-4 absolute left-8 z-10">
+                  <BackButton />
+                </div>
                 <img
                   src="/logo.png"
                   alt="Telescope"
