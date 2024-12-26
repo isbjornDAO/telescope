@@ -53,6 +53,7 @@ export function ConnectDiscordAlert() {
           });
 
           if (!response.ok) {
+            localStorage.removeItem("pendingDiscordConnection");
             const errorData = await response.json();
             console.error("❌ Discord connection failed:", {
               status: response.status,
@@ -124,6 +125,21 @@ export function ConnectDiscordAlert() {
         description: "Failed to sign the message. Please try again.",
         variant: "destructive",
       });
+
+      // Type guard to check if error is an object with response property
+      if (error && typeof error === 'object' && 'response' in error) {
+        const errorResponse = error.response as { status: number; json: () => Promise<{ connectedWallet?: string }> };
+        if (errorResponse.status === 400) {
+          const data = await errorResponse.json();
+          if (data.connectedWallet) {
+            toast({
+              title: "Error",
+              description: "Discord account already connected.",
+              variant: "destructive",
+            });
+          }
+        }
+      }
     }
   };
 
@@ -140,8 +156,7 @@ export function ConnectDiscordAlert() {
               Connect your Discord account
             </AlertTitle>
             <AlertDescription className="text-zinc-500">
-              Link your Discord account to access exclusive features and keep
-              track of your activity.
+              Link your Discord account to be able to vote.
             </AlertDescription>
           </div>
         </div>

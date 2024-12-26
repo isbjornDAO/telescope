@@ -15,5 +15,5 @@ export default function Profile() {
     if (!isConnected) {
       router.push("/");
     }
-  }, [isConnected, router]);
+  }, [isConnected, router, address]);
 }

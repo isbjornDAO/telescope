@@ -30,8 +30,8 @@ export async function GET(
     // Calculate current streak
     let currentStreak = 0;
     let longestStreak = user.streak || 0;
-    const now = new Date();
-    const yesterday = new Date(now.setDate(now.getDate() - 1));
+    // const now = new Date();
+    // const yesterday = new Date(now.setDate(now.getDate() - 1));
 
     // Sort votes by date
     const sortedVotes = user.votes.sort(

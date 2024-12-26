@@ -31,6 +31,21 @@ export async function POST(req: Request) {
       );
     }
 
+    // Check if Discord ID is already linked to another wallet
+    const existingUser = await prisma.user.findFirst({
+      where: { discordId },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { 
+          error: "This Discord account is already connected to another wallet",
+          connectedWallet: existingUser.address 
+        },
+        { status: 400 }
+      );
+    }
+
     const { signature, address, message } = await req.json();
     console.log("📝 Received connection request:", {
       walletAddress: address,

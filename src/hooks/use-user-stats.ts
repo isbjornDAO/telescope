@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAccount } from "wagmi";
 import { calculateLevel, getXpForNextLevel } from "@/lib/xp";
 import { Address } from "viem";
 

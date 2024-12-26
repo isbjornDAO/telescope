@@ -60,7 +60,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (isLoadingStats || isLoadingHistory) {
+  if (isLoadingStats || isLoadingHistory || isLoadingDiscordUser) {
     return (
       <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16">
         {/* Discord Alert Skeleton */}

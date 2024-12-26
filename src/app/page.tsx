@@ -1,19 +1,20 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { ConnectButton } from "@/components/connect-button";
 import { LeaderboardTable } from "@/components/leaderboard-table";
 import { VoteButton } from "@/components/vote-button";
 import { LeaderboardItem } from "@/types";
-import { HomeIcon, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { FAQ } from "@/components/faq";
 import { Countdown } from "@/components/countdown";
 import { getTextColorClass } from "@/lib/utils";
 import { Categories } from "@/components/categories";
+import { useUserStats } from "@/hooks/use-user-stats";
+import { ConnectDiscordAlert } from "@/components/connect-discord-alert";
+import { Address } from "viem";
 
 interface VotingStatusProps {
   isLocked: boolean;
@@ -56,6 +57,7 @@ export default function Home() {
 
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
+  const { data: userStats } = useUserStats(address as Address, isConnected);
   const [isVotingLocked, setIsVotingLocked] = useState(false);
   const [nextVoteTime, setNextVoteTime] = useState<Date | null>(null);
 
@@ -125,12 +127,6 @@ export default function Home() {
         <Tabs defaultValue="projects" className="flex flex-col gap-4">
           <div className="flex items-start md:items-center justify-between flex-col md:flex-row gap-4">
             <div className="flex items-center gap-2">
-              <a
-                href="https://isbjorn.co.nz"
-                className="px-4 py-2 font-bold text-md bg-white border-white border-2 rounded-md shadow"
-              >
-                <HomeIcon className="w-6 h-6" />
-              </a>
               <TabsList className="gap-2 bg-transparent m-0 p-0">
                 <TabsTrigger
                   value="projects"
@@ -161,7 +157,11 @@ export default function Home() {
               </div>
             )}
           </div>
-          <Countdown />
+          {isConnected && !userStats?.discordId ? (
+            <ConnectDiscordAlert />
+          ) : (
+            <Countdown />
+          )}
           <TabsContent
             value="projects"
             className="tab-content gap-4 flex flex-col"
