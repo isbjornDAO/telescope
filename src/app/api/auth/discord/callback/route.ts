@@ -1,24 +1,24 @@
 import { NextRequest } from "next/server";
 import { verifyMessage } from "viem";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   console.log("\n=== DISCORD CALLBACK API ROUTE ===");
   console.log("📍 Route: /api/auth/discord/callback [GET]");
   console.log("⏰ Timestamp:", new Date().toISOString());
-  
+
   try {
     console.log("🔵 Starting Discord callback process...");
-    
-    // Get URL parameters
-    const searchParams = req.nextUrl.searchParams;
-    const state = searchParams.get("state");
+
+    // Get URL parameters using URL API instead of nextUrl
+    const url = new URL(req.url);
+    const state = url.searchParams.get("state");
     console.log("🔍 URL Parameters:", {
       hasState: !!state,
       stateLength: state?.length,
       rawUrl: req.url,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     if (!state) {
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     console.log("📝 Parsed state data:", {
       walletAddress: address,
       messageLength: message.length,
-      signatureLength: signature.length
+      signatureLength: signature.length,
     });
 
     // Verify the signature
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
     console.log("🎮 Session data:", {
       hasSession: !!session,
       discordId: session?.discordUser?.id,
-      discordUsername: session?.discordUser?.username
+      discordUsername: session?.discordUser?.username,
     });
 
     const discordId = session?.discordUser?.id;
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
 
     console.log("✅ Discord authentication successful:", {
       walletAddress: address,
-      discordId: discordId
+      discordId: discordId,
     });
 
     return new Response("Discord authentication successful", { status: 200 });
@@ -73,8 +73,10 @@ export async function GET(req: NextRequest) {
     console.error("\n❌ ERROR IN DISCORD CALLBACK API:", {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
     throw error;
   }
-} 
+}
+
+export const dynamic = "force-dynamic";

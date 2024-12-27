@@ -2,15 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { findOrCreateUser } from "@/lib/user";
-import { Address, verifyMessage } from "viem";
 import { calculateLevel } from "@/lib/xp";
 
 const voteSchema = z.object({
   walletAddress: z
     .string()
     .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
-  signature: z.string(),
-  message: z.string(),
 });
 
 export async function POST(
@@ -22,36 +19,19 @@ export async function POST(
   const transaction = await prisma.$transaction(async (prisma) => {
     try {
       const body = await req.json();
-      console.log("🔵 Request body received:", {
-        walletAddress: body.walletAddress,
-        signatureLength: body.signature?.length,
-        messageLength: body.message?.length,
-      });
-
-      const { walletAddress, signature, message } = voteSchema.parse(body);
-      console.log("🔵 Request validation passed");
-
-      // Verify the signature
-      console.log("🔵 Verifying signature...");
-      const isValid = await verifyMessage({
-        address: walletAddress as Address,
-        message,
-        signature: signature as `0x${string}`,
-      });
-
-      if (!isValid) {
-        console.error("❌ Invalid signature");
-        return NextResponse.json(
-          { error: "Invalid signature" },
-          { status: 401 }
-        );
-      }
-      console.log("✅ Signature verified successfully");
+      const { walletAddress } = voteSchema.parse(body);
 
       const user = await findOrCreateUser(walletAddress);
       console.log("🔵 User found/created:", { userId: user.id });
 
-      // Find the project by ID, selecting metadata
+      // Verify user has Discord connected
+      if (!user.discordId) {
+        return NextResponse.json(
+          { error: "Discord account not connected" },
+          { status: 400 }
+        );
+      }
+
       const project = await prisma.project.findUnique({
         where: { id: params.projectId },
         select: {
@@ -83,8 +63,7 @@ export async function POST(
       if (existingVote) {
         return NextResponse.json(
           {
-            error:
-              "You have already voted for this project in the last 24 hours.",
+            error: "You have already voted for this project in the last 24 hours.",
           },
           { status: 400 }
         );

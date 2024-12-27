@@ -15,6 +15,7 @@ import { Categories } from "@/components/categories";
 import { useUserStats } from "@/hooks/use-user-stats";
 import { ConnectDiscordAlert } from "@/components/connect-discord-alert";
 import { Address } from "viem";
+import { useSession } from "next-auth/react";
 
 interface VotingStatusProps {
   isLocked: boolean;
@@ -57,7 +58,11 @@ export default function Home() {
 
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
-  const { data: userStats } = useUserStats(address as Address, isConnected);
+  const { data: userStats, isLoading: isUserStatsLoading } = useUserStats(
+    address as Address,
+    isConnected
+  );
+  const { status: sessionStatus } = useSession();
   const [isVotingLocked, setIsVotingLocked] = useState(false);
   const [nextVoteTime, setNextVoteTime] = useState<Date | null>(null);
 
@@ -157,11 +162,11 @@ export default function Home() {
               </div>
             )}
           </div>
-          {isConnected && !userStats?.discordId ? (
+          {isConnected && !isUserStatsLoading && !userStats?.discordId ? (
             <ConnectDiscordAlert />
-          ) : (
+          ) : sessionStatus !== "loading" ? (
             <Countdown />
-          )}
+          ) : null}
           <TabsContent
             value="projects"
             className="tab-content gap-4 flex flex-col"
