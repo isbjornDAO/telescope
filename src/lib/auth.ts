@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { DefaultSession, NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
@@ -23,8 +24,8 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   providers: [
     DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID as string,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+      clientId: env.DISCORD_CLIENT_ID as string,
+      clientSecret: env.DISCORD_CLIENT_SECRET as string,
       authorization: {
         params: {
           scope: "identify guilds email connections",
@@ -60,7 +61,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   debug: true,
-  secret: process.env.NEXTAUTH_SECRET as string,
+  secret: env.NEXTAUTH_SECRET as string,
   callbacks: {
     async signIn() {
       return true;
