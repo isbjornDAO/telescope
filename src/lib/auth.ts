@@ -24,7 +24,7 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   providers: [
     DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
+      clientId: "1249159247850111017",
       clientSecret: env.DISCORD_CLIENT_SECRET,
       authorization: {
         params: {
