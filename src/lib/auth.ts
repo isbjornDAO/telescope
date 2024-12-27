@@ -24,12 +24,11 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   providers: [
     DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID as string,
-      clientSecret: env.DISCORD_CLIENT_SECRET as string,
+      clientId: env.DISCORD_CLIENT_ID,
+      clientSecret: env.DISCORD_CLIENT_SECRET,
       authorization: {
         params: {
           scope: "identify guilds email connections",
-          state: undefined,
         },
       },
       profile(profile) {

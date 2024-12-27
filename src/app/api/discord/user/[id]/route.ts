@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { NextRequest, NextResponse } from "next/server";
 
 interface DiscordUser {
@@ -45,7 +46,7 @@ export async function GET(
   try {
     const response = await fetch(`${DISCORD_API_URL}/users/${id}`, {
       headers: {
-        Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+        Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`,
       },
     });
 
@@ -59,7 +60,7 @@ export async function GET(
     }
 
     const data: DiscordUser = await response.json();
-    
+
     // Add formatted URLs to the response
     const enrichedData = {
       ...data,
@@ -75,4 +76,4 @@ export async function GET(
       { status: 500 }
     );
   }
-} 
+}
