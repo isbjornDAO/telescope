@@ -113,10 +113,11 @@ export function ConnectDiscordAlert() {
       );
       console.log("💾 Stored wallet data in localStorage");
 
-      // Redirect to Discord OAuth
+      // Redirect to Discord OAuth with specific options
       console.log("🎮 Redirecting to Discord OAuth...");
       await signIn("discord", {
         callbackUrl: "/profile",
+        redirect: true,
       });
     } catch (error) {
       console.error("❌ Error in Discord connection initiation:", error);

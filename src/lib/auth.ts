@@ -60,7 +60,18 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   debug: true,
-  secret: env.NEXTAUTH_SECRET as string,
+  cookies: {
+    state: {
+      name: "next-auth.state",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: env.NEXT_PUBLIC_ENVIRONMENT === "production",
+      },
+    },
+  },
+  secret: env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn() {
       return true;
