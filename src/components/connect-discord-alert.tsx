@@ -127,8 +127,11 @@ export function ConnectDiscordAlert() {
       });
 
       // Type guard to check if error is an object with response property
-      if (error && typeof error === 'object' && 'response' in error) {
-        const errorResponse = error.response as { status: number; json: () => Promise<{ connectedWallet?: string }> };
+      if (error && typeof error === "object" && "response" in error) {
+        const errorResponse = error.response as {
+          status: number;
+          json: () => Promise<{ connectedWallet?: string }>;
+        };
         if (errorResponse.status === 400) {
           const data = await errorResponse.json();
           if (data.connectedWallet) {
@@ -160,7 +163,10 @@ export function ConnectDiscordAlert() {
             </AlertDescription>
           </div>
         </div>
-        <Button onClick={handleConnectDiscord} className="snow-button">
+        <Button
+          onClick={handleConnectDiscord}
+          className="snow-button w-full md:w-auto mt-2 md:mt-0"
+        >
           Connect Discord
         </Button>
       </Alert>

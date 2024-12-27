@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useAccount, useSignMessage } from "wagmi";
+import { useAccount } from "wagmi";
 import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -23,10 +23,8 @@ export function VoteButton({
   const { address, isConnected } = useAccount();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasVoted, setHasVoted] = useState<boolean>(false);
-  const [projectName, setProjectName] = useState<string>("");
   const { data: userStats } = useUserStats(address as Address, isConnected);
 
-  const { signMessageAsync, isPending } = useSignMessage();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -42,7 +40,6 @@ export function VoteButton({
           if (response.ok) {
             const data = await response.json();
             setHasVoted(data.hasVoted);
-            setProjectName(data.projectName);
           } else {
             console.error("Failed to fetch vote status:", response.statusText);
           }
@@ -96,15 +93,9 @@ export function VoteButton({
       });
     });
 
-    console.log("🔵 Initiating vote process", { projectId, address });
     setIsLoading(true);
-    const message = `I confirm that I want to vote for ${
-      projectName || `project #${projectId}`
-    }.\n\nThis signature is only used to verify your vote and cannot be used for any other purpose.`;
 
     try {
-      const signature = await signMessageAsync({ message });
-
       const response = await fetch(`/api/projects/${projectId}/vote`, {
         method: "POST",
         headers: {
@@ -112,13 +103,10 @@ export function VoteButton({
         },
         body: JSON.stringify({
           walletAddress: address,
-          signature,
-          message,
         }),
       });
 
       const data = await response.json();
-      console.log("🔵 Vote response:", { status: response.status, data });
 
       if (response.ok) {
         queryClient.invalidateQueries({ queryKey: ["projects"] });
@@ -143,19 +131,20 @@ export function VoteButton({
       }
     } catch (error) {
       queryClient.setQueryData(["projects"], previousProjects);
-      console.error("❌ Signature error:", error);
+      console.error("Error voting:", error);
 
       toast({
-        title: "Signature Failed",
-        description: "You need to sign the message to vote.",
+        title: "Error",
+        description: "Failed to submit vote. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const isDisabled =
     isLoading ||
-    isPending ||
     !isConnected ||
     hasVoted ||
     isGloballyDisabled ||
@@ -163,19 +152,13 @@ export function VoteButton({
 
   const buttonText = isLoading
     ? "Loading..."
-    : isPending
-    ? "Voting..."
     : hasVoted
     ? "Voted"
     : !userStats?.discordId
     ? "Vote"
     : "Vote";
 
-  return isLoading ? (
-    <Button size="sm" disabled className="snow-button w-full md:w-auto">
-      Loading...
-    </Button>
-  ) : (
+  return (
     <Button
       size="sm"
       disabled={isDisabled}
