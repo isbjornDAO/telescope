@@ -28,6 +28,21 @@ const SUBSTACKS = [
   },
 ];
 
+interface RSSItem {
+  title: string;
+  link: string;
+  pubDate: string;
+  creator: string;
+  content: string;
+  description?: string;
+  media?: { $: { url: string } };
+  enclosure?: { url: string };
+}
+
+interface RSSFeed {
+  items: RSSItem[];
+}
+
 // Custom parser to include image field
 const parser = new Parser({
   customFields: {
@@ -39,7 +54,7 @@ const parser = new Parser({
   },
 });
 
-function extractImageUrl(item: any): string | null {
+function extractImageUrl(item: RSSItem): string | null {
   // Try to find image in different possible locations
   if (item.media?.$.url) {
     return item.media.$.url;
@@ -84,8 +99,8 @@ export async function GET(request: Request) {
 
     const feedPromises = feedsToFetch.map(async (stack) => {
       try {
-        const feed = await parser.parseURL(stack.url);
-        return feed.items.map((item: any) => ({
+        const feed = await parser.parseURL(stack.url) as RSSFeed;
+        return feed.items.map((item: RSSItem) => ({
           title: item.title,
           link: item.link,
           pubDate: item.pubDate,
