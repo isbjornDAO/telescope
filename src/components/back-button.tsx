@@ -3,22 +3,25 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { Home } from "lucide-react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function BackButton() {
   const pathname = usePathname();
-  
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   // Only show on profile pages
-  if (!pathname.startsWith("/profile")) {
+  if (!pathname.startsWith("/profile") && !pathname.startsWith("/news")) {
     return null;
   }
 
   return (
     <Link href="/">
-      <Button variant="outline" size="sm" className="gap-2">
-        <ArrowLeft className="h-4 w-4" />
-        Back Home
+      <Button variant="outline" className="gap-2" size={isMobile ? "icon" : "default"}>
+        <Home className="h-4 w-4" />
+        {isMobile ? "" : "Back Home"}
       </Button>
     </Link>
   );
-} 
+}
