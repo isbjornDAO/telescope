@@ -11,6 +11,7 @@ import { useUserDiscord } from "@/hooks/use-user-discord";
 import { Address } from "viem";
 import { useParams } from "next/navigation";
 import { useAccount } from "wagmi";
+import { Metadata } from 'next'
 
 interface VoteHistory {
   votes: {
@@ -20,6 +21,16 @@ interface VoteHistory {
   }[];
   currentStreak: number;
   longestStreak: number;
+}
+
+export async function generateMetadata({ params }: { params: { address: string } }): Promise<Metadata> {
+  return {
+    title: `Profile - ${params.address}`,
+    description: `View profile and stats for ${params.address}`,
+    openGraph: {
+      images: [`/profile/${params.address}/opengraph-image`],
+    },
+  }
 }
 
 export default function ProfilePage() {
