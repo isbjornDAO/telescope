@@ -26,15 +26,17 @@ interface Post {
 interface NewsFeedProps {
   sources?: string[];
   slugs?: string[];
+  author?: string;
   currentPage?: number;
   onPageChange?: (page: number) => void;
 }
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 9;
 
 export function NewsFeed({
   sources,
   slugs,
+  author,
   currentPage = 1,
   onPageChange,
 }: NewsFeedProps) {
@@ -49,6 +51,7 @@ export function NewsFeed({
         const queryParams = new URLSearchParams();
         if (sources?.length) queryParams.set("sources", sources.join(","));
         if (slugs?.length) queryParams.set("slugs", slugs.join(","));
+        if (author) queryParams.set("author", author);
 
         const response = await fetch(
           "/api/news" +
@@ -65,7 +68,7 @@ export function NewsFeed({
     }
 
     fetchPosts();
-  }, [sources, slugs]);
+  }, [sources, slugs, author]);
 
   const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -107,13 +110,22 @@ export function NewsFeed({
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="h-48 bg-muted rounded w-full mb-4"></div>
-            <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-            <div className="h-3 bg-muted rounded w-1/2"></div>
-            <div className="h-16 bg-muted rounded w-full mt-2"></div>
+      <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+        {[...Array(9)].map((_, i) => (
+          <div
+            key={i}
+            className={`animate-pulse rounded-lg overflow-hidden ${
+              i % 3 === 0
+                ? "sm:col-span-4 lg:col-span-6 aspect-[16/5]"
+                : "sm:col-span-2 aspect-[4/3]"
+            }`}
+          >
+            <div className="w-full h-full bg-muted">
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <div className="h-4 bg-muted-foreground/20 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-muted-foreground/20 rounded w-1/4"></div>
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -128,50 +140,51 @@ export function NewsFeed({
     return <div className="text-muted-foreground">No news articles found.</div>;
   }
 
+  console.log(posts);
+
   return (
-    <div className="space-y-8">
-      {currentPosts.map((post) => (
-        <article key={post.link} className="space-y-4 bg-white rounded-lg">
-          <div className="space-y-2">
-            {post.image && (
-              <a
-                href={post.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <div className="relative w-full h-48 rounded-t-lg overflow-hidden bg-muted">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              </a>
-            )}
-            <div className="px-4 pt-2 pb-4">
-              <h3 className="text-xl font-semibold hover:text-sky-500 transition-colors duration-200">
-                <a href={post.link} target="_blank" rel="noopener noreferrer">
-                  {post.title}
-                </a>
-              </h3>
-              <div className="flex gap-2 text-sm text-muted-foreground mb-2">
-                <span>{new Date(post.pubDate).toLocaleDateString()}</span>
-                <span>•</span>
-                <span>{post.source}</span>
-              </div>
-              {post.description && (
-                <p className="text-muted-foreground line-clamp-3">
-                  {post.description}
-                </p>
+    <div className="space-y-16">
+      <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+        {currentPosts.map((post) => (
+          <article
+            key={post.link}
+            className={`relative group overflow-hidden rounded-lg transition-all duration-300 hover:shadow-lg ${
+              post.image
+                ? "sm:col-span-2 aspect-[4/3]"
+                : "sm:col-span-4 lg:col-span-6 aspect-[16/5]"
+            }`}
+          >
+            <a
+              href={post.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full h-full"
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10" />
+              {post.image ? (
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-sky-400 to-blue-600" />
               )}
-            </div>
-          </div>
-        </article>
-      ))}
+              <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
+                <h3 className="text-lg font-semibold text-white group-hover:text-sky-200 transition-colors duration-200 line-clamp-2">
+                  {post.title}
+                </h3>
+                <div className="flex gap-2 text-xs text-white/80 mt-2">
+                  <span>{post.source}</span>
+                </div>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
 
       {totalPages > 1 && (
-        <Pagination className="mt-16">
+        <Pagination className="col-span-full">
           <PaginationContent className="flex flex-wrap gap-2 justify-center">
             <PaginationItem className="hidden sm:inline-block">
               <PaginationPrevious

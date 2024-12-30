@@ -74,6 +74,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const sources = searchParams.get("sources")?.split(",") || [];
     const slugs = searchParams.get("slugs")?.split(",") || [];
+    const author = searchParams.get("author");
 
     const feedsToFetch = slugs.length
       ? SUBSTACKS.filter((stack) => slugs.includes(stack.slug))
@@ -101,9 +102,14 @@ export async function GET(request: Request) {
     });
 
     const feedResults = await Promise.all(feedPromises);
-    const allPosts = feedResults
+    let allPosts = feedResults
       .flat()
       .sort((a, b) => new Date(b.pubDate!).getTime() - new Date(a.pubDate!).getTime());
+
+    // Filter by author if specified
+    if (author) {
+      allPosts = allPosts.filter((post) => post.creator === author);
+    }
 
     return NextResponse.json(allPosts);
   } catch (error) {
