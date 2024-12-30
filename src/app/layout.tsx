@@ -11,6 +11,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { FAQ } from "@/components/faq";
 import { ConnectButton } from "@/components/connect-button";
 import { BackButton } from "@/components/back-button";
+import Link from "next/link";
+import { Newspaper } from "lucide-react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -88,6 +90,15 @@ export default function RootLayout({
                   className="w-56 md:w-80 flex items-end absolute md:relative left-0 bottom-0"
                 />
                 <div className="flex items-center relative z-10 justify-center gap-4 md:self-auto">
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href="/news"
+                      className="flex items-center gap-2 bg-white rounded-lg px-4 py-2 h-9 shadow"
+                    >
+                      <Newspaper className="h-4 w-4" />
+                      News
+                    </Link>
+                  </div>
                   <FAQ />
                   <ConnectButton />
                 </div>
