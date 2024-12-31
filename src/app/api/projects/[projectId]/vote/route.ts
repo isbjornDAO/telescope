@@ -16,6 +16,17 @@ export async function POST(
 ) {
   console.log("🔵 Vote request received", { projectId: params.projectId });
 
+  // === Voting Lock Start ===
+  const votingLocked = true; // Set to true to lock voting. Comment out or set to false to unlock.
+
+  if (votingLocked) {
+    return NextResponse.json(
+      { error: "Voting is currently locked. Please try again later." },
+      { status: 403 }
+    );
+  }
+  // === Voting Lock End ===
+
   const transaction = await prisma.$transaction(async (prisma) => {
     try {
       const body = await req.json();
@@ -63,7 +74,8 @@ export async function POST(
       if (existingVote) {
         return NextResponse.json(
           {
-            error: "You have already voted for this project in the last 24 hours.",
+            error:
+              "You have already voted for this project in the last 24 hours.",
           },
           { status: 400 }
         );
