@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useState, useEffect } from "react";
 import {
   Pagination,
@@ -106,6 +107,16 @@ export function NewsFeed({
     ];
   };
 
+  // Helper function to format the date
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -158,7 +169,7 @@ export function NewsFeed({
               rel="noopener noreferrer"
               className="block w-full h-full"
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
               {post.image ? (
                 <img
                   src={post.image}
@@ -168,12 +179,17 @@ export function NewsFeed({
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-sky-400 to-blue-600" />
               )}
-              <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
-                <h3 className="text-lg font-semibold text-white group-hover:text-sky-200 transition-colors duration-200 line-clamp-2">
-                  {post.title}
-                </h3>
-                <div className="flex gap-2 text-xs text-white/80 mt-2">
-                  <span>{post.source}</span>
+              <div className="absolute bottom-0 left-0 right-0 p-4 z-20 flex flex-col justify-between items-start h-full">
+                <span className="text-xs text-white py-1 px-2 bg-black/40 rounded-md w-auto">{post.source}</span>
+                <div>
+                  <h3 className="text-lg font-semibold text-white transition-colors duration-200 line-clamp-2">
+                    {post.title}
+                  </h3>
+                  <div className="flex gap-2 text-xs text-white/80 mt-2">
+                    <span>
+                      {post.creator} - {formatDate(post.pubDate)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </a>
