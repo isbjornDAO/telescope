@@ -40,10 +40,10 @@ export default async function Image({
 
   // Fetch user stats
   const statsResponse = await fetch(
-    `${siteConfig.url.base}/api/users/${address}/stats`
+    `/api/users/${address}/stats`
   );
   const voteResponse = await fetch(
-    `${siteConfig.url.base}/api/users/${address}/votes`
+    `/api/users/${address}/votes`
   );
 
   if (!statsResponse.ok || !voteResponse.ok) {
@@ -77,7 +77,7 @@ export default async function Image({
   let discordUser = null;
   if (userStats.discordId) {
     const discordResponse = await fetch(
-      `${siteConfig.url.base}/api/discord/user/${userStats.discordId}`
+      `/api/discord/user/${userStats.discordId}`
     );
     if (discordResponse.ok) {
       discordUser = await discordResponse.json();
