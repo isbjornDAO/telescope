@@ -22,8 +22,19 @@ interface VotingStatusProps {
   nextVoteTime: Date | null;
 }
 
+const votingLocked = true;
+
 const VotingStatusMessage = React.memo(
   ({ isLocked, nextVoteTime }: VotingStatusProps) => {
+    if (votingLocked) {
+      return (
+        <div className="text-sm text-zinc-900 font-medium bg-white px-4 py-2 rounded-lg border-white border-2 flex items-center gap-2 shadow">
+          <span>Voting is locked until next season</span>
+          <img src="/telescope.svg" className="w-4 h-4" />
+        </div>
+      );
+    }
+
     if (!isLocked) {
       return (
         <div className="text-sm text-zinc-900 font-medium bg-white px-4 py-2 rounded-lg border-white border-2 flex items-center gap-2 shadow">
@@ -157,8 +168,17 @@ export default function Home() {
               />
             ) : (
               <div className="text-sm text-zinc-900 font-medium bg-white px-4 py-2 rounded-lg border-white border-2 flex items-center gap-2 shadow">
-                <span>Connect your wallet to vote</span>
-                <img src="/telescope.svg" className="w-4 h-4" />
+                {votingLocked ? (
+                  <>
+                    <span>Voting is locked until next season</span>
+                    <img src="/telescope.svg" className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    <span>Connect your wallet to vote</span>
+                    <img src="/telescope.svg" className="w-4 h-4" />
+                  </>
+                )}
               </div>
             )}
           </div>
