@@ -8,6 +8,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { ConnectButton } from "@/components/connect-button";
 
 interface VoteTimeDistribution {
   hour: number;
@@ -327,7 +328,12 @@ export default async function StatsPage() {
     (session.discordUser.id !== "808694504726724628" &&
       session.discordUser.id !== "1078316901953966132")
   ) {
-    redirect("/");
+    return (
+      <div className="container py-8 max-w-screen-lg mx-auto w-full px-4 md:px-0 flex flex-col items-center justify-center min-h-[50vh]">
+        <h2 className="text-2xl font-semibold mb-4">Connect your wallet</h2>
+        <ConnectButton />
+      </div>
+    );
   }
 
   const stats = await getStats();
