@@ -7,7 +7,6 @@ import { DailyTopProjectsChart } from "@/components/daily-top-projects-chart";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { ConnectButton } from "@/components/connect-button";
 
 interface VoteTimeDistribution {
