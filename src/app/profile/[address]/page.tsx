@@ -11,6 +11,7 @@ import { useUserDiscord } from "@/hooks/use-user-discord";
 import { Address } from "viem";
 import { useParams } from "next/navigation";
 import { useAccount } from "wagmi";
+import { UserBadge } from "@/components/user-badge";
 
 interface VoteHistory {
   votes: {
@@ -139,12 +140,14 @@ export default function ProfilePage() {
               )}
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold text-zinc-900">
+              <h1 className="text-2xl font-bold text-zinc-900 flex items-center gap-2">
                 {discordUser?.global_name ||
                   `${addressParam?.substring(0, 6)}...${addressParam?.substring(
                     38
                   )}`}
+                <UserBadge address={addressParam} />
               </h1>
+              {/* TODO: Create badge component */}
               <p className="text-sm text-zinc-500">
                 {discordUser?.username &&
                   `${addressParam?.substring(0, 6)}...
