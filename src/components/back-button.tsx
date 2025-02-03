@@ -12,7 +12,7 @@ export function BackButton() {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Only show on profile, news, and mint pages
-  if (!pathname.startsWith("/profile") && !pathname.startsWith("/news") && !pathname.startsWith("/mint")) {
+  if (!pathname.startsWith("/profile") && !pathname.startsWith("/news")) {
     return null;
   }
 
