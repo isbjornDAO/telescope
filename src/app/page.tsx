@@ -16,6 +16,8 @@ import { useUserStats } from "@/hooks/use-user-stats";
 import { ConnectDiscordAlert } from "@/components/connect-discord-alert";
 import { Address } from "viem";
 import { useSession } from "next-auth/react";
+import { BearUniversityAlert } from "@/components/bear-university-alert";
+import { MintWindow } from "@/components/mint-window";
 
 interface VotingStatusProps {
   isLocked: boolean;
@@ -76,6 +78,8 @@ export default function Home() {
   const { status: sessionStatus } = useSession();
   const [isVotingLocked, setIsVotingLocked] = useState(false);
   const [nextVoteTime, setNextVoteTime] = useState<Date | null>(null);
+
+  const [activeTab, setActiveTab] = useState<"projects" | "artists" | "mint">("projects")
 
   const {
     data: projects,
@@ -147,17 +151,26 @@ export default function Home() {
                 <TabsTrigger
                   value="projects"
                   className="px-4 py-2 font-bold text-md bg-white border-white border-2"
+                  onClick={() => { setActiveTab("projects") }}
                 >
                   Projects
                 </TabsTrigger>
                 <TabsTrigger
                   value="artists"
                   className="px-4 py-2 font-bold text-md bg-white relative border-white border-2"
+                  onClick={() => { setActiveTab("artists") }}
                 >
                   <Badge className="absolute -top-3 -right-6 text-xs bg-sky-900 text-white hover:bg-sky-900 border-white">
                     Soon
                   </Badge>
                   Artists
+                </TabsTrigger>
+                <TabsTrigger
+                  value="mint"
+                  className="px-4 py-2 font-bold text-md bg-white border-white border-2"
+                  onClick={() => { setActiveTab("mint") }}
+                >
+                  Mint
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -187,6 +200,7 @@ export default function Home() {
           ) : sessionStatus !== "loading" ? (
             <Countdown />
           ) : null}
+          {activeTab === "mint" && <BearUniversityAlert />}
           <TabsContent
             value="projects"
             className="tab-content gap-4 flex flex-col"
@@ -244,6 +258,11 @@ export default function Home() {
               >
                 Apply now
               </a>
+            </div>
+          </TabsContent>
+          <TabsContent value="mint" className="tab-content">
+            <div className="w-full bg-white rounded-lg py-16 shadow flex items-center justify-center flex-col gap-4">
+              <MintWindow />
             </div>
           </TabsContent>
         </Tabs>
