@@ -3,7 +3,7 @@
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@/components/connect-button";
 import { MintButton } from "@/components/mint-button";
-import { YearJoinedAvaxIndicator } from "@/components/year-joined-avax-indicator";
+import { WLRoundIndicator } from "@/components/wl-round-indicator";
 import { useState } from "react";
 import { MintCounter } from "@/components/mint-counter";
 
@@ -12,14 +12,14 @@ export function MintWindow() {
     const { address, isConnected } = useAccount();
     const [numToMint, setNumToMint] = useState<number>(1);
     const [maxAllowedToMint, setMaxAllowedToMint] = useState<number>(10);
-    const [yearJoined, setYearJoined] = useState(2025);
+    const [roundJoined, setRoundJoined] = useState(5);
 
-    const puppetPrices: { [year: number]: number } = {
-        2021: 1,
-        2022: 1.2,
-        2023: 1.6,
-        2024: 2,
-        2025: 2.5
+    const puppetPrices: { [round: number]: number } = {
+        1: 1,
+        2: 1.2,
+        3: 1.6,
+        4: 2,
+        5: 2.5
     }
 
     return (
@@ -31,10 +31,10 @@ export function MintWindow() {
             <div className="mt-2 md:mt-0 flex-1 text-center flex flex-col gap-1 items-center">
                 <h2 className="text-2xl font-bold mb-2">Mint a puppet</h2>
                 <div className="w-[300px]">Welcome new student to Bear University! Those who picked up the avax pamphlet first have a lower enrollment fee!</div>
-                <YearJoinedAvaxIndicator yearJoined={yearJoined} prices={puppetPrices} />
+                <WLRoundIndicator roundJoined={roundJoined} prices={puppetPrices} />
                 <br />
                 <MintCounter value={numToMint} setValue={setNumToMint} max={maxAllowedToMint} />
-                <div className="font-semibold text-sm mb-1">{`Total: ${numToMint * puppetPrices[yearJoined]} AVAX`}</div>
+                <div className="font-semibold text-sm mb-1">{`Total: ${numToMint * puppetPrices[roundJoined]} AVAX`}</div>
                 {isConnected
                     ? (<MintButton />)
                     : (<ConnectButton />)}
