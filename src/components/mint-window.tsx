@@ -5,12 +5,16 @@ import { ConnectButton } from "@/components/connect-button";
 import { MintButton } from "@/components/mint-button";
 import { YearJoinedAvaxIndicator } from "@/components/year-joined-avax-indicator";
 import { useState } from "react";
+import { MintCounter } from "@/components/mint-counter";
+
 
 export function MintWindow() {
     const { address, isConnected } = useAccount();
+    const [numToMint, setNumToMint] = useState<number>(1);
+    const [maxAllowedToMint, setMaxAllowedToMint] = useState<number>(10);
     const [yearJoined, setYearJoined] = useState(2025);
 
-    const puppetPrices = {
+    const puppetPrices: { [year: number]: number } = {
         2021: 1,
         2022: 1.2,
         2023: 1.6,
@@ -29,6 +33,8 @@ export function MintWindow() {
                 <div className="w-[300px]">Welcome new student to Bear University! Those who picked up the avax pamphlet first have a lower enrollment fee!</div>
                 <YearJoinedAvaxIndicator yearJoined={yearJoined} prices={puppetPrices} />
                 <br />
+                <MintCounter value={numToMint} setValue={setNumToMint} max={maxAllowedToMint} />
+                <div className="font-semibold text-sm mb-1">{`Total: ${numToMint * puppetPrices[yearJoined]} AVAX`}</div>
                 {isConnected
                     ? (<MintButton />)
                     : (<ConnectButton />)}
