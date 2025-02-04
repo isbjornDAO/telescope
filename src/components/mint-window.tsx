@@ -26,7 +26,7 @@ export function MintWindow() {
         <div className="w-full flex flex-col md:flex-row gap-1 px-10 items-center">
             <img
                 className="w-[300px] border-zinc-300 border-2"
-                src="logo.png"
+                src="example_puppet.png"
             />
             <div className="mt-2 md:mt-0 flex-1 text-center flex flex-col gap-1 items-center">
                 <h2 className="text-2xl font-bold mb-2">Mint a puppet</h2>
