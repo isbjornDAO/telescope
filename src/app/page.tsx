@@ -174,7 +174,7 @@ export default function Home() {
                 </TabsTrigger>
               </TabsList>
             </div>
-            {isConnected ? (
+            {activeTab !== "mint" && (isConnected ? (
               <VotingStatusMessage
                 isLocked={isVotingLocked}
                 nextVoteTime={nextVoteTime}
@@ -193,13 +193,13 @@ export default function Home() {
                   </>
                 )}
               </div>
-            )}
+            ))}
           </div>
-          {isConnected && !isUserStatsLoading && !userStats?.discordId ? (
+          {activeTab !== "mint" && (isConnected && !isUserStatsLoading && !userStats?.discordId ? (
             <ConnectDiscordAlert />
           ) : sessionStatus !== "loading" ? (
             <Countdown />
-          ) : null}
+          ) : null)}
           {activeTab === "mint" && <BearUniversityAlert />}
           <TabsContent
             value="projects"
