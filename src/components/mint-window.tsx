@@ -8,8 +8,8 @@ import { useState } from "react";
 import { MintCounter } from "@/components/mint-counter";
 import { useUserStats } from "@/hooks/use-user-stats";
 import { Address } from "viem";
-import { Button } from "./ui/button";
 import { ConnectDiscordButton } from "./connect-discord-button";
+import { CheckCircle } from "lucide-react";
 
 
 export function MintWindow() {
@@ -60,11 +60,15 @@ export function MintWindow() {
                     src="example_puppet.png"
                 />
                 <div className="mt-2 md:mt-0 flex-1 text-center flex flex-col gap-1 items-center">
-                    <h2 className="text-2xl font-bold mb-6">Sign Up to Bear University</h2>
+                    <div className="flex flex-col gap-1 items-center mb-6">
+                        <h2 className="text-2xl font-bold">Sign Up to Bear University</h2>
+                        {isConnected && <span className=" text-zinc-500 font-semibold">
+                            {`Wallet Connected: ${address?.substring(0, 4)}...${address?.substring(address.length - 4)}`}
+                        </span>}
+                    </div>
                     {isConnected
                         ? (
                             <div className="flex flex-col gap-3">
-                                <div>{`Wallet Connected: ${address?.substring(0, 4)}...${address?.substring(address.length - 4)}`}</div>
                                 {!userStats?.discordId
                                     ? (
                                         <div>
@@ -72,8 +76,8 @@ export function MintWindow() {
                                         </div>
                                     )
                                     : (
-                                        <div>
-
+                                        <div className="flex flex-col gap-1 items-center">
+                                            <span className="text-green-500 font-semibold">You are Signed Up!</span><CheckCircle className="h-8 w-8 stroke-green-500" />
                                         </div>
                                     )
                                 }
