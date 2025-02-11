@@ -1,4 +1,4 @@
-export const puppets_nft_address = "0xBdcb17b217f239817EEF209a24321e30b63333B3";
+export const puppets_nft_address = "0x16D5Decd64c2c1323e6164532248C0b58A65605B";
 
 export const puppets_nft_abi = [
   {

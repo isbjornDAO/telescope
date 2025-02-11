@@ -1,9 +1,9 @@
 "use client";
 
-import { useAccount, usePrepareTransactionRequest, useReadContract, useSendTransaction } from "wagmi";
+import { useAccount, usePrepareTransactionRequest, useReadContract, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
 import { ConnectButton } from "@/components/connect-button";
 import { WLRoundIndicator } from "@/components/wl-round-indicator";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MintCounter } from "@/components/mint-counter";
 import { useUserStats } from "@/hooks/use-user-stats";
 import { Address, encodeFunctionData, parseEther } from "viem";
@@ -11,16 +11,20 @@ import { ConnectDiscordButton } from "./connect-discord-button";
 import { CheckCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { puppets_nft_abi, puppets_nft_address } from "@/lib/constants";
+import { Loader } from "@/components/loader";
+import { useToast } from "@/hooks/use-toast";
 
 
 export function MintWindow() {
     const { address, isConnected } = useAccount();
+    const { toast } = useToast();
 
     const MAX_SUPPLY = 1000;
     const [numMinted, setNumMinted] = useState(250);
 
     const [isMinting, setIsMinting] = useState(true);
     const [mintPhase, setMintPhase] = useState<number>(0);
+    const [userMintAllowanceThisPhase, setUserMintAllowanceThisPhase] = useState<number>(0);
     const [numToMint, setNumToMint] = useState<number>(1);
     const [maxAllowedToMint, setMaxAllowedToMint] = useState<number>(10);
     const [totalCost, setTotalCost] = useState(0);
@@ -49,30 +53,28 @@ export function MintWindow() {
         chainId: 43113
     });
 
-    const transactionData = encodeFunctionData({
+    const { data: numMintedData, refetch: fetchNumMinted } = useReadContract({
         abi: puppets_nft_abi,
-        functionName: whiteListLevel === 6 && mintPhase < 6 ? 'panicMint' :
-            mintPhase === 6 ? 'publicMint' : 'wlMint',
-        args: [BigInt(numToMint)]
+        address: puppets_nft_address,
+        functionName: "totalSupply",
+        chainId: 43113
     });
 
-    const { data: request } = usePrepareTransactionRequest({
-        chainId: 43113,
-        account: address,
-        to: puppets_nft_address,
-        data: transactionData,
-        value: parseEther(totalCost.toString())
+    const { data: whiteListData, refetch: fetchWhiteList } = useReadContract({
+        abi: puppets_nft_abi,
+        address: puppets_nft_address,
+        functionName: "whiteList",
+        args: [address],
+        chainId: 43113
     });
 
-    const { sendTransaction: sendMintTx, isPending: isMintPending } = useSendTransaction();
-
-    const handleMint = () => {
-        if (request) {
-            sendMintTx(request);
-        } else {
-            console.error("Failed to queue up mint tx.");
-        }
-    };
+    const { data: mintApprovalThisPhaseData, refetch: fetchMintApprovalThisPhase } = useReadContract({
+        abi: puppets_nft_abi,
+        address: puppets_nft_address,
+        functionName: "userAllowanceByPhase",
+        args: [BigInt(mintPhase), address],
+        chainId: 43113
+    });
 
     useEffect(() => {
         if (mintPhase != 6) {
@@ -91,11 +93,9 @@ export function MintWindow() {
     }, [whiteListLevel]);
 
     useEffect(() => {
-        if (whiteListLevel <= mintPhase) {
-            setTotalCost(puppetPrices[mintPhase] * numToMint);
-        } else {
-            setTotalCost(puppetPrices[6] * numToMint);
-        }
+        const price = puppetPrices[mintPhase] ?? puppetPrices[6];
+        const total = BigInt(Math.round(price * 1e18)) * BigInt(numToMint);
+        setTotalCost(Number(total) / 1e18);
     }, [numToMint, whiteListLevel, mintPhase]);
 
     useEffect(() => {
@@ -111,6 +111,134 @@ export function MintWindow() {
 
         return () => clearInterval(interval);
     }, [fetchMintPhase]);
+
+    useEffect(() => {
+        if (numMintedData !== undefined) {
+            setNumMinted(Number(numMintedData));
+        }
+    }, [numMintedData]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchNumMinted();
+        }, 5000); // Poll every 5 seconds
+
+        return () => clearInterval(interval);
+    }, [fetchNumMinted]);
+
+    useEffect(() => {
+        if (isConnected) {
+            fetchWhiteList();
+        }
+    }, [address]);
+
+    useEffect(() => {
+        if (whiteListData !== undefined) {
+            const whiteListNum = Number(whiteListData);
+            if (whiteListNum !== 0) {
+                setWhiteListLevel(Number(whiteListData));
+            }
+        }
+    }, [whiteListData]);
+
+    useEffect(() => {
+        if (mintApprovalThisPhaseData !== undefined) {
+            setUserMintAllowanceThisPhase(Number(mintApprovalThisPhaseData));
+        }
+    }, [mintApprovalThisPhaseData]);
+
+    useEffect(() => {
+        if (isConnected) {
+            const interval = setInterval(() => {
+                fetchMintApprovalThisPhase();
+            }, 15000); // Poll every 15 seconds
+
+            return () => clearInterval(interval);
+        }
+    }, [fetchMintApprovalThisPhase]);
+
+    useEffect(() => {
+        if (userMintAllowanceThisPhase <= 0) {
+            setMaxAllowedToMint(1);
+        } else {
+            setMaxAllowedToMint(userMintAllowanceThisPhase)
+        }
+    }, [userMintAllowanceThisPhase]);
+
+    const mintTransactionData = useMemo(() => {
+        if (!address || numToMint <= 0) return null;
+
+        const functionName = userMintAllowanceThisPhase <= 0 && mintPhase !== 6
+            ? 'panicMint'
+            : mintPhase === 6
+                ? 'publicMint'
+                : 'wlMint';
+
+        const args = (mintPhase < 6 && userMintAllowanceThisPhase > 0 && userMintAllowanceThisPhase >= numToMint)
+            ? [BigInt(numToMint), BigInt(mintPhase)]
+            : [BigInt(numToMint)];
+
+        return encodeFunctionData({
+            abi: puppets_nft_abi,
+            functionName,
+            args
+        });
+    }, [address, numToMint, userMintAllowanceThisPhase, mintPhase]);
+
+    const { data: request } = usePrepareTransactionRequest({
+        chainId: 43113,
+        account: address,
+        to: puppets_nft_address,
+        data: mintTransactionData ?? undefined,
+        value: parseEther(totalCost.toString())
+    });
+
+    const { sendTransaction: sendMintTx, isPending: isMintPending, data: mintTxHash } = useSendTransaction();
+
+    const { data: mintReceipt, isError: mintError, isLoading: isConfirming, isSuccess: mintSuccess } = useWaitForTransactionReceipt({ hash: mintTxHash });
+
+    const handleMint = async () => {
+        if (request) {
+            try {
+                // Send the transaction
+                sendMintTx(request);
+
+            } catch (error) {
+                console.error("Minting failed", error);
+                toast({
+                    title: "Mint Failed",
+                    description: error instanceof Error ? error.message : "There was an issue with your minting transaction. Please refresh and try again.",
+                    variant: "destructive"
+                });
+            }
+        } else {
+            console.error("Failed to queue up mint tx.");
+        }
+    };
+
+    useEffect(() => {
+        if (mintSuccess) {
+            toast({
+                title: "Mint Successful!",
+                description: `Mint successful! Transaction hash: ${mintTxHash?.slice(0, 6)}...${mintTxHash?.slice(-4)}`,
+            });
+        }
+
+        if (mintError) {
+            toast({
+                title: "Mint Failed",
+                description: "There was an error with your minting transaction. Please try again.",
+                variant: "destructive"
+            });
+        }
+
+        fetchNumMinted();
+        fetchMintApprovalThisPhase();
+        fetchWhiteList();
+        fetchMintPhase();
+    }, [mintSuccess, mintError]);
+
+
 
     return isMinting
         ? (
@@ -131,9 +259,19 @@ export function MintWindow() {
                     <div className="font-semibold text-sm mb-1">{`Total: ${totalCost} AVAX`}</div>
                     {isConnected
                         ? (<Button
-                            className="snow-button max-w-[150px]"
-                            disabled={false && whiteListLevel >= mintPhase}
-                            onClick={handleMint}>Mint</Button>)
+                            className="flex snow-button max-w-[150px] items-center justify-center relative min-h-[36px]"
+                            disabled={isMintPending || isConfirming}
+                            onClick={handleMint}>
+                            <div className="flex items-center justify-center w-full h-full">
+                                {isMintPending || isConfirming ? (
+                                    <div className="flex items-center justify-center">
+                                        <Loader />
+                                    </div>
+                                ) : (
+                                    "Mint"
+                                )}
+                            </div>
+                        </Button>)
                         : (<ConnectButton />)}
                 </div>
             </div>
