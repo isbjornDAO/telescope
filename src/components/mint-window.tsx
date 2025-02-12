@@ -24,12 +24,12 @@ export function MintWindow() {
 
     const [isMinting, setIsMinting] = useState(true);
     const [mintPhase, setMintPhase] = useState<number>(0);
-    const [userMintAllowanceThisPhase, setUserMintAllowanceThisPhase] = useState<number>(0);
     const [numToMint, setNumToMint] = useState<number>(1);
     const [maxAllowedToMint, setMaxAllowedToMint] = useState<number>(10);
     const [totalCost, setTotalCost] = useState(0);
 
-    const [whiteListLevel, setWhiteListLevel] = useState(6);
+    const [isWhiteList, setIsWhiteList] = useState(false);
+    const [numMintedThisPhase, setNumMintedThisPhase] = useState(0);
     const [whiteListString, setWhiteListString] = useState<string>('Connect your wallet to see if you got WL');
 
     const { data: userStats, isLoading: isUserStatsLoading } = useUserStats(
@@ -38,12 +38,12 @@ export function MintWindow() {
     );
 
     const puppetPrices: { [round: number]: number } = {
+        0: 0,
         1: 1,
-        2: 1.2,
-        3: 1.4,
-        4: 1.6,
-        5: 1.8,
-        6: 2
+        2: 1.25,
+        3: 1.5,
+        4: 1.75,
+        5: 2
     };
 
     const { data: mintPhaseData, refetch: fetchMintPhase } = useReadContract({
@@ -68,35 +68,38 @@ export function MintWindow() {
         chainId: 43113
     });
 
-    const { data: mintApprovalThisPhaseData, refetch: fetchMintApprovalThisPhase } = useReadContract({
+    const { data: numMintedThisPhaseData, refetch: fetchNumMintedThisPhase } = useReadContract({
         abi: puppets_nft_abi,
         address: puppets_nft_address,
-        functionName: "userAllowanceByPhase",
+        functionName: "mintsInPhase",
         args: [BigInt(mintPhase), address],
         chainId: 43113
     });
 
     useEffect(() => {
-        if (mintPhase != 6) {
-            setMaxAllowedToMint(mintPhase);
+        if (mintPhase === 1) {
+            setMaxAllowedToMint(1 - numMintedThisPhase);
         } else {
-            setMaxAllowedToMint(10);
+            setMaxAllowedToMint(2 - numMintedThisPhase);
+            if (numMintedThisPhase == 2) {
+                setMaxAllowedToMint(0);
+            }
         }
-    }, [mintPhase]);
+    }, [mintPhase, numMintedThisPhase]);
 
     useEffect(() => {
-        if (whiteListLevel < 6) {
-            setWhiteListString(`You are in round ${whiteListLevel}. You can also mint in each round after`);
+        if (isWhiteList) {
+            setWhiteListString(`You are on the WL. You can also mint in each round after`);
         } else {
-            setWhiteListString(`You are not on the list. Feel free to mint at the public price`);
+            setWhiteListString(`You are not on the list. Feel free to mint in the public rounds`);
         }
-    }, [whiteListLevel]);
+    }, [isWhiteList]);
 
     useEffect(() => {
-        const price = puppetPrices[mintPhase] ?? puppetPrices[6];
+        const price = puppetPrices[mintPhase];
         const total = BigInt(Math.round(price * 1e18)) * BigInt(numToMint);
         setTotalCost(Number(total) / 1e18);
-    }, [numToMint, whiteListLevel, mintPhase]);
+    }, [numToMint, mintPhase]);
 
     useEffect(() => {
         if (mintPhaseData !== undefined) {
@@ -134,56 +137,44 @@ export function MintWindow() {
 
     useEffect(() => {
         if (whiteListData !== undefined) {
-            const whiteListNum = Number(whiteListData);
-            if (whiteListNum !== 0) {
-                setWhiteListLevel(Number(whiteListData));
+            const whiteListBool = Boolean(whiteListData);
+            if (whiteListBool) {
+                setIsWhiteList(true);
             }
         }
     }, [whiteListData]);
 
     useEffect(() => {
-        if (mintApprovalThisPhaseData !== undefined) {
-            setUserMintAllowanceThisPhase(Number(mintApprovalThisPhaseData));
+        if (numMintedThisPhaseData !== undefined) {
+            const numMintedThisPhaseNum = Number(numMintedThisPhaseData);
+            setNumMintedThisPhase(numMintedThisPhaseNum);
         }
-    }, [mintApprovalThisPhaseData]);
+    }, [numMintedThisPhaseData]);
 
     useEffect(() => {
         if (isConnected) {
             const interval = setInterval(() => {
-                fetchMintApprovalThisPhase();
+                fetchNumMintedThisPhase();
             }, 15000); // Poll every 15 seconds
 
             return () => clearInterval(interval);
         }
-    }, [fetchMintApprovalThisPhase]);
+    }, [fetchNumMintedThisPhase]);
 
-    useEffect(() => {
-        if (userMintAllowanceThisPhase <= 0) {
-            setMaxAllowedToMint(1);
-        } else {
-            setMaxAllowedToMint(userMintAllowanceThisPhase)
-        }
-    }, [userMintAllowanceThisPhase]);
 
     const mintTransactionData = useMemo(() => {
         if (!address || numToMint <= 0) return null;
 
-        const functionName = userMintAllowanceThisPhase <= 0 && mintPhase !== 6
-            ? 'panicMint'
-            : mintPhase === 6
-                ? 'publicMint'
-                : 'wlMint';
-
-        const args = (mintPhase < 6 && userMintAllowanceThisPhase > 0 && userMintAllowanceThisPhase >= numToMint)
-            ? [BigInt(numToMint), BigInt(mintPhase)]
-            : [BigInt(numToMint)];
+        const functionName = mintPhase === 1
+            ? 'wlMint'
+            : 'publicMint';
 
         return encodeFunctionData({
             abi: puppets_nft_abi,
             functionName,
-            args
+            args: mintPhase === 1 ? undefined : [BigInt(mintPhase), BigInt(numToMint)]
         });
-    }, [address, numToMint, userMintAllowanceThisPhase, mintPhase]);
+    }, [address, numToMint, mintPhase]);
 
     const { data: request } = usePrepareTransactionRequest({
         chainId: 43113,
@@ -233,12 +224,10 @@ export function MintWindow() {
         }
 
         fetchNumMinted();
-        fetchMintApprovalThisPhase();
+        fetchNumMintedThisPhase();
         fetchWhiteList();
         fetchMintPhase();
     }, [mintSuccess, mintError]);
-
-
 
     return isMinting
         ? (
@@ -260,7 +249,7 @@ export function MintWindow() {
                     {isConnected
                         ? (<Button
                             className="flex snow-button max-w-[150px] items-center justify-center relative min-h-[36px]"
-                            disabled={isMintPending || isConfirming}
+                            disabled={isMintPending || isConfirming || maxAllowedToMint === 0}
                             onClick={handleMint}>
                             <div className="flex items-center justify-center w-full h-full">
                                 {isMintPending || isConfirming ? (

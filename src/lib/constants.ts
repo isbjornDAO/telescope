@@ -1,4 +1,4 @@
-export const puppets_nft_address = "0x16D5Decd64c2c1323e6164532248C0b58A65605B";
+export const puppets_nft_address = "0xAAcCf43a0fa81AaA05923A2eB5F78e5ABD82bc95";
 
 export const puppets_nft_abi = [
   {
@@ -178,6 +178,15 @@ export const puppets_nft_abi = [
   },
   {
     inputs: [
+      { internalType: "address[]", name: "addresses", type: "address[]" },
+    ],
+    name: "addToWhitelist",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
       { internalType: "address", name: "to", type: "address" },
       { internalType: "uint256", name: "tokenId", type: "uint256" },
     ],
@@ -251,7 +260,7 @@ export const puppets_nft_abi = [
       { internalType: "enum Puppets.MintPhase", name: "", type: "uint8" },
       { internalType: "address", name: "", type: "address" },
     ],
-    name: "mintsPerWalletPerPhase",
+    name: "mintsInPhase",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",
@@ -278,17 +287,22 @@ export const puppets_nft_abi = [
     type: "function",
   },
   {
-    inputs: [{ internalType: "uint32", name: "quantity", type: "uint32" }],
-    name: "panicMint",
+    inputs: [
+      { internalType: "uint32", name: "quantity", type: "uint32" },
+      { internalType: "enum Puppets.MintPhase", name: "phase", type: "uint8" },
+    ],
+    name: "publicMint",
     outputs: [],
     stateMutability: "payable",
     type: "function",
   },
   {
-    inputs: [{ internalType: "uint32", name: "quantity", type: "uint32" }],
-    name: "publicMint",
+    inputs: [
+      { internalType: "address[]", name: "addresses", type: "address[]" },
+    ],
+    name: "removeFromWhitelist",
     outputs: [],
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -445,26 +459,6 @@ export const puppets_nft_abi = [
     type: "function",
   },
   {
-    inputs: [
-      { internalType: "address", name: "_user", type: "address" },
-      { internalType: "enum Puppets.MintPhase", name: "_phase", type: "uint8" },
-    ],
-    name: "setUserPhaseAllowance",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "address[]", name: "_users", type: "address[]" },
-      { internalType: "enum Puppets.MintPhase", name: "_phase", type: "uint8" },
-    ],
-    name: "setUserPhaseAllowances",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     inputs: [{ internalType: "bytes4", name: "interfaceId", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
@@ -511,29 +505,14 @@ export const puppets_nft_abi = [
     type: "function",
   },
   {
-    inputs: [
-      { internalType: "enum Puppets.MintPhase", name: "", type: "uint8" },
-      { internalType: "address", name: "", type: "address" },
-    ],
-    name: "userAllowanceByPhase",
-    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [{ internalType: "address", name: "", type: "address" }],
     name: "whiteList",
-    outputs: [
-      { internalType: "enum Puppets.MintPhase", name: "", type: "uint8" },
-    ],
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [
-      { internalType: "uint32", name: "quantity", type: "uint32" },
-      { internalType: "enum Puppets.MintPhase", name: "phase", type: "uint8" },
-    ],
+    inputs: [],
     name: "wlMint",
     outputs: [],
     stateMutability: "payable",
