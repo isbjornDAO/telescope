@@ -22,7 +22,8 @@ export function MintWindow() {
     const MAX_SUPPLY = 1000;
     const [numMinted, setNumMinted] = useState(250);
 
-    const [isMinting, setIsMinting] = useState(true);
+    const [isMinting, setIsMinting] = useState(false);
+    const [canAccessMinting, setCanAccessMinting] = useState(false);
     const [mintPhase, setMintPhase] = useState<number>(0);
     const [numToMint, setNumToMint] = useState<number>(1);
     const [maxAllowedToMint, setMaxAllowedToMint] = useState<number>(10);
@@ -75,6 +76,14 @@ export function MintWindow() {
         args: [BigInt(mintPhase), address],
         chainId: 43113
     });
+
+    useEffect(() => {
+        if (!userStats?.discordId) {
+            setCanAccessMinting(false);
+        } else {
+            setCanAccessMinting(true);
+        }
+    }, [userStats]);
 
     useEffect(() => {
         if (mintPhase === 1) {
@@ -229,7 +238,7 @@ export function MintWindow() {
         fetchMintPhase();
     }, [mintSuccess, mintError]);
 
-    return isMinting
+    return canAccessMinting && isMinting
         ? (
             <div className="w-full flex flex-col md:flex-row gap-1 pl-12 pr-8 items-center">
                 <div className="flex flex-col gap-2 items-center">
@@ -288,7 +297,7 @@ export function MintWindow() {
                                     )
                                     : (
                                         <div className="flex flex-col gap-1 items-center">
-                                            <span className="text-green-500 font-semibold">You are Signed Up!</span><CheckCircle className="h-8 w-8 stroke-green-500" />
+                                            <span className="text-green-500 font-semibold">You are Ready for the Mint!</span><CheckCircle className="h-8 w-8 stroke-green-500" />
                                         </div>
                                     )
                                 }

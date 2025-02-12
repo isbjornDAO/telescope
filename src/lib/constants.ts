@@ -1,4 +1,4 @@
-export const puppets_nft_address = "0xAAcCf43a0fa81AaA05923A2eB5F78e5ABD82bc95";
+export const puppets_nft_address = "0x9f43AaeB0ab27A597B733d4be257F59f4ff91DD0";
 
 export const puppets_nft_abi = [
   {
@@ -251,6 +251,13 @@ export const puppets_nft_abi = [
       { internalType: "address", name: "operator", type: "address" },
     ],
     name: "isApprovedForAll",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "mintActive",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "view",
     type: "function",
