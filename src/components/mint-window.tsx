@@ -47,6 +47,13 @@ export function MintWindow() {
         5: 2
     };
 
+    const { data: isMintingData, refetch: fetchIsMinting } = useReadContract({
+        abi: puppets_nft_abi,
+        address: puppets_nft_address,
+        functionName: "mintActive",
+        chainId: 43113
+    });
+
     const { data: mintPhaseData, refetch: fetchMintPhase } = useReadContract({
         abi: puppets_nft_abi,
         address: puppets_nft_address,
@@ -76,6 +83,12 @@ export function MintWindow() {
         args: [BigInt(mintPhase), address],
         chainId: 43113
     });
+
+    useEffect(() => {
+        if (isMintingData !== undefined) {
+            setIsMinting(Boolean(isMintingData));
+        }
+    }, [isMintingData]);
 
     useEffect(() => {
         if (!userStats?.discordId) {
@@ -289,7 +302,7 @@ export function MintWindow() {
                     {isConnected
                         ? (
                             <div className="flex flex-col gap-3">
-                                {!userStats?.discordId
+                                {!canAccessMinting
                                     ? (
                                         <div>
                                             <ConnectDiscordButton />
