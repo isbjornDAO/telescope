@@ -43,13 +43,12 @@ const toastVariants = cva(
 const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
-  VariantProps<typeof toastVariants> & { txHash?: string } // Add txHash here
+  VariantProps<typeof toastVariants> & { txHash?: string }
 >(({ className, variant, children, txHash, ...props }, ref) => {
-  console.log("txHash in Toast:", txHash); // Debugging
 
   return (
     <ToastPrimitives.Root ref={ref} className={cn(toastVariants({ variant }), className)} {...props}>
-      <ToastDescription txHash={txHash}>{children}</ToastDescription> {/* Pass txHash explicitly */}
+      <ToastDescription txHash={txHash}>{children}</ToastDescription>
     </ToastPrimitives.Root>
   );
 });
@@ -104,7 +103,6 @@ const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description> & { txHash?: string }
 >(({ className, txHash, children, ...props }, ref) => {
-  console.log(txHash);
   return (
     <ToastPrimitives.Description
       ref={ref}
