@@ -87,8 +87,13 @@ export function MintWindow() {
     useEffect(() => {
         if (isMintingData !== undefined) {
             setIsMinting(Boolean(isMintingData));
+            console.log(Boolean(isMintingData));
         }
     }, [isMintingData]);
+
+    useEffect(() => {
+        fetchIsMinting();
+    }, []);
 
     useEffect(() => {
         if (!userStats?.discordId) {
@@ -121,6 +126,7 @@ export function MintWindow() {
         const price = puppetPrices[mintPhase];
         const total = BigInt(Math.round(price * 1e18)) * BigInt(numToMint);
         setTotalCost(Number(total) / 1e18);
+        console.log(Number(total) / 1e18);
     }, [numToMint, mintPhase]);
 
     useEffect(() => {
@@ -184,25 +190,23 @@ export function MintWindow() {
     }, [fetchNumMintedThisPhase]);
 
 
-    const mintTransactionData = useMemo(() => {
+    const mintTransactionData = () => {
         if (!address || numToMint <= 0) return null;
 
-        const functionName = mintPhase === 1
-            ? 'wlMint'
-            : 'publicMint';
+        const functionName = mintPhase === 1 ? 'wlMint' : 'publicMint';
 
         return encodeFunctionData({
             abi: puppets_nft_abi,
             functionName,
-            args: mintPhase === 1 ? undefined : [BigInt(mintPhase), BigInt(numToMint)]
+            args: mintPhase === 1 ? undefined : [BigInt(numToMint), BigInt(mintPhase)]
         });
-    }, [address, numToMint, mintPhase]);
+    };
 
-    const { data: request } = usePrepareTransactionRequest({
+    const { data: mintRequest } = usePrepareTransactionRequest({
         chainId: 43113,
         account: address,
         to: puppets_nft_address,
-        data: mintTransactionData ?? undefined,
+        data: mintTransactionData() ?? undefined,
         value: parseEther(totalCost.toString())
     });
 
@@ -211,10 +215,11 @@ export function MintWindow() {
     const { data: mintReceipt, isError: mintError, isLoading: isConfirming, isSuccess: mintSuccess } = useWaitForTransactionReceipt({ hash: mintTxHash });
 
     const handleMint = async () => {
-        if (request) {
+        console.log(mintTransactionData());
+        if (mintRequest) {
             try {
                 // Send the transaction
-                sendMintTx(request);
+                sendMintTx(mintRequest);
 
             } catch (error) {
                 console.error("Minting failed", error);
