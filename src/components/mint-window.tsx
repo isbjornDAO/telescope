@@ -13,9 +13,11 @@ import { Button } from "./ui/button";
 import { puppets_nft_abi, puppets_nft_address } from "@/lib/constants";
 import { Loader } from "@/components/icons/loader";
 import { useToast } from "@/hooks/use-toast";
+import { avalanche, avalancheFuji } from "wagmi/chains";
 
 
 export function MintWindow() {
+    const chainId = avalancheFuji.id; // = avalanche.id // testnet id for dev, switch to avalanche for prod
     const { address, isConnected } = useAccount();
     const { toast } = useToast();
 
@@ -51,21 +53,21 @@ export function MintWindow() {
         abi: puppets_nft_abi,
         address: puppets_nft_address,
         functionName: "mintActive",
-        chainId: 43113
+        chainId: chainId
     });
 
     const { data: mintPhaseData, refetch: fetchMintPhase } = useReadContract({
         abi: puppets_nft_abi,
         address: puppets_nft_address,
         functionName: "getCurrentPhase",
-        chainId: 43113
+        chainId: chainId
     });
 
     const { data: numMintedData, refetch: fetchNumMinted } = useReadContract({
         abi: puppets_nft_abi,
         address: puppets_nft_address,
         functionName: "totalSupply",
-        chainId: 43113
+        chainId: chainId
     });
 
     const { data: whiteListData, refetch: fetchWhiteList } = useReadContract({
@@ -73,7 +75,7 @@ export function MintWindow() {
         address: puppets_nft_address,
         functionName: "whiteList",
         args: [address],
-        chainId: 43113
+        chainId: chainId
     });
 
     const { data: numMintedThisPhaseData, refetch: fetchNumMintedThisPhase } = useReadContract({
@@ -81,7 +83,7 @@ export function MintWindow() {
         address: puppets_nft_address,
         functionName: "mintsInPhase",
         args: [BigInt(mintPhase), address],
-        chainId: 43113
+        chainId: chainId
     });
 
     useEffect(() => {
@@ -187,9 +189,6 @@ export function MintWindow() {
         }
     }, [fetchNumMintedThisPhase]);
 
-    console.log(numMintedThisPhase);
-
-
     const mintTransactionData = () => {
         if (!address || numToMint <= 0) return null;
 
@@ -215,7 +214,6 @@ export function MintWindow() {
     const { data: mintReceipt, isError: mintError, isLoading: isConfirming, isSuccess: mintSuccess } = useWaitForTransactionReceipt({ hash: mintTxHash });
 
     const handleMint = async () => {
-        console.log(mintTransactionData());
         if (mintRequest) {
             try {
                 // Send the transaction
@@ -236,7 +234,6 @@ export function MintWindow() {
 
     useEffect(() => {
         if (mintSuccess) {
-            console.log("Mint Transaction Hash:", mintTxHash);
             toast({
                 title: "Mint Successful!",
                 description: "You are the proud owner of a puppet!",
