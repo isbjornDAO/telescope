@@ -43,17 +43,17 @@ const toastVariants = cva(
 const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
-    VariantProps<typeof toastVariants>
->(({ className, variant, ...props }, ref) => {
+  VariantProps<typeof toastVariants> & { txHash?: string } // Add txHash here
+>(({ className, variant, children, txHash, ...props }, ref) => {
+  console.log("txHash in Toast:", txHash); // Debugging
+
   return (
-    <ToastPrimitives.Root
-      ref={ref}
-      className={cn(toastVariants({ variant }), className)}
-      {...props}
-    />
-  )
-})
-Toast.displayName = ToastPrimitives.Root.displayName
+    <ToastPrimitives.Root ref={ref} className={cn(toastVariants({ variant }), className)} {...props}>
+      <ToastDescription txHash={txHash}>{children}</ToastDescription> {/* Pass txHash explicitly */}
+    </ToastPrimitives.Root>
+  );
+});
+Toast.displayName = ToastPrimitives.Root.displayName;
 
 const ToastAction = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Action>,
@@ -102,14 +102,28 @@ ToastTitle.displayName = ToastPrimitives.Title.displayName
 
 const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
->(({ className, ...props }, ref) => (
-  <ToastPrimitives.Description
-    ref={ref}
-    className={cn("text-sm opacity-90", className)}
-    {...props}
-  />
-))
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description> & { txHash?: string }
+>(({ className, txHash, children, ...props }, ref) => {
+  console.log(txHash);
+  return (
+    <ToastPrimitives.Description
+      ref={ref}
+      className={cn("text-sm opacity-90", className)}
+      {...props}
+    >
+      {children}
+      {txHash && (
+        <a
+          href={`https://.snowscan.xyz/tx/${txHash}`}
+          target="_blank"
+          className="text-blue-500 underline text-xs"
+        >
+          View on Snowscan
+        </a>
+      )}
+    </ToastPrimitives.Description>
+  )
+});
 ToastDescription.displayName = ToastPrimitives.Description.displayName
 
 type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
