@@ -1,6 +1,7 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
+import { DiscordIcon } from "@/components/icons/discord";
 
 
 export function BearUniversityAlert() {
@@ -26,10 +27,7 @@ export function BearUniversityAlert() {
                     className="mt-4 md:mt-0 flex items-center gap-2"
                     onClick={() => window.open('https://discord.gg/sBTs64xcbZ', '_blank')}
                 >
-                    <img
-                        src="/icons/discord.svg"
-                        className="h-4 w-4"
-                    />
+                    <DiscordIcon />
                     Open Discord
                 </Button>
             </Alert>
