@@ -38,8 +38,8 @@ import { SessionProvider } from "next-auth/react";
 
 export const noopStorage: BaseStorage = {
   getItem: () => null,
-  setItem: () => {},
-  removeItem: () => {},
+  setItem: () => { },
+  removeItem: () => { },
 };
 
 const singularEnv =
@@ -48,9 +48,9 @@ const singularEnv =
 export const storage =
   typeof window !== "undefined" && window.localStorage
     ? createStorage({
-        key: `telescope-${singularEnv}`,
-        storage: window.localStorage,
-      })
+      key: `telescope-${singularEnv}`,
+      storage: window.localStorage,
+    })
     : null;
 
 export const web3Config = createConfig({
@@ -85,6 +85,12 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         },
       ],
       chains: [avalanche, avalancheFuji],
+      transports: {
+        [avalanche.id]: http("https://avalanche-c-chain-rpc.publicnode.com"),
+        [avalancheFuji.id]: http(
+          "https://avalanche-fuji-c-chain-rpc.publicnode.com"
+        ),
+      },
       storage,
     });
 
