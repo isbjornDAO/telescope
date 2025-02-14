@@ -87,7 +87,6 @@ export function MintWindow() {
     useEffect(() => {
         if (isMintingData !== undefined) {
             setIsMinting(Boolean(isMintingData));
-            console.log(Boolean(isMintingData));
         }
     }, [isMintingData]);
 
@@ -126,7 +125,6 @@ export function MintWindow() {
         const price = puppetPrices[mintPhase];
         const total = BigInt(Math.round(price * 1e18)) * BigInt(numToMint);
         setTotalCost(Number(total) / 1e18);
-        console.log(Number(total) / 1e18);
     }, [numToMint, mintPhase]);
 
     useEffect(() => {
@@ -189,6 +187,8 @@ export function MintWindow() {
         }
     }, [fetchNumMintedThisPhase]);
 
+    console.log(numMintedThisPhase);
+
 
     const mintTransactionData = () => {
         if (!address || numToMint <= 0) return null;
@@ -236,9 +236,11 @@ export function MintWindow() {
 
     useEffect(() => {
         if (mintSuccess) {
+            console.log("Mint Transaction Hash:", mintTxHash);
             toast({
                 title: "Mint Successful!",
-                description: `Mint successful! Transaction hash: ${mintTxHash?.slice(0, 6)}...${mintTxHash?.slice(-4)}`,
+                description: "You are the proud owner of a puppet!",
+                txHash: mintTxHash
             });
         }
 
