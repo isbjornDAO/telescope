@@ -11,7 +11,7 @@ import { ConnectDiscordButton } from "./connect-discord-button";
 import { CheckCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { puppets_nft_abi, puppets_nft_address } from "@/lib/constants";
-import { Loader } from "@/components/loader";
+import { Loader } from "@/components/icons/loader";
 import { useToast } from "@/hooks/use-toast";
 
 
