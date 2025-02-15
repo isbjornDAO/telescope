@@ -53,7 +53,7 @@ export function MintCounter({
     };
 
     return (
-        <div className="flex items-center space-x-2 mb-2">
+        <div className="flex items-center space-x-2 mb-[1px]">
             <button
                 onClick={handleDecrement}
                 disabled={value <= effectiveMin || max === 0}

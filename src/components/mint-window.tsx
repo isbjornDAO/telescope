@@ -107,11 +107,10 @@ export function MintWindow() {
     useEffect(() => {
         if (mintPhase === 1) {
             setMaxAllowedToMint(1 - numMintedThisPhase);
+        } else if (mintPhase === 5) {
+            setMaxAllowedToMint(10 - numMintedThisPhase);
         } else {
             setMaxAllowedToMint(2 - numMintedThisPhase);
-            if (numMintedThisPhase == 2) {
-                setMaxAllowedToMint(0);
-            }
         }
     }, [mintPhase, numMintedThisPhase]);
 
@@ -271,7 +270,8 @@ export function MintWindow() {
                     <WLRoundIndicator currentPhase={mintPhase} prices={puppetPrices} />
                     <br />
                     <MintCounter value={numToMint} setValue={setNumToMint} max={maxAllowedToMint} />
-                    <div className="font-semibold text-sm mb-1">{`Total: ${totalCost} AVAX`}</div>
+                    <span className="text-zinc-500 text-xs mb-1">{`max: ${maxAllowedToMint}`}</span>
+                    {/* <div className="font-semibold text-sm mb-1">{`Total: ${totalCost} AVAX`}</div> */}
                     {isConnected
                         ? (<Button
                             className="flex snow-button max-w-[150px] items-center justify-center relative min-h-[36px]"
@@ -283,7 +283,7 @@ export function MintWindow() {
                                         <Loader />
                                     </div>
                                 ) : (
-                                    "Mint"
+                                    totalCost !== 0 ? `Mint (${totalCost} AVAX)` : 'Mint'
                                 )}
                             </div>
                         </Button>)
