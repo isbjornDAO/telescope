@@ -25,7 +25,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   votes     Vote[]
-  discordId String?   @unique
+  discordId String?
 }
 
 model Project {
@@ -51,9 +51,24 @@ model Vote {
   votedDate  DateTime @default(now())
 }
 
+model IncubatorProject {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String   @unique
+  description String
+  logo        String
+  status      String   // 'live', 'upcoming', 'presale', 'scam'
+  launchDate  DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  social      Social?
+  tags        String[] @default([])
+}
+
 type Social {
-  twitter  String?
-  discord  String?
-  telegram String?
-  website  String?
+  twitter          String?
+  discord          String?
+  telegram         String?
+  website          String?
+  dexscreener      String?
+  contractAddress  String?
 }
