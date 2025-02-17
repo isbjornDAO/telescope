@@ -63,6 +63,7 @@ export const Categories = () => {
 
   const handleCategoryClick = (category: string) => {
     const params = new URLSearchParams(searchParams);
+    const currentTab = window.location.hash.replace('#', '') || 'projects';
 
     if (category === selectedCategory) {
       params.delete("tag");
@@ -70,24 +71,8 @@ export const Categories = () => {
       params.set("tag", category);
     }
 
-    // Reset to page 1 when changing categories
-    params.set("page", "1");
-
-    // Create new URLSearchParams with desired order
-    const orderedParams = new URLSearchParams();
-
-    // Set tag first if it exists
-    if (params.has("tag")) {
-      orderedParams.set("tag", params.get("tag")!);
-    }
-
-    // Set page second
-    if (params.has("page")) {
-      orderedParams.set("page", params.get("page")!);
-    }
-
-    // Use router.replace with ordered parameters
-    router.replace(`/?${orderedParams.toString()}`, { scroll: false });
+    // Update the URL based on current tab
+    router.replace(`/?${params.toString()}#${currentTab}`, { scroll: false });
   };
 
   const visibleCategories =

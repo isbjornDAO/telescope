@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { LeaderboardTable } from "@/components/leaderboard-table";
 import { VoteButton } from "@/components/vote-button";
-import { LeaderboardItem } from "@/types";
+import { LeaderboardItem, IncubatorProject } from "@/types";
 import { Users } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
@@ -16,6 +16,8 @@ import { useUserStats } from "@/hooks/use-user-stats";
 import { ConnectDiscordAlert } from "@/components/connect-discord-alert";
 import { Address } from "viem";
 import { useSession } from "next-auth/react";
+import { ProjectCard } from '@/components/project-card';
+import { DisclaimerAlert } from "@/components/disclaimer-alert";
 
 interface VotingStatusProps {
   isLocked: boolean;
@@ -76,6 +78,7 @@ export default function Home() {
   const { status: sessionStatus } = useSession();
   const [isVotingLocked, setIsVotingLocked] = useState(false);
   const [nextVoteTime, setNextVoteTime] = useState<Date | null>(null);
+  const [activeTab, setActiveTab] = useState("projects");
 
   const {
     data: projects,
@@ -100,6 +103,24 @@ export default function Home() {
     },
     staleTime: 0, // Consider data stale immediately
     gcTime: 0, // Remove data from cache immediately when unused
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchInterval: 5000,
+  });
+
+  const { data: incubatorProjects } = useQuery<IncubatorProject[], Error>({
+    queryKey: ["incubator-projects", selectedTag],
+    queryFn: async () => {
+      const url = `/api/incubator${selectedTag ? `?tag=${selectedTag}` : ""}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch incubator projects.");
+      }
+      return response.json();
+    },
+    staleTime: 0,
+    gcTime: 0,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
@@ -140,7 +161,7 @@ export default function Home() {
   return (
     <div className="w-full">
       <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16">
-        <Tabs defaultValue="projects" className="flex flex-col gap-4">
+        <Tabs defaultValue="projects" className="flex flex-col gap-4" onValueChange={(value) => setActiveTab(value)}>
           <div className="flex items-start md:items-center justify-between flex-col md:flex-row gap-4">
             <div className="flex items-center gap-2">
               <TabsList className="gap-2 bg-transparent m-0 p-0">
@@ -149,6 +170,12 @@ export default function Home() {
                   className="px-4 py-2 font-bold text-md bg-white border-white border-2"
                 >
                   Projects
+                </TabsTrigger>
+                <TabsTrigger
+                  value="incubator"
+                  className="px-4 py-2 font-bold text-md bg-white border-white border-2"
+                >
+                  Incubator
                 </TabsTrigger>
                 <TabsTrigger
                   value="artists"
@@ -185,7 +212,10 @@ export default function Home() {
           {isConnected && !isUserStatsLoading && !userStats?.discordId ? (
             <ConnectDiscordAlert />
           ) : sessionStatus !== "loading" ? (
-            <Countdown />
+            <>
+              {activeTab === "projects" && <Countdown />}
+              {activeTab === "incubator" && <DisclaimerAlert />}
+            </>
           ) : null}
           <TabsContent
             value="projects"
@@ -229,8 +259,21 @@ export default function Home() {
               isError={isError}
             />
           </TabsContent>
+          <TabsContent value="incubator" className="tab-content mt-2 flex flex-col gap-4">
+            <div className="flex gap-1 flex-col">
+              <h3 className="font-bold">Categories</h3>
+              <Categories />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {incubatorProjects
+                ?.filter(project => !selectedTag || project.tags.includes(selectedTag))
+                .map((project) => (
+                  <ProjectCard key={project.id} project={project} />
+                ))}
+            </div>
+          </TabsContent>
           <TabsContent value="artists" className="tab-content">
-            <div className="w-full bg-white rounded-lg py-16 shadow flex items-center justify-center flex-col gap-4">
+            <div className="w-full bg-white rounded-lg py-8 shadow flex items-center justify-center flex-col gap-4">
               <div className="flex flex-col items-center">
                 <h2 className="text-2xl font-bold">Coming soon</h2>
                 <span className=" text-zinc-500">

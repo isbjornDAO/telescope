@@ -13,6 +13,15 @@ export type SiteConfig = {
   ogImage: string;
 };
 
+export interface Social {
+  twitter?: string;
+  discord?: string;
+  telegram?: string;
+  website?: string;
+  dexscreener?: string;
+  contractAddress?: string;
+}
+
 export interface LeaderboardItem {
   id: string;
   rank: number;
@@ -20,12 +29,7 @@ export interface LeaderboardItem {
   name: string;
   description?: string;
   metadata?: ItemMetadata;
-  social?: {
-    twitter?: string;
-    discord?: string;
-    telegram?: string;
-    website?: string;
-  };
+  social?: Social;
   tags?: string[];
 }
 
@@ -65,4 +69,17 @@ export interface DiscordProfile {
   avatar: string | null;
   accent_color: number | null;
   global_name: string | null;
+}
+
+export interface IncubatorProject {
+  id: string;
+  title: string;
+  description: string;
+  logo: string;
+  status: 'live' | 'upcoming' | 'presale';
+  launchDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  social?: Social;
+  tags: string[];
 }

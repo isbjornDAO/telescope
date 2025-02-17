@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserStats } from "@/hooks/use-user-stats";
 import { useQuery } from "@tanstack/react-query";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns"; // eslint-disable-line
 // import { VoteStreak } from "@/components/vote-streak";
 import { ConnectDiscordAlert } from "@/components/connect-discord-alert";
 import { useUserDiscord } from "@/hooks/use-user-discord";

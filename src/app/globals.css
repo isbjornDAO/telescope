@@ -125,3 +125,7 @@ body {
   filter: drop-shadow(0 2px 1px rgb(0 0 0 / 0.25));
   opacity: 1;
 }
+
+.tab-content[data-state='inactive'] {
+  display: none;
+}
