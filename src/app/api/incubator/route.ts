@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+// import { Prisma } from '@prisma/client';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * Handles GET requests to fetch incubator projects based on optional tag filtering.
@@ -8,15 +10,11 @@ import { Prisma } from '@prisma/client';
  * @param {Request} request - The incoming request object.
  * @returns {Promise<NextResponse>} - A JSON response containing the list of incubator projects.
  */
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const tag = searchParams.get("tag");
-
     const projects = await prisma.incubatorProject.findMany({
-      where: tag ? { tags: { has: tag } } : undefined,
       orderBy: {
-        launchDate: 'asc',
+        createdAt: 'desc',
       },
     });
 

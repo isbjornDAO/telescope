@@ -83,7 +83,12 @@ Sample data files should be placed in `/prisma/seeds/`
      "description": "Project Description",
      "logo": "https://...",
      "status": "live",
-     "launchDate": "2024-03-20T00:00:00Z",
+     "launchDate": {
+       "$date": "2024-03-20T00:00:00Z"
+     },
+     "createdAt": {
+       "$date": "2024-12-15T19:07:12.808Z"
+     },
      "tags": ["presale", "new"],
      "social": {
        "dexscreener": "https://...",
