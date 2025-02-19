@@ -81,7 +81,7 @@ Sample data files should be placed in `/prisma/seeds/`
    {
      "title": "Project Title",
      "description": "Project Description",
-     "logo": "https://...",
+     "logo": "https://...", // Image should be 120x120px, PNG/JPG format
      "status": "live",
      "launchDate": {
        "$date": "2024-03-20T00:00:00Z"

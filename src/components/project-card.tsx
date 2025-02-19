@@ -13,6 +13,9 @@ interface ProjectCardProps {
     project: IncubatorProject;
 }
 
+export const INCUBATOR_IMAGE_WIDTH = 120;  // px
+export const INCUBATOR_IMAGE_HEIGHT = 120; // px
+
 export function ProjectCard({ project }: ProjectCardProps) {
     const [copied, setCopied] = useState(false);
 
@@ -135,16 +138,18 @@ export function ProjectCard({ project }: ProjectCardProps) {
                             ))}
                         </div>
                     )}
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                        <Calendar size={16} />
-                        <span className="text-sm">
-                            {new Date(project.launchDate).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                            })}
-                        </span>
-                    </div>
+                    {project.launchDate && (
+                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                            <Calendar size={16} />
+                            <span className="text-sm">
+                                {new Date(project.launchDate).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                })}
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
