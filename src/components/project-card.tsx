@@ -13,6 +13,9 @@ interface ProjectCardProps {
     project: IncubatorProject;
 }
 
+export const INCUBATOR_IMAGE_WIDTH = 120;  // px
+export const INCUBATOR_IMAGE_HEIGHT = 120; // px
+
 export function ProjectCard({ project }: ProjectCardProps) {
     const [copied, setCopied] = useState(false);
 
@@ -39,13 +42,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all border border-gray-200 dark:border-gray-700 mb-4">
-            <div className="relative">
+            <div className="relative aspect-square">
                 <Image
                     src={project.logo}
                     alt={`${project.title} logo`}
                     width={400}
-                    height={192}
-                    className="w-full h-48 object-cover rounded-t-lg"
+                    height={400}
+                    className="w-full h-full object-cover rounded-t-lg"
                     priority={false}
                 />
                 <span
@@ -135,16 +138,18 @@ export function ProjectCard({ project }: ProjectCardProps) {
                             ))}
                         </div>
                     )}
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                        <Calendar size={16} />
-                        <span className="text-sm">
-                            {new Date(project.launchDate).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                            })}
-                        </span>
-                    </div>
+                    {project.launchDate && (
+                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                            <Calendar size={16} />
+                            <span className="text-sm">
+                                {new Date(project.launchDate).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                })}
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

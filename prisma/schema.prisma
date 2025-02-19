@@ -57,7 +57,7 @@ model IncubatorProject {
   description String
   logo        String
   status      String   // 'live', 'upcoming', 'presale', 'scam'
-  launchDate  DateTime
+  launchDate  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   social      Social?
