@@ -42,13 +42,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all border border-gray-200 dark:border-gray-700 mb-4">
-            <div className="relative">
+            <div className="relative aspect-square">
                 <Image
                     src={project.logo}
                     alt={`${project.title} logo`}
                     width={400}
-                    height={192}
-                    className="w-full h-48 object-cover rounded-t-lg"
+                    height={400}
+                    className="w-full h-full object-cover rounded-t-lg"
                     priority={false}
                 />
                 <span
