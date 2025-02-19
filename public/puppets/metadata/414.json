@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Ly Purple"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Spiderman"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Wizard"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Paintbrush"
+    }
+  ],
+  "name": "Puppet #414",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/414.png"
+}

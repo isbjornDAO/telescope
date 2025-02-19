@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Balance"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Hatsune Miku"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Coffee"
+    }
+  ],
+  "name": "Puppet #897",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/897.png"
+}

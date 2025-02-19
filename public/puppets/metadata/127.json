@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Ly Purple"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Destroyer"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Smile"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Royal"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Ferdy"
+    }
+  ],
+  "name": "Puppet #127",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/127.png"
+}

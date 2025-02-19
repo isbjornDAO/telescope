@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Balance"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Angry"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Viking"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Ferdy"
+    }
+  ],
+  "name": "Puppet #7",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/7.png"
+}

@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Light Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Avax Hoodie"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Harry Potter"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Hot Chocolate"
+    }
+  ],
+  "name": "Puppet #513",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/513.png"
+}

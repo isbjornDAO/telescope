@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Brown"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Criminal"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Smile"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Dunce"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Bible"
+    }
+  ],
+  "name": "Puppet #66",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/66.png"
+}

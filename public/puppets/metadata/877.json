@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Avax Red"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Robe"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Unfazed"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Leaf"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Coffee"
+    }
+  ],
+  "name": "Puppet #877",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/877.png"
+}

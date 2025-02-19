@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Prometheus Pink"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "HEV Suit"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Specter TV"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Spatula"
+    }
+  ],
+  "name": "Puppet #67",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/67.png"
+}

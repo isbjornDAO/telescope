@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Ferdy Orange"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Churchill"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Freckles"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Dunce"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Hot Chocolate"
+    }
+  ],
+  "name": "Puppet #333",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/333.png"
+}

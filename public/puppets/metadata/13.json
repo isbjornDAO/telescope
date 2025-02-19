@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Brown"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Avax Chain"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Unfazed"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Ang"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Unicorn"
+    }
+  ],
+  "name": "Puppet #13",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/13.png"
+}

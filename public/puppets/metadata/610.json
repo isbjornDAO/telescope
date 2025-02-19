@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Purple"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Jacket"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Unfazed"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Ice"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Unicorn"
+    }
+  ],
+  "name": "Puppet #610",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/610.png"
+}

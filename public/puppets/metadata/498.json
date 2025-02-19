@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Cardigan"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Unfazed"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Ushanka"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Manly P. Hall"
+    }
+  ],
+  "name": "Puppet #498",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/498.png"
+}

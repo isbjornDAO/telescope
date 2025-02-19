@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Purple"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Singlet"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Leaf"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Torch"
+    }
+  ],
+  "name": "Puppet #413",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/413.png"
+}

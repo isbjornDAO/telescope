@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Purple"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Team1"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Unfazed"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Occultist"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Gun"
+    }
+  ],
+  "name": "Puppet #594",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/594.png"
+}

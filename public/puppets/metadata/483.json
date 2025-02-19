@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Smash"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Angry"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Valve"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Buzz Controller"
+    }
+  ],
+  "name": "Puppet #483",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/483.png"
+}

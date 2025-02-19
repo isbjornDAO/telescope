@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Avax Hoodie 2"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Angry"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Tinfoil"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Portal Gun"
+    }
+  ],
+  "name": "Puppet #592",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/592.png"
+}

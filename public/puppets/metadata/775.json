@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Darkest Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Fishing Shirt"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Smile"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Ushanka"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Camera"
+    }
+  ],
+  "name": "Puppet #775",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/775.png"
+}

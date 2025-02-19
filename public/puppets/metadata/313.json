@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Grey"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Destroyer"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Angry"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Harry Potter"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Unicorn"
+    }
+  ],
+  "name": "Puppet #313",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/313.png"
+}

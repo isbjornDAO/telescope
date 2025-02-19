@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Jarry Green"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Robe"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Unfazed"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Smitty"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Tarot"
+    }
+  ],
+  "name": "Puppet #318",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/318.png"
+}

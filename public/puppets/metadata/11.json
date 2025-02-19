@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Ly Purple"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Mambo"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Angry"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Beret"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Hot Chocolate"
+    }
+  ],
+  "name": "Puppet #11",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/11.png"
+}

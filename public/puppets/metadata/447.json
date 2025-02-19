@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Red"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Inmate"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Freckles"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Dunce"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Crowbar"
+    }
+  ],
+  "name": "Puppet #447",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/447.png"
+}

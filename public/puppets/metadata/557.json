@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Darkest Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "I <3 AVAX"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Freckles"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Duck"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Telescope"
+    }
+  ],
+  "name": "Puppet #557",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/557.png"
+}

@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Grey"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Robe"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Shocked"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Viking"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Magazine"
+    }
+  ],
+  "name": "Puppet #546",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/546.png"
+}

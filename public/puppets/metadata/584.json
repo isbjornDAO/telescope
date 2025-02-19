@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Light Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Avax Hoodie 2"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Chef Hat"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Excalibur"
+    }
+  ],
+  "name": "Puppet #584",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/584.png"
+}

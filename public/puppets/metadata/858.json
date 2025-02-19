@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Bear 2"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Angry"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Graduate"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Fourth Turning"
+    }
+  ],
+  "name": "Puppet #858",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/858.png"
+}

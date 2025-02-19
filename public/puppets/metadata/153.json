@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Green"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Singlet"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Freckles"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Red Triangle"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Money Bag"
+    }
+  ],
+  "name": "Puppet #153",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/153.png"
+}

@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Red"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Destroyer"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Smile"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Tinfoil"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Wolfie"
+    }
+  ],
+  "name": "Puppet #627",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/627.png"
+}

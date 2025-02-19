@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Ly Purple"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Toasty"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Valve"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Bear's Sketchbook"
+    }
+  ],
+  "name": "Puppet #871",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/871.png"
+}

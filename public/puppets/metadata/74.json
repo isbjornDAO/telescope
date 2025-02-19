@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Jarry Green"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Celtics"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Smile"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "DnD Beanie"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Microphone"
+    }
+  ],
+  "name": "Puppet #74",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/74.png"
+}

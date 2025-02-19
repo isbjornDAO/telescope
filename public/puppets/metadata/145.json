@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Brown"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "I <3 AVAX"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Smitty"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Wolfie"
+    }
+  ],
+  "name": "Puppet #145",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/145.png"
+}

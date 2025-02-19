@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Brown"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "PBI Jacket"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Devil"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Fishing Rod"
+    }
+  ],
+  "name": "Puppet #323",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/323.png"
+}

@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Grey"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Bjork"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Chef Hat"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Red Coin"
+    }
+  ],
+  "name": "Puppet #337",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/337.png"
+}

@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Brown"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Chef"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Ripperz"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Graduate"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Portal Gun"
+    }
+  ],
+  "name": "Puppet #79",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/79.png"
+}

@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Magic 8 Ball"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Unfazed"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Pentagram"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Bible"
+    }
+  ],
+  "name": "Puppet #927",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/927.png"
+}

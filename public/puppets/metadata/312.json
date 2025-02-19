@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Light Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Astronaut"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Angry"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Tinfoil"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Excalibur"
+    }
+  ],
+  "name": "Puppet #312",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/312.png"
+}

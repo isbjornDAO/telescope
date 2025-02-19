@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Ly Purple"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Magic 8 Ball"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Freckles"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Team1"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Paintbrush"
+    }
+  ],
+  "name": "Puppet #993",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/993.png"
+}

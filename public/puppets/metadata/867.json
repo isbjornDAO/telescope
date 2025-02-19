@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Ferdy Orange"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Spiderman"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Smile"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Chef Hat"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Microphone"
+    }
+  ],
+  "name": "Puppet #867",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/867.png"
+}

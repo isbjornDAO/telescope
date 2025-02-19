@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Darkest Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Bear"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Red Triangle"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Fishing Rod"
+    }
+  ],
+  "name": "Puppet #304",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/304.png"
+}

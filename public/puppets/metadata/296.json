@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Brown"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Avax Chain"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Shocked"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Team1"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Microphone"
+    }
+  ],
+  "name": "Puppet #296",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/296.png"
+}

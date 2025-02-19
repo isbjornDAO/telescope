@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Red"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Astronaut"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Angry"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Fishing Hat"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Fishing Rod"
+    }
+  ],
+  "name": "Puppet #822",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/822.png"
+}

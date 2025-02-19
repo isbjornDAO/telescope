@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Purple"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "I <3 AVAX"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Shocked"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Trucker"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Pickaxe"
+    }
+  ],
+  "name": "Puppet #178",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/178.png"
+}

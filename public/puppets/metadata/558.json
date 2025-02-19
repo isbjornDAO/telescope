@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Peon"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Bow"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Bear's Sketchbook"
+    }
+  ],
+  "name": "Puppet #558",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/558.png"
+}

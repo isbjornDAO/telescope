@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Bear Body"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Magic 8 Ball"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Bear Head"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "Freckles"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Rain"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Keyboard"
+    }
+  ],
+  "name": "Puppet #532",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/532.png"
+}
