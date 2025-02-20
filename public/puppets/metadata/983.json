@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Tuxedo"
+      "value": "Singlet"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Pentagram"
+      "value": "Wizard"
     },
     {
       "trait_type": "Item",
-      "value": "Portal Gun"
+      "value": "Gun"
     }
   ],
   "name": "Puppet #983",

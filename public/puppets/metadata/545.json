@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Brown"
+      "value": "Avax Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Balance"
+      "value": "Inmate"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Ang"
+      "value": "Hair"
     },
     {
       "trait_type": "Item",
-      "value": "Spatula"
+      "value": "Microphone"
     }
   ],
   "name": "Puppet #545",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Dark Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Magic 8 Ball"
+      "value": "Bear 2"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Ushanka"
+      "value": "Devil"
     },
     {
       "trait_type": "Item",
-      "value": "Tarot"
+      "value": "Excalibur"
     }
   ],
   "name": "Puppet #987",

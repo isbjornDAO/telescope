@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Purple"
+      "value": "Dark Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Jacket"
+      "value": "Astronaut"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Chef Hat"
+      "value": "Specter TV"
     },
     {
       "trait_type": "Item",
-      "value": "Keyboard"
+      "value": "Microphone"
     }
   ],
   "name": "Puppet #368",

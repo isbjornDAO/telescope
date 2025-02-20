@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Brown"
+      "value": "Avax Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "HEV Suit"
+      "value": "Team1"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Shocked"
     },
     {
       "trait_type": "Hat",
-      "value": "Husky Sock"
+      "value": "Cowboy"
     },
     {
       "trait_type": "Item",
-      "value": "Asahi"
+      "value": "Skis"
     }
   ],
   "name": "Puppet #131",

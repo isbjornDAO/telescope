@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Red"
+      "value": "Avax Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Peon"
+      "value": "Mambo"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Occultist"
+      "value": "Duck"
     },
     {
       "trait_type": "Item",
-      "value": "Asahi"
+      "value": "Green Candle"
     }
   ],
   "name": "Puppet #905",

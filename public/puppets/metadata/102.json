@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Dark Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Robe"
+      "value": "Bjork"
     },
     {
       "trait_type": "Head",
@@ -19,11 +19,11 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Waifu"
+      "value": "Fishing Hat"
     },
     {
       "trait_type": "Item",

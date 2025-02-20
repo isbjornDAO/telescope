@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ly Purple"
+      "value": "Jarry Green"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Ledger"
+      "value": "Jacket"
     },
     {
       "trait_type": "Head",
@@ -19,7 +19,7 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Freckles"
     },
     {
       "trait_type": "Hat",
@@ -27,7 +27,7 @@
     },
     {
       "trait_type": "Item",
-      "value": "Paintbrush"
+      "value": "Excalibur"
     }
   ],
   "name": "Puppet #428",

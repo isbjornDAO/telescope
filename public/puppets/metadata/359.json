@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Jarry Green"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "I <3 AVAX"
+      "value": "Snowdog"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Dunce"
+      "value": "Red Triangle"
     },
     {
       "trait_type": "Item",
-      "value": "Fourth Turning"
+      "value": "iPhone"
     }
   ],
   "name": "Puppet #359",

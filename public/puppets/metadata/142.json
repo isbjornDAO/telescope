@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Brown"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Balance"
+      "value": "HEV Suit"
     },
     {
       "trait_type": "Head",
@@ -19,7 +19,7 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
@@ -27,7 +27,7 @@
     },
     {
       "trait_type": "Item",
-      "value": "Tarot"
+      "value": "Iceblock"
     }
   ],
   "name": "Puppet #142",

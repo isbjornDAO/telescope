@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Blue"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Cardigan"
+      "value": "Avax Hoodie"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Duck"
+      "value": "Ang"
     },
     {
       "trait_type": "Item",
-      "value": "Controller"
+      "value": "Cake"
     }
   ],
   "name": "Puppet #896",

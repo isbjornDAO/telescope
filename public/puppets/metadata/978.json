@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Prometheus Pink"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Golf"
+      "value": "Bear 3"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Leaf"
+      "value": "Hatsune Miku"
     },
     {
       "trait_type": "Item",
-      "value": "Hot Chocolate"
+      "value": "Bear's Sketchbook"
     }
   ],
   "name": "Puppet #978",

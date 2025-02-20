@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Jarry Green"
+      "value": "Grey"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Napoli"
+      "value": "Blue Suit"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Top Hat"
+      "value": "Fez"
     },
     {
       "trait_type": "Item",
-      "value": "Red Coin"
+      "value": "Microphone"
     }
   ],
   "name": "Puppet #515",

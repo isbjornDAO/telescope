@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Dark Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Value"
+      "value": "I <3 AVAX"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Smile"
     },
     {
       "trait_type": "Hat",
-      "value": "Wizard"
+      "value": "Red Triangle"
     },
     {
       "trait_type": "Item",
-      "value": "Green Candle"
+      "value": "Paintbrush"
     }
   ],
   "name": "Puppet #335",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Light Blue"
+      "value": "Dark Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Mambo"
+      "value": "Criminal"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Red Triangle"
+      "value": "Dunce"
     },
     {
       "trait_type": "Item",
-      "value": "Keyboard"
+      "value": "Money Bag"
     }
   ],
   "name": "Puppet #39",

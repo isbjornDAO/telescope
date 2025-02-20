@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Ly Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Blue Suit"
+      "value": "Destroyer"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Graduate"
+      "value": "Crown"
     },
     {
       "trait_type": "Item",
-      "value": "Red Coin"
+      "value": "Camera"
     }
   ],
   "name": "Puppet #460",

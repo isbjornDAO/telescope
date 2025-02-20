@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ly Purple"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Snowdog"
+      "value": "Singlet"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
-      "value": "Dunce"
+      "value": "Crown"
     },
     {
       "trait_type": "Item",
-      "value": "Asahi"
+      "value": "Bible"
     }
   ],
   "name": "Puppet #72",

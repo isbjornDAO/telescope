@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Light Blue"
+      "value": "Grey"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Peon"
+      "value": "Robe"
     },
     {
       "trait_type": "Head",
@@ -19,11 +19,11 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Default"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Wizard"
+      "value": "Cowboy"
     },
     {
       "trait_type": "Item",

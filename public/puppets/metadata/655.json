@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Green"
+      "value": "Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Avax Hoodie"
+      "value": "HEV Suit"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Default"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
-      "value": "Crown"
+      "value": "Wizard"
     },
     {
       "trait_type": "Item",
-      "value": "Fishing Rod"
+      "value": "Telescope"
     }
   ],
   "name": "Puppet #655",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Brown"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Chef"
+      "value": "Golf"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Angry"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
-      "value": "Third Eye"
+      "value": "Trucker"
     },
     {
       "trait_type": "Item",
-      "value": "Excalibur"
+      "value": "Portal Gun"
     }
   ],
   "name": "Puppet #43",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Dark Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Inmate"
+      "value": "Criminal"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Death the Kid"
+      "value": "Crown"
     },
     {
       "trait_type": "Item",
-      "value": "Spatula"
+      "value": "Tarot"
     }
   ],
   "name": "Puppet #468",

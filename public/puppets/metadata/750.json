@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Purple"
+      "value": "Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Robe"
+      "value": "Magic 8 Ball"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Button Eyes"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Specter TV"
+      "value": "Crown"
     },
     {
       "trait_type": "Item",
-      "value": "Football"
+      "value": "Cake"
     }
   ],
   "name": "Puppet #750",

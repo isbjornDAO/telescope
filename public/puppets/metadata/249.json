@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ly Purple"
+      "value": "Jarry Green"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Napoli"
+      "value": "Pot"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Shocked"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
-      "value": "Red Triangle"
+      "value": "Team1"
     },
     {
       "trait_type": "Item",
-      "value": "Paintbrush"
+      "value": "Money Bag"
     }
   ],
   "name": "Puppet #249",

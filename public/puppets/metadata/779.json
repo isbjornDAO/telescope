@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Blue Suit"
+      "value": "Napoli"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Freckles"
     },
     {
       "trait_type": "Hat",
-      "value": "Waifu"
+      "value": "Devil"
     },
     {
       "trait_type": "Item",
-      "value": "Bear's Sketchbook"
+      "value": "Bible"
     }
   ],
   "name": "Puppet #779",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Red"
+      "value": "Grey"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Jacket"
+      "value": "Inmate"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Viking"
+      "value": "Royal"
     },
     {
       "trait_type": "Item",
-      "value": "Telescope"
+      "value": "Money Bag"
     }
   ],
   "name": "Puppet #183",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Green"
+      "value": "Dark Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Destroyer"
+      "value": "Avax Hoodie"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Thinking"
+      "value": "Beret"
     },
     {
       "trait_type": "Item",
-      "value": "Hot Chocolate"
+      "value": "Tarot"
     }
   ],
   "name": "Puppet #519",

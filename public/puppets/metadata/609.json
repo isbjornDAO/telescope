@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Jarry Green"
+      "value": "Ly Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Snowdog"
+      "value": "Churchill"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Team1"
+      "value": "Valve"
     },
     {
       "trait_type": "Item",
-      "value": "Cake"
+      "value": "Spanner"
     }
   ],
   "name": "Puppet #609",

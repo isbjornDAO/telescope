@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Avax Red"
+      "value": "Grey"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Avax Hoodie 2"
+      "value": "Magic 8 Ball"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Tinfoil"
+      "value": "Fishing Hat"
     },
     {
       "trait_type": "Item",
-      "value": "Pickaxe"
+      "value": "Hot Chocolate"
     }
   ],
   "name": "Puppet #45",

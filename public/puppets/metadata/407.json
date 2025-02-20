@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ly Purple"
+      "value": "Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Avax Hoodie 2"
+      "value": "Cardigan"
     },
     {
       "trait_type": "Head",
@@ -23,7 +23,7 @@
     },
     {
       "trait_type": "Hat",
-      "value": "DnD Beanie"
+      "value": "Chef Hat"
     },
     {
       "trait_type": "Item",

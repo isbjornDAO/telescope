@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Dark Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Blue Suit"
+      "value": "Chef"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Ripperz"
     },
     {
       "trait_type": "Hat",
-      "value": "Third Eye"
+      "value": "Graduate"
     },
     {
       "trait_type": "Item",
-      "value": "Torch"
+      "value": "Portal Gun"
     }
   ],
   "name": "Puppet #80",

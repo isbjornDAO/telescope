@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Brown"
     },
     {
       "trait_type": "Body",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Leaf"
+      "value": "Halo"
     },
     {
       "trait_type": "Item",
-      "value": "Microphone"
+      "value": "Torch"
     }
   ],
   "name": "Puppet #464",

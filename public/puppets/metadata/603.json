@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Light Blue"
+      "value": "Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Avax Hoodie"
+      "value": "Cardigan"
     },
     {
       "trait_type": "Head",
@@ -19,11 +19,11 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Angry"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Trucker"
+      "value": "Viking"
     },
     {
       "trait_type": "Item",

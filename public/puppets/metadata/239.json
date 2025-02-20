@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Brown"
+      "value": "Darkest Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Bear 1"
+      "value": "Ledger"
     },
     {
       "trait_type": "Head",
@@ -19,11 +19,11 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Default"
+      "value": "Smile"
     },
     {
       "trait_type": "Hat",
-      "value": "Valve"
+      "value": "Husky Sock"
     },
     {
       "trait_type": "Item",

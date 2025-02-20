@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Jarry Green"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Value"
+      "value": "Astronaut"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Trucker"
+      "value": "Fez"
     },
     {
       "trait_type": "Item",
-      "value": "Cake"
+      "value": "Controller"
     }
   ],
   "name": "Puppet #848",

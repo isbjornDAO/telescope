@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Golf"
+      "value": "Tuxedo"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Trucker"
+      "value": "Hair"
     },
     {
       "trait_type": "Item",
-      "value": "Portal Gun"
+      "value": "Camera"
     }
   ],
   "name": "Puppet #42",

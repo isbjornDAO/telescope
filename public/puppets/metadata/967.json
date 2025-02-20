@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Light Blue"
+      "value": "Dark Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Ledger"
+      "value": "Avax Hoodie"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Specter TV"
+      "value": "Wizard"
     },
     {
       "trait_type": "Item",
-      "value": "Red Coin"
+      "value": "Unicorn"
     }
   ],
   "name": "Puppet #967",

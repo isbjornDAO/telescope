@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Purple"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Napoli"
+      "value": "Avax Hoodie 1"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Angry"
+      "value": "Shocked"
     },
     {
       "trait_type": "Hat",
-      "value": "Hair"
+      "value": "Viking"
     },
     {
       "trait_type": "Item",
-      "value": "Coffee"
+      "value": "Crowbar"
     }
   ],
   "name": "Puppet #579",

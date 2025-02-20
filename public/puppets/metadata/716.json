@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Brown"
+      "value": "Dark Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Bear 2"
+      "value": "Ledger"
     },
     {
       "trait_type": "Head",
@@ -19,11 +19,11 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Angry"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
-      "value": "Royal"
+      "value": "Pentagram"
     },
     {
       "trait_type": "Item",

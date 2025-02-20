@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Destroyer"
+      "value": "Astronaut"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Harry Potter"
+      "value": "Tinfoil"
     },
     {
       "trait_type": "Item",
-      "value": "Unicorn"
+      "value": "Excalibur"
     }
   ],
   "name": "Puppet #313",

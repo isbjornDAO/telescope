@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Purple"
+      "value": "Blue"
     },
     {
       "trait_type": "Body",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Freckles"
     },
     {
       "trait_type": "Hat",
-      "value": "Chef Hat"
+      "value": "Ushanka"
     },
     {
       "trait_type": "Item",
-      "value": "Money Bag"
+      "value": "Excalibur"
     }
   ],
   "name": "Puppet #64",

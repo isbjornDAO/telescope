@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Dark Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Smash"
+      "value": "Robe"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Shocked"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Husky Sock"
+      "value": "Chef Hat"
     },
     {
       "trait_type": "Item",
-      "value": "Spatula"
+      "value": "Excalibur"
     }
   ],
   "name": "Puppet #109",

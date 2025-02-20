@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Purple"
+      "value": "Dark Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Avax Chain"
+      "value": "Peon"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Chef Hat"
+      "value": "Occultist"
     },
     {
       "trait_type": "Item",
-      "value": "Unicorn"
+      "value": "Asahi"
     }
   ],
   "name": "Puppet #906",

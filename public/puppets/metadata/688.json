@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Blue"
+      "value": "Darkest Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Robe"
+      "value": "Smash"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Bow"
+      "value": "Death the Kid"
     },
     {
       "trait_type": "Item",
-      "value": "Football"
+      "value": "Iceblock"
     }
   ],
   "name": "Puppet #688",

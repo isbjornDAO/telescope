@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ly Purple"
+      "value": "Dark Green"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Toasty"
+      "value": "Celtics"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Duck"
+      "value": "Pentagram"
     },
     {
       "trait_type": "Item",
-      "value": "Baguette"
+      "value": "Camera"
     }
   ],
   "name": "Puppet #441",

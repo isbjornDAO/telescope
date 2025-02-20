@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Purple"
+      "value": "Dark Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Avax Hoodie 2"
+      "value": "Fishing Shirt"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Hair"
+      "value": "Chef Hat"
     },
     {
       "trait_type": "Item",
-      "value": "Torch"
+      "value": "Unicorn"
     }
   ],
   "name": "Puppet #494",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Green"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Thinking"
+      "value": "Cowboy"
     },
     {
       "trait_type": "Item",
-      "value": "Telescope"
+      "value": "Cake"
     }
   ],
   "name": "Puppet #962",

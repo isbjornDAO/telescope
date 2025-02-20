@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Brown"
+      "value": "Avax Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Peon"
+      "value": "Smash"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Ang"
+      "value": "Pentagram"
     },
     {
       "trait_type": "Item",
-      "value": "Ferdy"
+      "value": "Telescope"
     }
   ],
   "name": "Puppet #95",

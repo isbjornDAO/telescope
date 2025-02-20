@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Astronaut"
+      "value": "Robe"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Leaf"
+      "value": "Death the Kid"
     },
     {
       "trait_type": "Item",
-      "value": "Football"
+      "value": "Tarot"
     }
   ],
   "name": "Puppet #25",

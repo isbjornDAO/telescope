@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Waifu"
+      "value": "Astronaut"
     },
     {
       "trait_type": "Head",
@@ -19,7 +19,7 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
@@ -27,7 +27,7 @@
     },
     {
       "trait_type": "Item",
-      "value": "Stick"
+      "value": "Football"
     }
   ],
   "name": "Puppet #26",

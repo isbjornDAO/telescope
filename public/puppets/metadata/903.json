@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ly Purple"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Celtics"
+      "value": "Blue Suit"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Top Hat"
+      "value": "Third Eye"
     },
     {
       "trait_type": "Item",
-      "value": "Microphone"
+      "value": "Pickaxe"
     }
   ],
   "name": "Puppet #903",

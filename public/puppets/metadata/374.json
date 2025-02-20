@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Purple"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Churchill"
+      "value": "Fishing Shirt"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Default"
+      "value": "Smile"
     },
     {
       "trait_type": "Hat",
-      "value": "Specter TV"
+      "value": "Top Hat"
     },
     {
       "trait_type": "Item",
-      "value": "Excalibur"
+      "value": "Crowbar"
     }
   ],
   "name": "Puppet #374",

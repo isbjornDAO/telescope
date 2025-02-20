@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Light Blue"
+      "value": "Grey"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Golf"
+      "value": "Balance"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Shocked"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Leaf"
+      "value": "Ice"
     },
     {
       "trait_type": "Item",
-      "value": "Football"
+      "value": "Tarot"
     }
   ],
   "name": "Puppet #942",

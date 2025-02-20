@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Blue"
+      "value": "Dark Green"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Chef"
+      "value": "Criminal"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Pentagram"
+      "value": "Beret"
     },
     {
       "trait_type": "Item",
-      "value": "Stick"
+      "value": "Cake"
     }
   ],
   "name": "Puppet #106",

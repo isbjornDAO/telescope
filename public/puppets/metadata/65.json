@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Criminal"
+      "value": "HEV Suit"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Fez"
+      "value": "Chef Hat"
     },
     {
       "trait_type": "Item",
-      "value": "Asahi"
+      "value": "Money Bag"
     }
   ],
   "name": "Puppet #65",

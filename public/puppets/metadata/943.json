@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Red"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Avax Chain"
+      "value": "Golf"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Viking"
+      "value": "Leaf"
     },
     {
       "trait_type": "Item",
-      "value": "Buzz Controller"
+      "value": "Football"
     }
   ],
   "name": "Puppet #943",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Red"
+      "value": "Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Celtics"
+      "value": "Bear"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Viking"
+      "value": "Chef Hat"
     },
     {
       "trait_type": "Item",
-      "value": "Portal Gun"
+      "value": "iPhone"
     }
   ],
   "name": "Puppet #286",

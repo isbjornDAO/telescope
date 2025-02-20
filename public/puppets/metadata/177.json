@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Darkest Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Bjork"
+      "value": "Avax Chain"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
-      "value": "Red Triangle"
+      "value": "Fez"
     },
     {
       "trait_type": "Item",
-      "value": "Torch"
+      "value": "Baguette"
     }
   ],
   "name": "Puppet #177",

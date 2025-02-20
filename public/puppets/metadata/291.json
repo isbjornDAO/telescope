@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Destroyer"
+      "value": "Golf"
     },
     {
       "trait_type": "Head",
@@ -19,11 +19,11 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Specter TV"
+      "value": "Leaf"
     },
     {
       "trait_type": "Item",

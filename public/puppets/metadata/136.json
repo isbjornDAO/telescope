@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Red"
+      "value": "Darkest Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Jacket"
+      "value": "Avax Chain"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Thinking"
+      "value": "Beret"
     },
     {
       "trait_type": "Item",
-      "value": "Excalibur"
+      "value": "Microphone"
     }
   ],
   "name": "Puppet #136",

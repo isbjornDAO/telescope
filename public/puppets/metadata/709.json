@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Darkest Blue"
+      "value": "Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Tuxedo"
+      "value": "Balance"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Waifu"
+      "value": "Ang"
     },
     {
       "trait_type": "Item",
-      "value": "Bible"
+      "value": "Tarot"
     }
   ],
   "name": "Puppet #709",

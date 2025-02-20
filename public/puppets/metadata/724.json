@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Light Blue"
+      "value": "Ly Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Mambo"
+      "value": "Celtics"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Shocked"
     },
     {
       "trait_type": "Hat",
-      "value": "Trucker"
+      "value": "Hatsune Miku"
     },
     {
       "trait_type": "Item",
-      "value": "Camera"
+      "value": "Torch"
     }
   ],
   "name": "Puppet #724",

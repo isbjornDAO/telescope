@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Jarry Green"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Avax Hoodie"
+      "value": "Bear"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Angry"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
-      "value": "Chef Hat"
+      "value": "Occultist"
     },
     {
       "trait_type": "Item",
-      "value": "Coffee"
+      "value": "Spanner"
     }
   ],
   "name": "Puppet #694",

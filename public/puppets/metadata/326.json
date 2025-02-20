@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Jarry Green"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Value"
+      "value": "Fishing Shirt"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Ice"
+      "value": "Thinking"
     },
     {
       "trait_type": "Item",
-      "value": "Gun"
+      "value": "Camera"
     }
   ],
   "name": "Puppet #326",

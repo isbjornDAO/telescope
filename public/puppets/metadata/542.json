@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Dark Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Team1"
+      "value": "Bear 1"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Hair"
+      "value": "Hatsune Miku"
     },
     {
       "trait_type": "Item",
-      "value": "Microphone"
+      "value": "Money Bag"
     }
   ],
   "name": "Puppet #542",

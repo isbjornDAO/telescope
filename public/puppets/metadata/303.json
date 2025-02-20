@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Grey"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Toasty"
+      "value": "Balance"
     },
     {
       "trait_type": "Head",
@@ -19,7 +19,7 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Shocked"
+      "value": "Smile"
     },
     {
       "trait_type": "Hat",
@@ -27,7 +27,7 @@
     },
     {
       "trait_type": "Item",
-      "value": "Portal Gun"
+      "value": "iPhone"
     }
   ],
   "name": "Puppet #303",

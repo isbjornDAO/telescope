@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Blue"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Bear 1"
+      "value": "Churchill"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Hatsune Miku"
+      "value": "Beret"
     },
     {
       "trait_type": "Item",
-      "value": "Ferdy"
+      "value": "Spatula"
     }
   ],
   "name": "Puppet #632",

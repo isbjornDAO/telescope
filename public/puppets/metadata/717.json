@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Red"
+      "value": "Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Avax Hoodie"
+      "value": "Bear 2"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Default"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Graduate"
+      "value": "Royal"
     },
     {
       "trait_type": "Item",
-      "value": "Wolfie"
+      "value": "Red Coin"
     }
   ],
   "name": "Puppet #717",

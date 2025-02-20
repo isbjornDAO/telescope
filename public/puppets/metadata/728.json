@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "HEV Suit"
+      "value": "Avax Hoodie 1"
     },
     {
       "trait_type": "Head",
@@ -19,7 +19,7 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Smile"
     },
     {
       "trait_type": "Hat",
@@ -27,7 +27,7 @@
     },
     {
       "trait_type": "Item",
-      "value": "Iceblock"
+      "value": "Stick"
     }
   ],
   "name": "Puppet #728",

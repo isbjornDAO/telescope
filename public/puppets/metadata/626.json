@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Avax Hoodie"
+      "value": "Mambo"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Fez"
+      "value": "Ushanka"
     },
     {
       "trait_type": "Item",
-      "value": "Football"
+      "value": "Asahi"
     }
   ],
   "name": "Puppet #626",

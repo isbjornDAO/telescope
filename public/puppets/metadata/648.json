@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Light Blue"
+      "value": "Dark Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Mambo"
+      "value": "Smash"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Hatsune Miku"
+      "value": "Duck"
     },
     {
       "trait_type": "Item",
-      "value": "Unicorn"
+      "value": "Pickaxe"
     }
   ],
   "name": "Puppet #648",

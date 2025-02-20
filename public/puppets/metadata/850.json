@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Brown"
     },
     {
       "trait_type": "Body",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Ushanka"
+      "value": "Ice"
     },
     {
       "trait_type": "Item",
-      "value": "Football"
+      "value": "Torch"
     }
   ],
   "name": "Puppet #850",

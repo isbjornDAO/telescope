@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Jarry Green"
+      "value": "Grey"
     },
     {
       "trait_type": "Body",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Shocked"
     },
     {
       "trait_type": "Hat",
-      "value": "Red Triangle"
+      "value": "Smitty"
     },
     {
       "trait_type": "Item",
-      "value": "iPhone"
+      "value": "Wolfie"
     }
   ],
   "name": "Puppet #358",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Jarry Green"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Value"
+      "value": "Destroyer"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Ang"
+      "value": "Husky Sock"
     },
     {
       "trait_type": "Item",
-      "value": "Unicorn"
+      "value": "Bible"
     }
   ],
   "name": "Puppet #278",

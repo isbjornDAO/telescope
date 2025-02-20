@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Bear 3"
+      "value": "Balance"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Angry"
+      "value": "Smile"
     },
     {
       "trait_type": "Hat",
-      "value": "Alert"
+      "value": "Top Hat"
     },
     {
       "trait_type": "Item",
-      "value": "Spatula"
+      "value": "Green Candle"
     }
   ],
   "name": "Puppet #4",

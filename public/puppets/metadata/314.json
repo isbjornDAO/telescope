@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Purple"
+      "value": "Grey"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Churchill"
+      "value": "Destroyer"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Hatsune Miku"
+      "value": "Harry Potter"
     },
     {
       "trait_type": "Item",
-      "value": "Money Bag"
+      "value": "Unicorn"
     }
   ],
   "name": "Puppet #314",

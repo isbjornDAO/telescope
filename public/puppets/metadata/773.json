@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Jarry Green"
+      "value": "Dark Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Tuxedo"
+      "value": "Balance"
     },
     {
       "trait_type": "Head",
@@ -19,11 +19,11 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Shocked"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Leaf"
+      "value": "Tinfoil"
     },
     {
       "trait_type": "Item",

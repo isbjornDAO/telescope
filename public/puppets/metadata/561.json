@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Darkest Blue"
+      "value": "Grey"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Value"
+      "value": "Celtics"
     },
     {
       "trait_type": "Head",
@@ -19,11 +19,11 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Shocked"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
-      "value": "Death the Kid"
+      "value": "Tinfoil"
     },
     {
       "trait_type": "Item",

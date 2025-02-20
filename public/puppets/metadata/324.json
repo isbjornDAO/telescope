@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Red"
+      "value": "Dark Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Blue Suit"
+      "value": "PBI Jacket"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Duck"
+      "value": "Devil"
     },
     {
       "trait_type": "Item",
-      "value": "Controller"
+      "value": "Fishing Rod"
     }
   ],
   "name": "Puppet #324",

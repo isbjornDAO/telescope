@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Darkest Blue"
+      "value": "Ly Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Chef"
+      "value": "Toasty"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Trucker"
+      "value": "Duck"
     },
     {
       "trait_type": "Item",
-      "value": "Fourth Turning"
+      "value": "Baguette"
     }
   ],
   "name": "Puppet #442",

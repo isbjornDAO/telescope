@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Blue"
+      "value": "Prometheus Pink"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Balance"
+      "value": "Criminal"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Graduate"
+      "value": "DnD Beanie"
     },
     {
       "trait_type": "Item",
-      "value": "Portal Gun"
+      "value": "Telescope"
     }
   ],
   "name": "Puppet #28",

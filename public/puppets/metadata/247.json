@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Avax Red"
+      "value": "Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Napoli"
+      "value": "Avax Hoodie 1"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Fez"
+      "value": "Beret"
     },
     {
       "trait_type": "Item",
-      "value": "Baguette"
+      "value": "Telescope"
     }
   ],
   "name": "Puppet #247",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Blue"
+      "value": "Dark Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Astronaut"
+      "value": "Destroyer"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Dunce"
+      "value": "Red Triangle"
     },
     {
       "trait_type": "Item",
-      "value": "Buzz Controller"
+      "value": "Money Bag"
     }
   ],
   "name": "Puppet #168",

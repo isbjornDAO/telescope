@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ly Purple"
+      "value": "Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Smash"
+      "value": "Inmate"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Default"
+      "value": "Smile"
     },
     {
       "trait_type": "Hat",
-      "value": "Ushanka"
+      "value": "Husky Sock"
     },
     {
       "trait_type": "Item",
-      "value": "Green Candle"
+      "value": "Tarot"
     }
   ],
   "name": "Puppet #294",

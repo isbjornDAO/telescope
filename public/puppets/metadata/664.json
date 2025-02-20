@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Avax Red"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Smash"
+      "value": "Valve"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Duck"
+      "value": "Valve"
     },
     {
       "trait_type": "Item",
-      "value": "Fishing Rod"
+      "value": "Ferdy"
     }
   ],
   "name": "Puppet #664",

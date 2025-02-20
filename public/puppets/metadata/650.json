@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Value"
+      "value": "Toasty"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Harry Potter"
+      "value": "Crown"
     },
     {
       "trait_type": "Item",
-      "value": "Skis"
+      "value": "Red Coin"
     }
   ],
   "name": "Puppet #650",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Destroyer"
+      "value": "Churchill"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Waifu"
+      "value": "Hatsune Miku"
     },
     {
       "trait_type": "Item",
-      "value": "Spatula"
+      "value": "Money Bag"
     }
   ],
   "name": "Puppet #315",

@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Dunce"
+      "value": "Cowboy"
     },
     {
       "trait_type": "Item",
-      "value": "Bear's Sketchbook"
+      "value": "Unicorn"
     }
   ],
   "name": "Puppet #365",

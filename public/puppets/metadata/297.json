@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Red"
+      "value": "Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Fishing Shirt"
+      "value": "Avax Chain"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Default"
+      "value": "Shocked"
     },
     {
       "trait_type": "Hat",
-      "value": "Trucker"
+      "value": "Team1"
     },
     {
       "trait_type": "Item",
-      "value": "Crowbar"
+      "value": "Microphone"
     }
   ],
   "name": "Puppet #297",

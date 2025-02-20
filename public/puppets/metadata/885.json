@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Purple"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Criminal"
+      "value": "Jacket"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Trucker"
+      "value": "Pentagram"
     },
     {
       "trait_type": "Item",
-      "value": "Unicorn"
+      "value": "Wolfie"
     }
   ],
   "name": "Puppet #885",

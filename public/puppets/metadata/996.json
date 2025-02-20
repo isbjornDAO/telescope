@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Ledger"
+      "value": "Napoli"
     },
     {
       "trait_type": "Head",
@@ -19,11 +19,11 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Halo"
+      "value": "Third Eye"
     },
     {
       "trait_type": "Item",

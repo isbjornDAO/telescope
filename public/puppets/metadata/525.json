@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Light Blue"
+      "value": "Jarry Green"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Astronaut"
+      "value": "Cardigan"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Leaf"
+      "value": "Rain"
     },
     {
       "trait_type": "Item",
-      "value": "Microphone"
+      "value": "Tarot"
     }
   ],
   "name": "Puppet #525",

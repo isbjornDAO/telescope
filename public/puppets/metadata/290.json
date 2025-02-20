@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Jarry Green"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Golf"
+      "value": "Snowdog"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Leaf"
+      "value": "Tinfoil"
     },
     {
       "trait_type": "Item",
-      "value": "Red Coin"
+      "value": "Microphone"
     }
   ],
   "name": "Puppet #290",

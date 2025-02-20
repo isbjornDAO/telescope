@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Dark Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Bear"
+      "value": "Jacket"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Rain"
+      "value": "Royal"
     },
     {
       "trait_type": "Item",
-      "value": "Football"
+      "value": "Green Candle"
     }
   ],
   "name": "Puppet #642",

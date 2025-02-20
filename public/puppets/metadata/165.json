@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Red"
+      "value": "Avax Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Astronaut"
+      "value": "Spiderman"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Smile"
     },
     {
       "trait_type": "Hat",
-      "value": "Graduate"
+      "value": "Alert"
     },
     {
       "trait_type": "Item",
-      "value": "Iceblock"
+      "value": "Paintbrush"
     }
   ],
   "name": "Puppet #165",

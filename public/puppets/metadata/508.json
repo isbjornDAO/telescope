@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Waifu"
+      "value": "Inmate"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Viking"
+      "value": "Red Triangle"
     },
     {
       "trait_type": "Item",
-      "value": "Stick"
+      "value": "Iceblock"
     }
   ],
   "name": "Puppet #508",

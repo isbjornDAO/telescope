@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Green"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Toasty"
+      "value": "Balance"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Shocked"
+      "value": "Smile"
     },
     {
       "trait_type": "Hat",
-      "value": "Occultist"
+      "value": "Chef Hat"
     },
     {
       "trait_type": "Item",
-      "value": "Rose"
+      "value": "Portal Gun"
     }
   ],
   "name": "Puppet #201",

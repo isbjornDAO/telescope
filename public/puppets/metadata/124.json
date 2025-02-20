@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Light Blue"
+      "value": "Dark Brown"
     },
     {
       "trait_type": "Body",
@@ -19,7 +19,7 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Default"
+      "value": "Freckles"
     },
     {
       "trait_type": "Hat",
@@ -27,7 +27,7 @@
     },
     {
       "trait_type": "Item",
-      "value": "Asahi"
+      "value": "Spanner"
     }
   ],
   "name": "Puppet #124",

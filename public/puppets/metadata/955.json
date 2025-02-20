@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Avax Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Tuxedo"
+      "value": "Inmate"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Top Hat"
+      "value": "Third Eye"
     },
     {
       "trait_type": "Item",
-      "value": "Iceblock"
+      "value": "Money Bag"
     }
   ],
   "name": "Puppet #955",

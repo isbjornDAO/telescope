@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Blue Suit"
+      "value": "Avax Hoodie"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Fez"
+      "value": "Harry Potter"
     },
     {
       "trait_type": "Item",
-      "value": "Microphone"
+      "value": "Hot Chocolate"
     }
   ],
   "name": "Puppet #514",

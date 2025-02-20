@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Blue"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Tuxedo"
+      "value": "HEV Suit"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Angry"
+      "value": "Shocked"
     },
     {
       "trait_type": "Hat",
-      "value": "Chef Hat"
+      "value": "Leaf"
     },
     {
       "trait_type": "Item",
-      "value": "Unicorn"
+      "value": "Coffee"
     }
   ],
   "name": "Puppet #672",

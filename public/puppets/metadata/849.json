@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Brown"
+      "value": "Jarry Green"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Toasty"
+      "value": "Valve"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Ice"
+      "value": "Trucker"
     },
     {
       "trait_type": "Item",
-      "value": "Torch"
+      "value": "Cake"
     }
   ],
   "name": "Puppet #849",

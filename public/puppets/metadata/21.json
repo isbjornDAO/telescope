@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ly Purple"
+      "value": "Dark Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "HEV Suit"
+      "value": "Magic 8 Ball"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Hair"
+      "value": "Fishing Hat"
     },
     {
       "trait_type": "Item",
-      "value": "Unicorn"
+      "value": "Buzz Controller"
     }
   ],
   "name": "Puppet #21",

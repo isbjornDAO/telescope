@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Darkest Blue"
+      "value": "Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Peon"
+      "value": "Magic 8 Ball"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Third Eye"
+      "value": "Rain"
     },
     {
       "trait_type": "Item",
-      "value": "Bible"
+      "value": "Keyboard"
     }
   ],
   "name": "Puppet #533",

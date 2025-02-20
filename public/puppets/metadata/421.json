@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Bjork"
+      "value": "Smash"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Shocked"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Cowboy"
+      "value": "Fishing Hat"
     },
     {
       "trait_type": "Item",
-      "value": "Pickaxe"
+      "value": "Wolfie"
     }
   ],
   "name": "Puppet #421",

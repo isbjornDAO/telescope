@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Brown"
+      "value": "Jarry Green"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "PBI Jacket"
+      "value": "Peon"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Ang"
+      "value": "Devil"
     },
     {
       "trait_type": "Item",
-      "value": "Skis"
+      "value": "North West"
     }
   ],
   "name": "Puppet #964",

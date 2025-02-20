@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Brown"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Robe"
+      "value": "Bear"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Ice"
+      "value": "Halo"
     },
     {
       "trait_type": "Item",
-      "value": "Football"
+      "value": "Controller"
     }
   ],
   "name": "Puppet #991",

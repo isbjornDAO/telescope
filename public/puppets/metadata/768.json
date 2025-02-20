@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Dark Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Churchill"
+      "value": "Fishing Shirt"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Trucker"
+      "value": "Wizard"
     },
     {
       "trait_type": "Item",
-      "value": "Unicorn"
+      "value": "North West"
     }
   ],
   "name": "Puppet #768",

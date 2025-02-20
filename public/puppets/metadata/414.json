@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ly Purple"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Spiderman"
+      "value": "Singlet"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Wizard"
+      "value": "Leaf"
     },
     {
       "trait_type": "Item",
-      "value": "Paintbrush"
+      "value": "Torch"
     }
   ],
   "name": "Puppet #414",

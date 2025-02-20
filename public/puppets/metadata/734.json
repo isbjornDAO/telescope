@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Dark Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Astronaut"
+      "value": "Avax Hoodie 1"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Crown"
+      "value": "Red Triangle"
     },
     {
       "trait_type": "Item",
-      "value": "Controller"
+      "value": "Green Candle"
     }
   ],
   "name": "Puppet #734",

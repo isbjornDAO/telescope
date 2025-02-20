@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Red"
+      "value": "Dark Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Inmate"
+      "value": "Destroyer"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Leaf"
+      "value": "Hatsune Miku"
     },
     {
       "trait_type": "Item",
-      "value": "Red Coin"
+      "value": "Wolfie"
     }
   ],
   "name": "Puppet #563",

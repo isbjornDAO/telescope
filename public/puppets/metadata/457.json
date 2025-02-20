@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Avax Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Bjork"
+      "value": "Napoli"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Angry"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
-      "value": "Bow"
+      "value": "Halo"
     },
     {
       "trait_type": "Item",
-      "value": "Spanner"
+      "value": "Gun"
     }
   ],
   "name": "Puppet #457",

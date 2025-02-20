@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ferdy Orange"
+      "value": "Dark Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Jacket"
+      "value": "Astronaut"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Freckles"
     },
     {
       "trait_type": "Hat",
-      "value": "Royal"
+      "value": "Graduate"
     },
     {
       "trait_type": "Item",
-      "value": "Cake"
+      "value": "Iceblock"
     }
   ],
   "name": "Puppet #166",

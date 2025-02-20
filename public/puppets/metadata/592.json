@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Darkest Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Avax Hoodie 2"
+      "value": "Team1"
     },
     {
       "trait_type": "Head",
@@ -19,11 +19,11 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Angry"
+      "value": "Shocked"
     },
     {
       "trait_type": "Hat",
-      "value": "Tinfoil"
+      "value": "Husky Sock"
     },
     {
       "trait_type": "Item",

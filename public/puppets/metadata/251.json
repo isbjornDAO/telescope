@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Dark Brown"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "I <3 AVAX"
+      "value": "Spiderman"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Top Hat"
+      "value": "Hair"
     },
     {
       "trait_type": "Item",
-      "value": "Portal Gun"
+      "value": "Controller"
     }
   ],
   "name": "Puppet #251",

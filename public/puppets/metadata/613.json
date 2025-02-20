@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Brown"
+      "value": "Grey"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Blue Suit"
+      "value": "Criminal"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
-      "value": "Third Eye"
+      "value": "Cowboy"
     },
     {
       "trait_type": "Item",
-      "value": "Manly P. Hall"
+      "value": "Skis"
     }
   ],
   "name": "Puppet #613",

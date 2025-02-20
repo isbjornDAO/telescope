@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Ly Purple"
+      "value": "Ferdy Orange"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Criminal"
+      "value": "Bear 3"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Angry"
+      "value": "Smile"
     },
     {
       "trait_type": "Hat",
-      "value": "Waifu"
+      "value": "Tinfoil"
     },
     {
       "trait_type": "Item",
-      "value": "Baguette"
+      "value": "Football"
     }
   ],
   "name": "Puppet #919",

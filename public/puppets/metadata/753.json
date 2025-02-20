@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Chef"
+      "value": "Astronaut"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Thinking"
+      "value": "Beret"
     },
     {
       "trait_type": "Item",
-      "value": "Pickaxe"
+      "value": "Asahi"
     }
   ],
   "name": "Puppet #753",

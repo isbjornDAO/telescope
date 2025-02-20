@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Dark Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Celtics"
+      "value": "Singlet"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Viking"
+      "value": "Duck"
     },
     {
       "trait_type": "Item",
-      "value": "Pickaxe"
+      "value": "Spatula"
     }
   ],
   "name": "Puppet #894",

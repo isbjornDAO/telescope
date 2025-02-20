@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Jarry Green"
+      "value": "Brown"
     },
     {
       "trait_type": "Body",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Hair"
+      "value": "Cowboy"
     },
     {
       "trait_type": "Item",
-      "value": "Paintbrush"
+      "value": "Microphone"
     }
   ],
   "name": "Puppet #762",

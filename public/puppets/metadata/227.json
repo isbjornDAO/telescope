@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Grey"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Spiderman"
+      "value": "Astronaut"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Unfazed"
+      "value": "Default"
     },
     {
       "trait_type": "Hat",
-      "value": "Trucker"
+      "value": "Dunce"
     },
     {
       "trait_type": "Item",
-      "value": "Cake"
+      "value": "Green Candle"
     }
   ],
   "name": "Puppet #227",

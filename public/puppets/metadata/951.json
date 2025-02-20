@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Blue"
+      "value": "Ly Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Toasty"
+      "value": "Balance"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Harry Potter"
+      "value": "Royal"
     },
     {
       "trait_type": "Item",
-      "value": "Spanner"
+      "value": "Asahi"
     }
   ],
   "name": "Puppet #951",

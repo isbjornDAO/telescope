@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Avax Red"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Robe"
+      "value": "Bear"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Smile"
+      "value": "Unfazed"
     },
     {
       "trait_type": "Hat",
-      "value": "Chef Hat"
+      "value": "Leaf"
     },
     {
       "trait_type": "Item",
-      "value": "Asahi"
+      "value": "Microphone"
     }
   ],
   "name": "Puppet #616",

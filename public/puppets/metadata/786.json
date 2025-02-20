@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Brown"
+      "value": "Bear Blue"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Bear"
+      "value": "Snowdog"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Freckles"
+      "value": "Shocked"
     },
     {
       "trait_type": "Hat",
-      "value": "Third Eye"
+      "value": "Top Hat"
     },
     {
       "trait_type": "Item",
-      "value": "Bible"
+      "value": "Money Bag"
     }
   ],
   "name": "Puppet #786",

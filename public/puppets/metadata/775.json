@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Darkest Blue"
+      "value": "Dark Brown"
     },
     {
       "trait_type": "Body",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Ushanka"
+      "value": "Death the Kid"
     },
     {
       "trait_type": "Item",
-      "value": "Camera"
+      "value": "Bear's Sketchbook"
     }
   ],
   "name": "Puppet #775",

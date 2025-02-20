@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Value"
+      "value": "PBI Jacket"
     },
     {
       "trait_type": "Head",
@@ -19,15 +19,15 @@
     },
     {
       "trait_type": "Emote",
-      "value": "Default"
+      "value": "Angry"
     },
     {
       "trait_type": "Hat",
-      "value": "Wizard"
+      "value": "Husky Sock"
     },
     {
       "trait_type": "Item",
-      "value": "Spanner"
+      "value": "Skis"
     }
   ],
   "name": "Puppet #432",

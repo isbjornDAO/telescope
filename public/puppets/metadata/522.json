@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Dark Red"
+      "value": "Avax Red"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Cardigan"
+      "value": "Toasty"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Team1"
+      "value": "DnD Beanie"
     },
     {
       "trait_type": "Item",
-      "value": "Tarot"
+      "value": "Spanner"
     }
   ],
   "name": "Puppet #522",

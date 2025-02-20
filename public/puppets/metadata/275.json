@@ -3,7 +3,7 @@
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Jarry Green"
+      "value": "Dark Purple"
     },
     {
       "trait_type": "Body",
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "Shirt",
-      "value": "Ledger"
+      "value": "Pot"
     },
     {
       "trait_type": "Head",
@@ -23,11 +23,11 @@
     },
     {
       "trait_type": "Hat",
-      "value": "Royal"
+      "value": "Husky Sock"
     },
     {
       "trait_type": "Item",
-      "value": "Coffee"
+      "value": "Torch"
     }
   ],
   "name": "Puppet #275",
