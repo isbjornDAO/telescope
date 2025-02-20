@@ -1,0 +1,35 @@
+{
+  "description": "Puppets on a mission to the Arctic.",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "???"
+    },
+    {
+      "trait_type": "Body",
+      "value": "???"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "???"
+    },
+    {
+      "trait_type": "Head",
+      "value": "???"
+    },
+    {
+      "trait_type": "Emote",
+      "value": "???"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "???"
+    },
+    {
+      "trait_type": "Item",
+      "value": "???"
+    }
+  ],
+  "name": "Unrevealed Puppet",
+  "image": "https://telescope.isbjorn.co.nz/puppets/images/unrevealed.gif"
+}
