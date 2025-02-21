@@ -3,7 +3,7 @@
 import { useAccount, usePrepareTransactionRequest, useReadContract, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
 import { ConnectButton } from "@/components/connect-button";
 import { WLRoundIndicator } from "@/components/wl-round-indicator";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { MintCounter } from "@/components/mint-counter";
 import { useUserStats } from "@/hooks/use-user-stats";
 import { Address, encodeFunctionData, parseEther } from "viem";
@@ -13,7 +13,7 @@ import { Button } from "./ui/button";
 import { puppets_nft_abi, puppets_nft_address } from "@/lib/constants";
 import { Loader } from "@/components/icons/loader";
 import { useToast } from "@/hooks/use-toast";
-import { avalanche, avalancheFuji } from "wagmi/chains";
+import { avalanche } from "wagmi/chains";
 
 
 export function MintWindow() {
@@ -35,9 +35,9 @@ export function MintWindow() {
     const [numMintedThisPhase, setNumMintedThisPhase] = useState(0);
     const [whiteListString, setWhiteListString] = useState<string>('Connect your wallet to see if you got WL');
 
-    const [stickerNum, setStickerNum] = useState(Math.floor(Math.random() * 6) + 1);
+    const [stickerNum,] = useState(Math.floor(Math.random() * 6) + 1);
 
-    const { data: userStats, isLoading: isUserStatsLoading } = useUserStats(
+    const { data: userStats } = useUserStats(
         address as Address,
         isConnected
     );
@@ -96,7 +96,7 @@ export function MintWindow() {
 
     useEffect(() => {
         fetchIsMinting();
-    }, []);
+    }, [fetchIsMinting]);
 
     useEffect(() => {
         if (!userStats?.discordId) {
@@ -128,7 +128,7 @@ export function MintWindow() {
         const price = puppetPrices[mintPhase];
         const total = BigInt(Math.round(price * 1e18)) * BigInt(numToMint);
         setTotalCost(Number(total) / 1e18);
-    }, [numToMint, mintPhase]);
+    }, [numToMint, mintPhase, puppetPrices]);
 
     useEffect(() => {
         if (mintPhaseData !== undefined) {
@@ -162,7 +162,7 @@ export function MintWindow() {
         if (isConnected) {
             fetchWhiteList();
         }
-    }, [address]);
+    }, [address, fetchWhiteList, isConnected]);
 
     useEffect(() => {
         if (whiteListData !== undefined) {
@@ -188,7 +188,7 @@ export function MintWindow() {
 
             return () => clearInterval(interval);
         }
-    }, [fetchNumMintedThisPhase]);
+    }, [address, fetchNumMintedThisPhase, isConnected]);
 
     const mintTransactionData = () => {
         if (!address || numToMint <= 0) return null;
@@ -203,7 +203,7 @@ export function MintWindow() {
     };
 
     const { data: mintRequest } = usePrepareTransactionRequest({
-        chainId: 43113,
+        chainId: chainId,
         account: address,
         to: puppets_nft_address,
         data: mintTransactionData() ?? undefined,
@@ -212,7 +212,7 @@ export function MintWindow() {
 
     const { sendTransaction: sendMintTx, isPending: isMintPending, data: mintTxHash } = useSendTransaction();
 
-    const { data: mintReceipt, isError: mintError, isLoading: isConfirming, isSuccess: mintSuccess } = useWaitForTransactionReceipt({ hash: mintTxHash });
+    const { isError: mintError, isLoading: isConfirming, isSuccess: mintSuccess } = useWaitForTransactionReceipt({ hash: mintTxHash });
 
     const handleMint = async () => {
         if (mintRequest) {
@@ -254,7 +254,7 @@ export function MintWindow() {
         fetchNumMintedThisPhase();
         fetchWhiteList();
         fetchMintPhase();
-    }, [mintSuccess, mintError]);
+    }, [mintSuccess, mintError, fetchMintPhase, fetchNumMinted, fetchNumMintedThisPhase, fetchWhiteList, mintTxHash, toast]);
 
     return canAccessMinting && isMinting
         ? (
@@ -263,6 +263,7 @@ export function MintWindow() {
                     <img
                         className="w-[300px] border-zinc-300 border-2"
                         src="puppets/images/unrevealed.gif"
+                        alt="unrevealed puppet"
                     />
                     <span className="font-semibold text-zinc-500">{`${numMinted} / ${MAX_SUPPLY} minted`}</span>
                 </div>
@@ -297,6 +298,7 @@ export function MintWindow() {
                 <img
                     className="w-[300px] h-[300px] object-contain object-center mx-auto"
                     src={`stickers/sticker${stickerNum}.png`}
+                    alt="cute student puppet"
                 />
                 <div className="mt-2 md:mt-0 flex-1 text-center flex flex-col gap-1 items-center">
                     <div className="flex flex-col gap-1 items-center mb-6">

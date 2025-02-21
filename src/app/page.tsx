@@ -167,7 +167,7 @@ export default function Home() {
         <Tabs defaultValue="projects"
           className="flex flex-col gap-4"
           onValueChange={(value) => {
-            // @ts-ignore
+            // @ts-expect-error value should be within the type of tab defined above
             setActiveTab(value)
           }}>
           <div className="flex items-start md:items-center justify-between flex-col md:flex-row gap-4">
