@@ -17,7 +17,7 @@ import { avalanche, avalancheFuji } from "wagmi/chains";
 
 
 export function MintWindow() {
-    const chainId = avalancheFuji.id; // = avalanche.id // testnet id for dev, switch to avalanche for prod
+    const chainId = avalanche.id;
     const { address, isConnected } = useAccount();
     const { toast } = useToast();
 
@@ -34,6 +34,8 @@ export function MintWindow() {
     const [isWhiteList, setIsWhiteList] = useState(false);
     const [numMintedThisPhase, setNumMintedThisPhase] = useState(0);
     const [whiteListString, setWhiteListString] = useState<string>('Connect your wallet to see if you got WL');
+
+    const [stickerNum, setStickerNum] = useState(Math.floor(Math.random() * 6) + 1);
 
     const { data: userStats, isLoading: isUserStatsLoading } = useUserStats(
         address as Address,
@@ -260,7 +262,7 @@ export function MintWindow() {
                 <div className="flex flex-col gap-2 items-center">
                     <img
                         className="w-[300px] border-zinc-300 border-2"
-                        src="example_puppet.png"
+                        src="puppets/images/unrevealed.gif"
                     />
                     <span className="font-semibold text-zinc-500">{`${numMinted} / ${MAX_SUPPLY} minted`}</span>
                 </div>
@@ -293,8 +295,8 @@ export function MintWindow() {
         ) : (
             <div className="w-full flex flex-col md:flex-row gap-1 pl-12 pr-8 items-center">
                 <img
-                    className="w-[300px] border-zinc-300 border-2"
-                    src="example_puppet.png"
+                    className="w-[300px] h-[300px] object-contain object-center mx-auto"
+                    src={`stickers/sticker${stickerNum}.png`}
                 />
                 <div className="mt-2 md:mt-0 flex-1 text-center flex flex-col gap-1 items-center">
                     <div className="flex flex-col gap-1 items-center mb-6">

@@ -164,7 +164,12 @@ export default function Home() {
   return (
     <div className="w-full">
       <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16">
-        <Tabs defaultValue="projects" className="flex flex-col gap-4" onValueChange={(value) => setActiveTab(value)}>
+        <Tabs defaultValue="projects"
+          className="flex flex-col gap-4"
+          onValueChange={(value) => {
+            // @ts-ignore
+            setActiveTab(value)
+          }}>
           <div className="flex items-start md:items-center justify-between flex-col md:flex-row gap-4">
             <div className="flex items-center gap-2">
               <TabsList className="gap-2 bg-transparent m-0 p-0">

@@ -1,14 +1,7 @@
-export const puppets_nft_address = "0x50d525E373260F2B7Bb0fcAdb8DEa4f8DB171d9C";
+export const puppets_nft_address = "0xc1a5507194a1e70c35678f53c48c3934abbcc140";
 
 export const puppets_nft_abi = [
-  {
-    inputs: [
-      { internalType: "string", name: "_name", type: "string" },
-      { internalType: "string", name: "_symbol", type: "string" },
-    ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
+  { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   {
     inputs: [
       { internalType: "uint256", name: "numerator", type: "uint256" },
@@ -196,9 +189,23 @@ export const puppets_nft_abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "artistAddress",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [{ internalType: "address", name: "owner", type: "address" }],
     name: "balanceOf",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "daoAddress",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
     stateMutability: "view",
     type: "function",
   },
@@ -212,6 +219,13 @@ export const puppets_nft_abi = [
       { internalType: "uint32", name: "startTime", type: "uint32" },
       { internalType: "uint256", name: "phaseLimit", type: "uint256" },
     ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "devAddress",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
     stateMutability: "view",
     type: "function",
   },
@@ -341,6 +355,13 @@ export const puppets_nft_abi = [
       { internalType: "uint256", name: "tokenId", type: "uint256" },
     ],
     name: "rescueNFT",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "reveal",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
