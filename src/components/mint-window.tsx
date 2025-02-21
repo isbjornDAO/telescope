@@ -90,9 +90,9 @@ export function MintWindow() {
 
     useEffect(() => {
         if (isMintingData !== undefined) {
-            setIsMinting(Boolean(isMintingData));
+            setIsMinting(Boolean(isMintingData) && mintPhase > 0);
         }
-    }, [isMintingData]);
+    }, [isMintingData, mintPhase]);
 
     useEffect(() => {
         fetchIsMinting();
@@ -111,6 +111,8 @@ export function MintWindow() {
             setMaxAllowedToMint(1 - numMintedThisPhase);
         } else if (mintPhase === 5) {
             setMaxAllowedToMint(10 - numMintedThisPhase);
+        } else if (mintPhase === 0) {
+            setMaxAllowedToMint(0);
         } else {
             setMaxAllowedToMint(2 - numMintedThisPhase);
         }
