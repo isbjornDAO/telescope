@@ -267,7 +267,8 @@ export function MintWindow() {
 
                     <br />
                     <MintCounter value={numToMint} setValue={setNumToMint} max={maxAllowedToMint} />
-                    <span className="text-zinc-500 text-xs mb-1">{`max: ${maxAllowedToMint}`}</span>
+                    <span className="text-zinc-500 text-xs mb-0">{`max: ${maxAllowedToMint}`}</span>
+                    <span className="text-zinc-500 text-xs mb-2">2 Avax ea.</span>
                     {isConnected
                         ? (<Button
                             className="flex snow-button max-w-[150px] items-center justify-center relative min-h-[36px]"
