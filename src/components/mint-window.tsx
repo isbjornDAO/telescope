@@ -99,7 +99,7 @@ export function MintWindow() {
 
     useEffect(() => {
         if (!userStats?.discordId) {
-            setCanAccessMinting(false);
+            setCanAccessMinting(true); // allow everyone now (flip to false to re gate via discord)
         } else {
             setCanAccessMinting(true);
         }
@@ -119,8 +119,8 @@ export function MintWindow() {
 
     useEffect(() => {
         const price = puppetPrices[mintPhase];
-        const total = BigInt(Math.round(price * 1e18)) * BigInt(numToMint);
-        setTotalCost(Number(total) / 1e18);
+        const total = BigInt(price) * BigInt(numToMint) * BigInt(1e18);
+        setTotalCost(Number(total / BigInt(1e18)));
     }, [numToMint, mintPhase, puppetPrices]);
 
     useEffect(() => {
@@ -187,7 +187,6 @@ export function MintWindow() {
         if (!address || numToMint <= 0) return null;
 
         const functionName = mintPhase === 1 ? 'wlMint' : 'publicMint';
-
         return encodeFunctionData({
             abi: puppets_nft_abi,
             functionName,
