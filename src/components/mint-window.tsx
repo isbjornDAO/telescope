@@ -2,7 +2,6 @@
 
 import { useAccount, usePrepareTransactionRequest, useReadContract, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
 import { ConnectButton } from "@/components/connect-button";
-import { WLRoundIndicator } from "@/components/wl-round-indicator";
 import { useEffect, useState } from "react";
 import { MintCounter } from "@/components/mint-counter";
 import { useUserStats } from "@/hooks/use-user-stats";
@@ -14,6 +13,7 @@ import { puppets_nft_abi, puppets_nft_address } from "@/lib/constants";
 import { Loader } from "@/components/icons/loader";
 import { useToast } from "@/hooks/use-toast";
 import { avalanche } from "wagmi/chains";
+import ProgressBar from "@/components/progress-bar";
 
 
 export function MintWindow() {
@@ -31,9 +31,8 @@ export function MintWindow() {
     const [maxAllowedToMint, setMaxAllowedToMint] = useState<number>(10);
     const [totalCost, setTotalCost] = useState(0);
 
-    const [isWhiteList, setIsWhiteList] = useState(false);
+    const [, setIsWhiteList] = useState(false);
     const [numMintedThisPhase, setNumMintedThisPhase] = useState(0);
-    const [whiteListString, setWhiteListString] = useState<string>('Connect your wallet to see if you got WL');
 
     const [stickerNum,] = useState(Math.floor(Math.random() * 6) + 1);
 
@@ -117,14 +116,6 @@ export function MintWindow() {
             setMaxAllowedToMint(2 - numMintedThisPhase);
         }
     }, [mintPhase, numMintedThisPhase]);
-
-    useEffect(() => {
-        if (isWhiteList) {
-            setWhiteListString(`You are on the WL. You can also mint in each round after`);
-        } else {
-            setWhiteListString(`You are not on the list. Feel free to mint in the public rounds`);
-        }
-    }, [isWhiteList]);
 
     useEffect(() => {
         const price = puppetPrices[mintPhase];
@@ -271,16 +262,17 @@ export function MintWindow() {
                 </div>
                 <div className="mt-2 md:mt-0 flex-1 text-center flex flex-col gap-1 items-center">
                     <h2 className="text-2xl font-bold mb-2">Mint a puppet</h2>
-                    <div className="w-[300px] mb-2">{`Welcome new student to Bear University! ${whiteListString}`}</div>
-                    <WLRoundIndicator currentPhase={mintPhase} prices={puppetPrices} />
+                    <div className="w-[300px] mb-2">{`Welcome new student to Bear University!`}</div>
+
+                    <ProgressBar progress={numMinted} base={1000} />
+
                     <br />
                     <MintCounter value={numToMint} setValue={setNumToMint} max={maxAllowedToMint} />
                     <span className="text-zinc-500 text-xs mb-1">{`max: ${maxAllowedToMint}`}</span>
-                    {/* <div className="font-semibold text-sm mb-1">{`Total: ${totalCost} AVAX`}</div> */}
                     {isConnected
                         ? (<Button
                             className="flex snow-button max-w-[150px] items-center justify-center relative min-h-[36px]"
-                            disabled={isMintPending || isConfirming || maxAllowedToMint === 0}
+                            disabled={isMintPending || isConfirming || maxAllowedToMint === 0 || numMinted === 1000}
                             onClick={handleMint}>
                             <div className="flex items-center justify-center w-full h-full">
                                 {isMintPending || isConfirming ? (
@@ -288,7 +280,7 @@ export function MintWindow() {
                                         <Loader />
                                     </div>
                                 ) : (
-                                    totalCost !== 0 ? `Mint (${totalCost} AVAX)` : 'Mint'
+                                    'Mint'
                                 )}
                             </div>
                         </Button>)
