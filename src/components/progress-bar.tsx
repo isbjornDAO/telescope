@@ -7,7 +7,7 @@ interface ProgressBarProps {
     base: number;
 }
 
-const ProgressBar = ({ progress, base }: ProgressBarProps) => {
+export const ProgressBar = ({ progress, base }: ProgressBarProps) => {
     const percentage = useMemo(() => (progress / base) * 100, [progress, base]);
 
     return (
@@ -19,5 +19,3 @@ const ProgressBar = ({ progress, base }: ProgressBarProps) => {
         </div>
     );
 };
-
-export default ProgressBar;

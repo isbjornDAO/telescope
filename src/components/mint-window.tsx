@@ -13,7 +13,8 @@ import { puppets_nft_abi, puppets_nft_address } from "@/lib/constants";
 import { Loader } from "@/components/icons/loader";
 import { useToast } from "@/hooks/use-toast";
 import { avalanche } from "wagmi/chains";
-import ProgressBar from "@/components/progress-bar";
+import { ProgressBar } from "@/components/progress-bar";
+import { MintCountDown } from "@/components/mint-count-down";
 
 
 export function MintWindow() {
@@ -250,20 +251,20 @@ export function MintWindow() {
 
     return canAccessMinting && isMinting
         ? (
-            <div className="w-full flex flex-col md:flex-row gap-1 pl-12 pr-8 items-center">
+            <div className="w-full flex flex-col md:flex-row gap-1 px-6 md:pl-12 md:pr-8 items-center">
                 <div className="flex flex-col gap-2 items-center">
                     <img
                         className="w-[300px] border-zinc-300 border-2"
                         src="puppets/images/unrevealed.gif"
                         alt="unrevealed puppet"
                     />
-                    <span className="font-semibold text-zinc-500">{`${numMinted} / ${MAX_SUPPLY} minted`}</span>
+                    <span className="font-semibold text-zinc-500">{`${numMinted} minted`}</span>
                 </div>
                 <div className="mt-2 md:mt-0 flex-1 text-center flex flex-col gap-1 items-center">
                     <h2 className="text-2xl font-bold mb-2">Mint a puppet</h2>
                     <div className="w-[300px] mb-2">{`Welcome new student to Bear University!`}</div>
 
-                    <ProgressBar progress={numMinted} base={1000} />
+                    <MintCountDown end={1740348000} />
 
                     <br />
                     <MintCounter value={numToMint} setValue={setNumToMint} max={maxAllowedToMint} />
