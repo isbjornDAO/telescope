@@ -13,7 +13,6 @@ import { puppets_nft_abi, puppets_nft_address } from "@/lib/constants";
 import { Loader } from "@/components/icons/loader";
 import { useToast } from "@/hooks/use-toast";
 import { avalanche } from "wagmi/chains";
-import { ProgressBar } from "@/components/progress-bar";
 import { MintCountDown } from "@/components/mint-count-down";
 
 
@@ -273,7 +272,7 @@ export function MintWindow() {
                     {isConnected
                         ? (<Button
                             className="flex snow-button max-w-[150px] items-center justify-center relative min-h-[36px]"
-                            disabled={isMintPending || isConfirming || maxAllowedToMint === 0 || numMinted === 1000}
+                            disabled={isMintPending || isConfirming || maxAllowedToMint === 0 || numMinted === MAX_SUPPLY}
                             onClick={handleMint}>
                             <div className="flex items-center justify-center w-full h-full">
                                 {isMintPending || isConfirming ? (
