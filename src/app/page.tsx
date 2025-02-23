@@ -19,7 +19,7 @@ import { useSession } from "next-auth/react";
 import { ProjectCard } from '@/components/project-card';
 import { DisclaimerAlert } from "@/components/disclaimer-alert";
 import { BearUniversityAlert } from "@/components/bear-university-alert";
-import { MintWindow } from "@/components/mint-window";
+//import { MintWindow } from "@/components/mint-window";
 
 interface VotingStatusProps {
   isLocked: boolean;
@@ -196,13 +196,13 @@ export default function Home() {
                   </Badge>
                   Artists
                 </TabsTrigger>
-                <TabsTrigger
+                {/* <TabsTrigger
                   value="mint"
                   className="px-4 py-2 font-bold text-md bg-white border-white border-2"
                   onClick={() => { setActiveTab("mint") }}
                 >
                   Mint
-                </TabsTrigger>
+                </TabsTrigger> */}
               </TabsList>
             </div>
             {activeTab !== "mint" && (isConnected ? (
@@ -307,11 +307,11 @@ export default function Home() {
               </a>
             </div>
           </TabsContent>
-          <TabsContent value="mint" className="tab-content">
+          {/* <TabsContent value="mint" className="tab-content">
             <div className="w-full bg-white rounded-lg py-16 shadow flex items-center justify-center flex-col gap-4">
               <MintWindow />
             </div>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </div>
     </div>
