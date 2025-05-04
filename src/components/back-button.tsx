@@ -12,13 +12,21 @@ export function BackButton() {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Only show on profile, news, and mint pages
-  if (!pathname.startsWith("/profile") && !pathname.startsWith("/news")) {
+  if (
+    !pathname.startsWith("/profile") &&
+    !pathname.startsWith("/news") &&
+    !pathname.startsWith("/admin")
+  ) {
     return null;
   }
 
   return (
     <Link href="/">
-      <Button variant="outline" className="gap-2" size={isMobile ? "icon" : "default"}>
+      <Button
+        variant="outline"
+        className="gap-2"
+        size={isMobile ? "icon" : "default"}
+      >
         <Home className="h-4 w-4" />
         {isMobile ? "" : "Back Home"}
       </Button>
