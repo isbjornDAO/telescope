@@ -8,6 +8,7 @@ const voteSchema = z.object({
   walletAddress: z
     .string()
     .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
+  type: z.enum(["like", "dislike"]),
 });
 
 export async function POST(
@@ -17,7 +18,7 @@ export async function POST(
   console.log("🔵 Vote request received", { projectId: params.projectId });
 
   // === Voting Lock Start ===
-  const votingLocked = true; // Set to true to lock voting. Comment out or set to false to unlock.
+  const votingLocked = false; // Set to true to lock voting. Comment out or set to false to unlock.
 
   if (votingLocked) {
     return NextResponse.json(
@@ -30,7 +31,7 @@ export async function POST(
   const transaction = await prisma.$transaction(async (prisma) => {
     try {
       const body = await req.json();
-      const { walletAddress } = voteSchema.parse(body);
+      const { walletAddress, type } = voteSchema.parse(body);
 
       const user = await findOrCreateUser(walletAddress);
       console.log("🔵 User found/created:", { userId: user.id });
@@ -72,12 +73,43 @@ export async function POST(
       });
 
       if (existingVote) {
-        return NextResponse.json(
-          {
-            error:
-              "You have already voted for this project in the last 24 hours.",
+        // If the vote type is the same, return error
+        if (existingVote.type === type) {
+          return NextResponse.json(
+            {
+              error: `You have already ${type}d this project in the last 24 hours.`,
+            },
+            { status: 400 }
+          );
+        }
+
+        // If the vote type is different, update the existing vote
+        await prisma.vote.update({
+          where: { id: existingVote.id },
+          data: { type },
+        });
+
+        // Update project metadata
+        const currentMetadata = (project.metadata as {
+          likes: number;
+          dislikes: number;
+          voters: number;
+        }) || { likes: 0, dislikes: 0, voters: 0 };
+
+        await prisma.project.update({
+          where: { id: project.id },
+          data: {
+            metadata: {
+              likes: type === "like" ? currentMetadata.likes + 1 : currentMetadata.likes - 1,
+              dislikes: type === "dislike" ? currentMetadata.dislikes + 1 : currentMetadata.dislikes - 1,
+              voters: currentMetadata.voters,
+            },
           },
-          { status: 400 }
+        });
+
+        return NextResponse.json(
+          { message: `Vote updated to ${type}.` },
+          { status: 200 }
         );
       }
 
@@ -96,6 +128,7 @@ export async function POST(
             userId: user.id,
             projectId: project.id,
             votedDate: now,
+            type,
           },
         }),
         prisma.user.update({
@@ -109,18 +142,18 @@ export async function POST(
 
       // Parse current metadata or initialize with default values
       const currentMetadata = (project.metadata as {
-        votes: number;
+        likes: number;
+        dislikes: number;
         voters: number;
-      }) || { votes: 0, voters: 0 };
-
-      console.log("Current metadata:", project.metadata);
+      }) || { likes: 0, dislikes: 0, voters: 0 };
 
       // Update the project's metadata
       await prisma.project.update({
         where: { id: project.id },
         data: {
           metadata: {
-            votes: (currentMetadata.votes || 0) + 1,
+            likes: type === "like" ? (currentMetadata.likes || 0) + 1 : (currentMetadata.likes || 0),
+            dislikes: type === "dislike" ? (currentMetadata.dislikes || 0) + 1 : (currentMetadata.dislikes || 0),
             voters: isFirstVote
               ? (currentMetadata.voters || 0) + 1
               : currentMetadata.voters,
@@ -128,20 +161,14 @@ export async function POST(
         },
       });
 
-      console.log("Updated metadata:", {
-        votes: (currentMetadata.votes || 0) + 1,
-        voters: isFirstVote
-          ? (currentMetadata.voters || 0) + 1
-          : currentMetadata.voters,
-      });
-
       console.log("✅ Vote successfully recorded", {
         userId: user.id,
         projectId: params.projectId,
+        type,
       });
 
       return NextResponse.json(
-        { message: "Vote successfully recorded." },
+        { message: `${type.charAt(0).toUpperCase() + type.slice(1)} successfully recorded.` },
         {
           status: 201,
           headers: {

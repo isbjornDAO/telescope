@@ -18,6 +18,8 @@ interface VoteHistory {
     projectId: string;
     projectName: string;
     votedDate: string;
+    type: "like" | "dislike";
+    season: string;
   }[];
   currentStreak: number;
   longestStreak: number;
@@ -188,13 +190,24 @@ export default function ProfilePage() {
                   <p className="font-medium text-zinc-900">
                     {vote.projectName}
                   </p>
-                  <p className="text-sm text-zinc-500">
-                    {formatDistanceToNow(new Date(vote.votedDate), {
-                      addSuffix: true,
-                    })}
-                  </p>
+                  <div className="flex items-center gap-2 text-sm text-zinc-500">
+                    <span>
+                      {formatDistanceToNow(new Date(vote.votedDate), {
+                        addSuffix: true,
+                      })}
+                    </span>
+                    <span>•</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100">
+                      {vote.season}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-sm text-zinc-500">+1 XP</div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm ${vote.type === "like" ? "text-green-600" : "text-red-600"}`}>
+                    {vote.type === "like" ? "👍" : "👎"}
+                  </span>
+                  <div className="text-sm text-zinc-500">+1 XP</div>
+                </div>
               </div>
             ))}
             {voteHistory?.votes.length === 0 && (
