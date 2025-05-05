@@ -102,7 +102,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   if (!config) return null;
 
   return (
-    <SessionProvider>
+    <SessionProvider refetchInterval={0} refetchOnWindowFocus={true}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider modalSize="compact" theme={darkTheme()}>

@@ -5,13 +5,19 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const tag = searchParams.get("tag");
+    const includeDeleted = searchParams.get("includeDeleted") === "true";
 
     const projects = await prisma.project.findMany({
-      where: tag ? {
-        tags: {
-          has: tag
-        }
-      } : undefined,
+      where: {
+        AND: [
+          tag ? {
+            tags: {
+              has: tag
+            }
+          } : {},
+          includeDeleted ? {} : { deleted: false }
+        ]
+      },
       orderBy: {
         createdAt: "desc",
       },
@@ -39,16 +45,43 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create the project
-    const project = await prisma.project.create({
-      data: {
+    // Check if there's a soft-deleted project with the same name
+    const existingDeletedProject = await prisma.project.findFirst({
+      where: {
         name,
-        description,
-        avatar,
-        tags,
-        social,
+        deleted: true,
       },
     });
+
+    let project;
+    if (existingDeletedProject) {
+      // Update the soft-deleted project
+      project = await prisma.project.update({
+        where: {
+          id: existingDeletedProject.id,
+        },
+        data: {
+          name,
+          description,
+          avatar,
+          tags,
+          social,
+          deleted: false,
+          deletedAt: null,
+        },
+      });
+    } else {
+      // Create a new project
+      project = await prisma.project.create({
+        data: {
+          name,
+          description,
+          avatar,
+          tags,
+          social,
+        },
+      });
+    }
 
     return NextResponse.json(project);
   } catch (error) {

@@ -19,7 +19,21 @@ export async function GET(
             project: {
               select: {
                 name: true,
-              },
+                deleted: true
+              }
+            },
+          },
+          orderBy: {
+            votedDate: "desc",
+          },
+        },
+        votesS1: {
+          include: {
+            project: {
+              select: {
+                name: true,
+                deleted: true
+              }
             },
           },
           orderBy: {
@@ -30,7 +44,7 @@ export async function GET(
     });
 
     if (!user) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         votes: [],
         currentStreak: 0,
         longestStreak: 0
@@ -41,13 +55,14 @@ export async function GET(
     let currentStreak = 0;
     let longestStreak = 0;
     let tempStreak = 0;
-    
-    const sortedVotes = user.votes.sort(
+
+    // Combine votes from both seasons and sort by date
+    const allVotes = [...user.votes, ...user.votesS1].sort(
       (a, b) => b.votedDate.getTime() - a.votedDate.getTime()
     );
 
-    if (sortedVotes.length > 0) {
-      let lastVoteDate = new Date(sortedVotes[0].votedDate);
+    if (allVotes.length > 0) {
+      let lastVoteDate = new Date(allVotes[0].votedDate);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       lastVoteDate.setHours(0, 0, 0, 0);
@@ -56,18 +71,18 @@ export async function GET(
       const daysSinceLastVote = Math.floor(
         (today.getTime() - lastVoteDate.getTime()) / (1000 * 60 * 60 * 24)
       );
-      
+
       if (daysSinceLastVote <= 1) {
         currentStreak = 1;
         tempStreak = 1;
 
         // Calculate consecutive days
-        for (let i = 1; i < sortedVotes.length; i++) {
-          const currentVoteDate = new Date(sortedVotes[i].votedDate);
+        for (let i = 1; i < allVotes.length; i++) {
+          const currentVoteDate = new Date(allVotes[i].votedDate);
           currentVoteDate.setHours(0, 0, 0, 0);
-          
+
           const dayDifference = Math.floor(
-            (lastVoteDate.getTime() - currentVoteDate.getTime()) / 
+            (lastVoteDate.getTime() - currentVoteDate.getTime()) /
             (1000 * 60 * 60 * 24)
           );
 
@@ -90,11 +105,16 @@ export async function GET(
       longestStreak = tempStreak;
     }
 
-    const voteHistory = user.votes.map((vote) => ({
-      projectId: vote.projectId,
-      projectName: vote.project.name,
-      votedDate: vote.votedDate.toISOString(),
-    }));
+    // Combine and format vote history from both seasons
+    const voteHistory = allVotes
+      .filter(vote => vote.project && !vote.project.deleted)
+      .map((vote) => ({
+        projectId: vote.projectId,
+        projectName: vote.project?.name || "Unknown Project",
+        votedDate: vote.votedDate.toISOString(),
+        type: vote.type,
+        season: 'votesS1' in vote ? 'Season 1' : 'Current Season'
+      }));
 
     return NextResponse.json({
       votes: voteHistory,

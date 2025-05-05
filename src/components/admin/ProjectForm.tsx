@@ -71,7 +71,7 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
         throw new Error(`Failed to ${mode} project`);
       }
 
-      router.push("/admin");
+      router.push("/admin/projects");
     } catch (error) {
       console.error(`Error ${mode}ing project:`, error);
       alert(`Failed to ${mode} project. Please try again.`);

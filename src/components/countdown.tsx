@@ -12,12 +12,10 @@ export function Countdown() {
         <div className="flex flex-row gap-2">
           <AlertCircle className="h-4 w-4 stroke-zinc-500" />
           <div className="flex flex-col">
-            <AlertTitle className="font-bold">
-              First Vote Epoch ended!
-            </AlertTitle>
+            <AlertTitle className="font-bold">Join the community!</AlertTitle>
             <AlertDescription className="text-zinc-500">
-              Epoch 1 ended on 31st December 2024, results will be announced on
-              our Discord.
+              Discover trending avax projects and collect your season rewards in
+              our server.
             </AlertDescription>
           </div>
         </div>

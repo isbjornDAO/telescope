@@ -21,6 +21,16 @@ declare module "next-auth" {
   }
 }
 
+export const ADMIN_DISCORD_IDS = [
+  "808694504726724628",
+  "1078316901953966132"
+] as const;
+
+export function isAdmin(discordId: string | undefined): boolean {
+  if (!discordId) return false;
+  return ADMIN_DISCORD_IDS.includes(discordId as typeof ADMIN_DISCORD_IDS[number]);
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     DiscordProvider({
@@ -60,9 +70,30 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   debug: true,
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
   cookies: {
-    state: {
-      name: "next-auth.state",
+    sessionToken: {
+      name: "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: env.NEXT_PUBLIC_ENVIRONMENT === "production",
+      },
+    },
+    callbackUrl: {
+      name: "next-auth.callback-url",
+      options: {
+        sameSite: "lax",
+        path: "/",
+        secure: env.NEXT_PUBLIC_ENVIRONMENT === "production",
+      },
+    },
+    csrfToken: {
+      name: "next-auth.csrf-token",
       options: {
         httpOnly: true,
         sameSite: "lax",
@@ -82,7 +113,7 @@ export const authOptions: NextAuthOptions = {
         token.tokenType = account.token_type;
       }
       if (profile) {
-        token.profile = profile;
+        token.discordUser = profile;
       }
       return token;
     },
@@ -91,7 +122,7 @@ export const authOptions: NextAuthOptions = {
       session.accessToken = token.accessToken as string;
       session.refreshToken = token.refreshToken as string;
       session.tokenType = token.tokenType;
-      session.discordUser = token.profile;
+      session.discordUser = token.discordUser;
       return session;
     },
   },

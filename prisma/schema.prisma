@@ -25,6 +25,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   votes     Vote[]
+  votesS1   VoteS1[]
   discordId String?
 }
 
@@ -36,9 +37,11 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   social      Social?
-  metadata    Json?
+  metadata    Json?    // Will store { likes: number, dislikes: number, voters: number }
   votes       Vote[]
   tags        String[] @default([])
+  deleted     Boolean  @default(false)
+  deletedAt   DateTime?
 }
 
 model Vote {
@@ -49,6 +52,7 @@ model Vote {
   project    Project  @relation(fields: [projectId], references: [id])
   projectId  String   @db.ObjectId
   votedDate  DateTime @default(now())
+  type       String   @default("like") // "like" or "dislike"
 }
 
 model IncubatorProject {
@@ -64,6 +68,32 @@ model IncubatorProject {
   tags        String[] @default([])
 }
 
+model ProjectS1 {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
+  avatar      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  social      Social?
+  metadata    Json?    // Will store { likes: number, dislikes: number, voters: number }
+  votes       VoteS1[]
+  tags        String[] @default([])
+  deleted     Boolean  @default(false)
+  deletedAt   DateTime?
+}
+
+model VoteS1 {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String   @db.ObjectId
+  project    ProjectS1  @relation(fields: [projectId], references: [id])
+  projectId  String   @db.ObjectId
+  votedDate  DateTime @default(now())
+  type       String   @default("like") // "like" or "dislike"
+}
+
 type Social {
   twitter          String?
   discord          String?
@@ -71,4 +101,11 @@ type Social {
   website          String?
   dexscreener      String?
   contractAddress  String?
+}
+
+model AdminSettings {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  voteLock  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -34,7 +34,8 @@ export interface LeaderboardItem {
 }
 
 export interface ItemMetadata {
-  votes: number;
+  likes: number;
+  dislikes: number;
   voters: number;
 }
 
@@ -49,6 +50,7 @@ export interface Vote {
   id: string;
   userId: string;
   projectId: string;
+  type: "like" | "dislike";
   createdAt: Date;
   updatedAt: Date;
 }

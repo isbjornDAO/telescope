@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,12 +15,20 @@ import { useAccount, useDisconnect } from "wagmi";
 import { useUserStats } from "@/hooks/use-user-stats";
 import Link from "next/link";
 import { Address } from "viem";
+import { setWalletAddressCookie } from "@/lib/cookies";
 
 export const ConnectButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { disconnect } = useDisconnect();
   const { address, isConnected } = useAccount();
   const { data: userStats } = useUserStats(address as Address, isConnected);
+
+  // Set cookie when wallet connects
+  useEffect(() => {
+    if (address && isConnected) {
+      setWalletAddressCookie(address);
+    }
+  }, [address, isConnected]);
 
   return (
     <RainbowConnectButton.Custom>

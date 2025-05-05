@@ -7,10 +7,13 @@ export async function GET(
 ) {
   try {
     const projectId = params.projectId;
+    const { searchParams } = new URL(request.url);
+    const includeDeleted = searchParams.get("includeDeleted") === "true";
 
     const project = await prisma.project.findUnique({
       where: {
         id: projectId,
+        ...(includeDeleted ? {} : { deleted: false }),
       },
     });
 
@@ -69,18 +72,36 @@ export async function DELETE(
   try {
     const projectId = params.projectId;
 
-    // Delete the project
-    await prisma.project.delete({
+    // First check if the project exists
+    const project = await prisma.project.findUnique({
       where: {
         id: projectId,
       },
     });
 
-    return NextResponse.json({ message: "Project deleted successfully" });
+    if (!project) {
+      return NextResponse.json(
+        { error: "Project not found" },
+        { status: 404 }
+      );
+    }
+
+    // Soft delete the project
+    await prisma.project.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        deleted: true,
+        deletedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json({ message: "Project soft deleted successfully" });
   } catch (error) {
-    console.error("Error deleting project:", error);
+    console.error("Error soft deleting project:", error);
     return NextResponse.json(
-      { error: "Failed to delete project" },
+      { error: "Failed to soft delete project" },
       { status: 500 }
     );
   }

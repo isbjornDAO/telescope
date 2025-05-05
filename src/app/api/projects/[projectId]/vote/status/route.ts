@@ -37,7 +37,7 @@ export async function GET(
     });
 
     if (!user) {
-      return NextResponse.json({ hasVoted: false }, { status: 200 });
+      return NextResponse.json({ hasVoted: false, voteType: null }, { status: 200 });
     }
 
     const now = new Date();
@@ -56,13 +56,18 @@ export async function GET(
 
     const project = await prisma.project.findUnique({
       where: { id: projectId },
-      select: { name: true },
+      select: { 
+        name: true,
+        metadata: true,
+      },
     });
 
     return NextResponse.json(
       {
         hasVoted: !!voteExists,
+        voteType: voteExists?.type || null,
         projectName: project?.name,
+        metadata: project?.metadata,
       },
       {
         status: 200,
