@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { Analytics } from "@vercel/analytics/react"
 
 export async function generateMetadata({ params }: { params: { address: string } }): Promise<Metadata> {
   return {
