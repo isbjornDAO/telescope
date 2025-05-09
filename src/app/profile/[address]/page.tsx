@@ -181,39 +181,76 @@ export default function ProfilePage() {
             </h2>
           </div>
           <div className="divide-y">
-            {voteHistory?.votes.map((vote) => (
-              <div
-                key={`${vote.projectId}-${vote.votedDate}`}
-                className="p-4 flex items-center justify-between hover:bg-zinc-50"
-              >
-                <div>
-                  <p className="font-medium text-zinc-900">
-                    {vote.projectName}
-                  </p>
-                  <div className="flex items-center gap-2 text-sm text-zinc-500">
-                    <span>
-                      {formatDistanceToNow(new Date(vote.votedDate), {
-                        addSuffix: true,
-                      })}
-                    </span>
-                    <span>•</span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100">
-                      {vote.season}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className={`text-sm ${vote.type === "like" ? "text-green-600" : "text-red-600"}`}>
-                    {vote.type === "like" ? "👍" : "👎"}
-                  </span>
-                  <div className="text-sm text-zinc-500">+1 XP</div>
-                </div>
-              </div>
-            ))}
-            {voteHistory?.votes.length === 0 && (
+            {voteHistory?.votes.length === 0 ? (
               <div className="p-4 text-center text-zinc-500">
                 No votes recorded yet
               </div>
+            ) : (
+              <>
+                {/* Current Season */}
+                {/* <div className="p-4 bg-zinc-50">
+                  <h3 className="font-medium text-zinc-900">Current Season</h3>
+                </div> */}
+                {voteHistory?.votes
+                  .filter(vote => vote.season === 'Current Season')
+                  .map((vote) => (
+                    <div
+                      key={`${vote.projectId}-${vote.votedDate}`}
+                      className="p-4 flex items-center justify-between hover:bg-zinc-50"
+                    >
+                      <div>
+                        <p className="font-medium text-zinc-900">
+                          {vote.projectName}
+                        </p>
+                        <div className="flex items-center gap-2 text-sm text-zinc-500">
+                          <span>
+                            {formatDistanceToNow(new Date(vote.votedDate), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm ${vote.type === "like" ? "text-green-600" : "text-red-600"}`}>
+                          {vote.type === "like" ? "👍" : "👎"}
+                        </span>
+                        <div className="text-sm text-zinc-500">+1 XP</div>
+                      </div>
+                    </div>
+                  ))}
+
+                {/* Season 1 */}
+                {/* <div className="p-4 bg-zinc-50">
+                  <h3 className="font-medium text-zinc-900">Season 1</h3>
+                </div> */}
+                {voteHistory?.votes
+                  .filter(vote => vote.season === 'Season 1')
+                  .map((vote) => (
+                    <div
+                      key={`${vote.projectId}-${vote.votedDate}`}
+                      className="p-4 flex items-center justify-between hover:bg-zinc-50"
+                    >
+                      <div>
+                        <p className="font-medium text-zinc-900">
+                          {vote.projectName}
+                        </p>
+                        <div className="flex items-center gap-2 text-sm text-zinc-500">
+                          <span>
+                            {formatDistanceToNow(new Date(vote.votedDate), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm ${vote.type === "like" ? "text-green-600" : "text-red-600"}`}>
+                          {vote.type === "like" ? "👍" : "👎"}
+                        </span>
+                        <div className="text-sm text-zinc-500">+1 XP</div>
+                      </div>
+                    </div>
+                  ))}
+              </>
             )}
           </div>
         </div>
