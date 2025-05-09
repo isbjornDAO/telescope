@@ -110,7 +110,7 @@ export async function GET(
       .filter(vote => vote.project && !vote.project.deleted)
       .map((vote) => ({
         projectId: vote.projectId,
-        projectName: vote.project?.name || "Unknown Project",
+        projectName: vote.project?.name || "Deleted Project",
         votedDate: vote.votedDate.toISOString(),
         type: vote.type,
         season: 'votesS1' in vote ? 'Season 1' : 'Current Season'

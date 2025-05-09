@@ -308,7 +308,13 @@ export default function Home() {
                   <Categories />
                 </div>
                 <LeaderboardTable
-                  items={projects || []}
+                  items={(projects || [])
+                    .sort((a, b) => {
+                      const aVotes = (a.metadata?.likes || 0) + (a.metadata?.dislikes || 0);
+                      const bVotes = (b.metadata?.likes || 0) + (b.metadata?.dislikes || 0);
+                      return bVotes - aVotes;
+                    })
+                    .map((item, idx) => ({ ...item, rank: idx + 1 }))}
                   renderMetadata={(item) => {
                     if (!item.metadata) return null;
 
@@ -354,7 +360,13 @@ export default function Home() {
                   <div>No Season 1 projects found</div>
                 ) : (
                   <LeaderboardTable
-                    items={season1Projects || []}
+                    items={(season1Projects || [])
+                      .sort((a, b) => {
+                        const aVotes = (a.metadata?.likes || 0) + (a.metadata?.dislikes || 0);
+                        const bVotes = (b.metadata?.likes || 0) + (b.metadata?.dislikes || 0);
+                        return bVotes - aVotes;
+                      })
+                      .map((item, idx) => ({ ...item, rank: idx + 1 }))}
                     renderMetadata={(item) => {
                       if (!item.metadata) return null;
 

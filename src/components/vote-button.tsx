@@ -37,8 +37,19 @@ export function VoteButton({
 
   useEffect(() => {
     const checkVoteStatus = async () => {
-      if (isConnected && address) {
-        try {
+      try {
+        // Always fetch project metadata
+        const projectResponse = await fetch(`/api/projects/${projectId}`);
+        if (projectResponse.ok) {
+          const projectData = await projectResponse.json();
+          setVoteStatus(prev => ({
+            ...prev,
+            metadata: projectData.metadata
+          }));
+        }
+
+        // Only fetch user's vote status if connected
+        if (isConnected && address) {
           const response = await fetch(
             `/api/projects/${projectId}/vote/status?walletAddress=${address}`,
             {
@@ -47,17 +58,17 @@ export function VoteButton({
           );
           if (response.ok) {
             const data = await response.json();
-            setVoteStatus({
+            setVoteStatus(prev => ({
+              ...prev,
               hasVoted: data.hasVoted,
               voteType: data.voteType,
-              metadata: data.metadata,
-            });
+            }));
           } else {
             console.error("Failed to fetch vote status:", response.statusText);
           }
-        } catch (error) {
-          console.error("Failed to fetch vote status:", error);
         }
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
       }
       setIsLoading(false);
     };
@@ -170,6 +181,8 @@ export function VoteButton({
 
   const isDisabled =
     isLoading || !isConnected || isGloballyDisabled || !userStats?.discordId;
+
+  console.log(voteStatus);
 
   return (
     <div className="">
