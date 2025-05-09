@@ -9,6 +9,7 @@ import { ThemeProvider } from "next-themes";
 import { Web3Provider } from "@/components/providers/web3";
 import { Toaster } from "@/components/ui/toaster";
 import { Navbar } from "@/components/navbar";
+import { Analytics } from "@vercel/analytics/react"
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -79,6 +80,7 @@ export default function RootLayout({
             {children}
           </Web3Provider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
