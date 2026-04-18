@@ -2,7 +2,7 @@
 
 import { PageNavigation } from "@/components/page-navigation";
 import { Card } from "@/components/ui/card";
-import { ExternalLink, Instagram, Twitter } from "lucide-react";
+import { ArrowUpRight, Instagram, Twitter } from "lucide-react";
 
 export default function ArtistsPage() {
   const artists = [
@@ -41,7 +41,7 @@ export default function ArtistsPage() {
       style: "Digital Illustration",
       specialties: ["Character Design", "Digital Art", "Illustration"],
       website: "https://linktr.ee/virkkk",
-      social: {},
+      social: {} as { twitter?: string; instagram?: string },
       featured: "Active in the AVAX art community"
     },
     {
@@ -51,7 +51,7 @@ export default function ArtistsPage() {
       style: "Contemporary Digital Art",
       specialties: ["Digital Art", "Contemporary Illustration"],
       website: "https://www.alinesubi.xyz/",
-      social: {},
+      social: {} as { twitter?: string; instagram?: string },
       featured: "Portfolio showcasing diverse creative works"
     },
     {
@@ -61,7 +61,7 @@ export default function ArtistsPage() {
       style: "Illustration & Character Design",
       specialties: ["Illustration", "Character Design", "Visual Storytelling"],
       website: "https://www.furk-art.com/",
-      social: {},
+      social: {} as { twitter?: string; instagram?: string },
       featured: "Diverse portfolio of illustration work"
     },
     {
@@ -96,85 +96,95 @@ export default function ArtistsPage() {
 
   return (
     <div className="w-full">
-      <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16">
+      <div className="w-full max-w-screen-lg mx-auto -mt-6 px-4 md:px-8 relative z-10 mb-16 mobile-content-align">
         <PageNavigation />
 
-        {/* Artists Section */}
-        <div className="w-full rounded-lg shadow-lg mb-8 border-2" style={{
-          background: 'linear-gradient(to bottom right, #e6f0f5, #d4e8f0)',
-          borderColor: '#4f8aae'
-        }}>
-          <div className="px-8 py-6">
-            {/* Artist Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {artists.map((artist, index) => (
-                <Card
-                  key={index}
-                  className="overflow-hidden transition-all duration-300 hover:shadow-xl group"
-                >
-                  <div className="relative aspect-square">
-                    {/* Artist Image */}
-                    <div
-                      className={`w-full h-full ${artist.name === "MrMocket" ? "bg-white dark:bg-zinc-700 p-4" : "bg-zinc-100 dark:bg-zinc-700"}`}
-                    >
-                      <img
-                        src={artist.image}
-                        alt={artist.name}
-                        className={`w-full h-full ${artist.name === "MrMocket" ? "object-contain" : "object-cover"} transition-transform duration-300 group-hover:scale-105`}
-                      />
-                    </div>
+        {/* Editorial header */}
+        <div className="flex items-end justify-between gap-6 mb-6 md:mb-8 pb-5 border-b border-zinc-300/60 dark:border-zinc-700/60">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.24em] font-semibold text-sky-700 dark:text-sky-300 mb-2">
+              Index № 01 · Community
+            </p>
+            <h1 className="font-serif italic text-4xl md:text-5xl leading-[0.95] tracking-tight text-foreground">
+              Artists in residence
+            </h1>
+          </div>
+          <p className="hidden sm:block max-w-xs text-sm leading-relaxed text-muted-foreground">
+            A living roster of illustrators, pixel-pushers and character designers orbiting the community.
+          </p>
+        </div>
 
-                    {/* Hover Overlay with Name and Links */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/80 dark:from-zinc-900/95 dark:via-zinc-900/90 dark:to-zinc-900/80 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4">
-                      {/* Artist Name */}
-                      <h3 className="font-bold text-base text-center">
-                        {artist.name}
-                      </h3>
+        {/* Artist Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10">
+          {artists.map((artist, index) => (
+            <a
+              key={index}
+              href={artist.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group block"
+            >
+              <Card className="overflow-hidden bg-card rounded-xl shadow-sm hover:shadow-xl transition-all duration-500 border border-border hover:-translate-y-1">
+                <div className="relative aspect-[4/5] overflow-hidden">
+                  <div
+                    className={`absolute inset-0 ${artist.name === "MrMocket" ? "bg-white dark:bg-zinc-800 p-6" : "bg-zinc-100 dark:bg-zinc-800"}`}
+                  >
+                    <img
+                      src={artist.image}
+                      alt={artist.name}
+                      className={`w-full h-full ${artist.name === "MrMocket" ? "object-contain" : "object-cover"} transition-transform duration-700 ease-out group-hover:scale-[1.04]`}
+                    />
+                  </div>
 
-                      {/* Social & Website Links */}
-                      <div className="flex flex-wrap gap-2 justify-center">
+                  {/* Index number — top left */}
+                  <div className="absolute top-3 left-3 font-serif italic text-sm text-white/90 mix-blend-difference">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+
+                  {/* Social overlay — bottom, slides up on hover */}
+                  {(artist.social.twitter || artist.social.instagram) && (
+                    <div className="absolute inset-x-0 bottom-0 p-3 flex gap-2 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                      {artist.social.twitter && (
                         <a
-                          href={artist.website}
+                          href={`https://twitter.com/${artist.social.twitter.replace("@", "")}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2 py-1 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 rounded-md text-xs font-medium transition-colors"
                           onClick={(e) => e.stopPropagation()}
+                          className="h-8 w-8 grid place-items-center rounded-full bg-white/95 dark:bg-zinc-900/95 text-zinc-900 dark:text-zinc-100 backdrop-blur hover:bg-white dark:hover:bg-zinc-900 shadow-md"
                         >
-                          <ExternalLink className="h-3 w-3" />
-                          Portfolio
+                          <Twitter className="h-3.5 w-3.5" />
                         </a>
-                        {artist.social.twitter && (
-                          <a
-                            href={`https://twitter.com/${artist.social.twitter.replace('@', '')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 px-2 py-1 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 rounded-md text-xs font-medium transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Twitter className="h-3 w-3" />
-                          </a>
-                        )}
-                        {artist.social.instagram && (
-                          <a
-                            href={`https://instagram.com/${artist.social.instagram.replace('@', '')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 px-2 py-1 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 rounded-md text-xs font-medium transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Instagram className="h-3 w-3" />
-                          </a>
-                        )}
-                      </div>
+                      )}
+                      {artist.social.instagram && (
+                        <a
+                          href={`https://instagram.com/${artist.social.instagram.replace("@", "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="h-8 w-8 grid place-items-center rounded-full bg-white/95 dark:bg-zinc-900/95 text-zinc-900 dark:text-zinc-100 backdrop-blur hover:bg-white dark:hover:bg-zinc-900 shadow-md"
+                        >
+                          <Instagram className="h-3.5 w-3.5" />
+                        </a>
+                      )}
                     </div>
+                  )}
+                </div>
 
-                    {/* Shiny effect */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/20 to-transparent dark:from-zinc-500/20 dark:via-zinc-400/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                {/* Persistent name + style */}
+                <div className="px-4 py-3 flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="font-serif text-base leading-tight truncate">
+                      {artist.name}
+                    </h3>
+                    <p className="text-[11px] uppercase tracking-wider text-muted-foreground mt-1 truncate">
+                      {artist.style}
+                    </p>
                   </div>
-                </Card>
-              ))}
-            </div>
-          </div>
+                  <ArrowUpRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-sky-700 dark:group-hover:text-sky-300" />
+                </div>
+              </Card>
+            </a>
+          ))}
         </div>
       </div>
     </div>

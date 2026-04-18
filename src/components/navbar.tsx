@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, Home, CircleDollarSign, Calendar, Monitor, Library, Newspaper, Palette, Gift, User, Settings, Radio as RadioIcon } from "lucide-react";
+import { Menu, Home, CircleDollarSign, Calendar, Monitor, Library, Newspaper, Palette, Gift, User, Settings } from "lucide-react";
 import { useAccount } from "wagmi";
 import { Address } from "viem";
 import { usePathname } from "next/navigation";
@@ -33,14 +33,14 @@ export function Navbar() {
 
   return (
     <header className="w-full bg-transparent border-b-4 border-zinc-300 dark:border-zinc-700">
-      <div className="w-full relative h-64 md:h-auto max-w-screen-lg mx-auto pt-4 md:pt-12 pb-4 px-4 md:px-8 flex items-start justify-end md:justify-between md:flex-row">
-        <div className="flex items-center gap-4 absolute left-4 top-4 md:left-8 md:top-12 z-10">
+      <div className="w-full relative h-48 md:h-auto max-w-screen-lg mx-auto pt-4 md:pt-6 pb-4 px-4 md:px-8 flex items-start justify-end md:justify-between md:flex-row">
+        <div className="flex items-center gap-4 absolute left-4 top-4 md:left-8 md:top-6 z-10">
           <BackButton />
         </div>
         <Image
           src="/logo.png"
           alt="Telescope"
-          className="flex items-end absolute md:relative left-4 md:left-0 -bottom-4 md:-bottom-4 w-80 md:w-80"
+          className="flex items-end absolute md:relative left-4 md:left-0 -bottom-4 md:-bottom-4 w-64 md:w-72"
           width={320}
           height={80}
           style={{ width: 'auto', height: 'auto' }}
@@ -98,10 +98,6 @@ export function Navbar() {
                 <Link href="/forum" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname?.startsWith("/forum") ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
                   <Monitor className="h-5 w-5" />
                   <span>Forum</span>
-                </Link>
-                <Link href="/radio" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname === "/radio" ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
-                  <RadioIcon className="h-5 w-5" />
-                  <span>Radio</span>
                 </Link>
                 <Link href="/projects" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname === "/projects" ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
                   <Library className="h-5 w-5" />

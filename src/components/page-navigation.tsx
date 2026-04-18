@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home as HomeIcon, Calendar, Monitor, Library, Palette, Newspaper, Gift, Radio as RadioIcon } from "lucide-react";
+import { Home as HomeIcon, Calendar, Monitor, Library, Palette, Newspaper, Gift } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 // Play random shop sound
@@ -16,7 +16,7 @@ export function PageNavigation() {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-8 relative z-30">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-5 sm:mb-6 relative z-30">
       {/* First row - Main 4 tabs */}
       <div className="gap-1 sm:gap-3 flex flex-nowrap">
         {/* Main navigation - always show titles */}
@@ -98,20 +98,6 @@ export function PageNavigation() {
             <Newspaper className="h-4 w-4 sm:h-6 sm:w-6 flex-shrink-0" />
             <span className={`${pathname?.startsWith("/news") ? "max-w-[100px] opacity-100 ml-1 sm:ml-2" : "max-w-0 sm:group-hover:max-w-[100px] opacity-0 sm:group-hover:opacity-100 sm:group-hover:ml-2"} transition-all duration-500 ease-in-out overflow-hidden whitespace-nowrap text-sm sm:text-base font-semibold`}>
               News
-            </span>
-          </button>
-        </Link>
-        <Link href="/radio">
-          <button
-            className={`group py-2.5 sm:py-3 font-bold text-md border-2 rounded-xl transition-all duration-500 ease-in-out flex items-center overflow-hidden ${
-              pathname === "/radio"
-                ? "bg-white dark:bg-zinc-800 border-white dark:border-zinc-700 shadow text-foreground justify-start px-2 sm:pl-4 sm:pr-4 gap-1 sm:gap-2"
-                : "bg-white dark:bg-zinc-800 border-white dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-muted-foreground justify-center px-2 sm:px-3.5 sm:group-hover:justify-start sm:group-hover:pl-4 sm:group-hover:pr-3 sm:group-hover:gap-2"
-            }`}
-          >
-            <RadioIcon className="h-4 w-4 sm:h-6 sm:w-6 flex-shrink-0" />
-            <span className={`${pathname === "/radio" ? "max-w-[100px] opacity-100 ml-1 sm:ml-2" : "max-w-0 sm:group-hover:max-w-[100px] opacity-0 sm:group-hover:opacity-100 sm:group-hover:ml-2"} transition-all duration-500 ease-in-out overflow-hidden whitespace-nowrap text-sm sm:text-base font-semibold`}>
-              Radio
             </span>
           </button>
         </Link>
