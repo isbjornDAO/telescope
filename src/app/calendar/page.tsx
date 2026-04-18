@@ -178,7 +178,7 @@ export default function CalendarPage() {
   if (loading) {
     return (
       <div className="w-full">
-        <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-4">
+        <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-4 mobile-content-align">
           <PageNavigation />
         </div>
         <div className="w-full max-w-screen-lg mx-auto px-8 pb-8">
@@ -191,7 +191,7 @@ export default function CalendarPage() {
 
   return (
     <div className="w-full">
-        <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-4">
+        <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-4 mobile-content-align">
           <PageNavigation />
 
           {isConnected && !isUserStatsLoading && !userStats?.discordId && (

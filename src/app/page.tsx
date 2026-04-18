@@ -378,10 +378,10 @@ export default function Home() {
                               {thread.posts[0]?.comment || "No content"}
                             </p>
                             <div className="flex gap-2 items-center">
-                              <Badge variant="outline" className="text-xs border-zinc-300 dark:border-zinc-700" style={{ color: '#3c688f' }}>
+                              <Badge variant="outline" className="text-xs border-zinc-300 dark:border-zinc-700 text-sky-700 dark:text-sky-300">
                                 /{thread.boardName}/
                               </Badge>
-                              <span className="text-xs text-white dark:text-zinc-400">
+                              <span className="text-xs text-muted-foreground">
                                 {thread.replyCount} replies
                               </span>
                             </div>
