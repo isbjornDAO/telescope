@@ -26,11 +26,20 @@ second one. Discord remains available for the existing community.
 A wallet is **not** a login. It is an optional credential you link from your
 profile to receive bounty payouts and claim rewards.
 
-> Builders Hub is currently an OAuth *consumer* (NextAuth with those three
-> providers) and exposes no authorization or token endpoint, so a literal
-> "Sign in with Builders Hub" button cannot be built yet. `src/lib/auth.ts`
-> keeps a slot for a `builders-hub` provider; when Ava Labs ships one, adding it
-> there links existing users automatically through the same email matching.
+### Builders Hub SSO
+
+A `builders-hub` provider is implemented and discovery-driven. Set
+`BUILDERS_HUB_ISSUER`, `BUILDERS_HUB_CLIENT_ID` and `BUILDERS_HUB_CLIENT_SECRET`
+and "Continue with Builders Hub" becomes the primary sign-in button — the
+provider configures itself from the issuer's `/.well-known/openid-configuration`,
+so enabling it is an environment change with no code change and no migration.
+Existing accounts link on first use through the same verified-email matching.
+
+Until Builders Hub exposes an OIDC issuer (today it is an OAuth *consumer*, with
+no authorization or token endpoint of its own), the three mirrored providers
+already deliver the important half: the same credentials resolve to the same
+Telescope identity. See `docs/integrations.md` for what each partner team needs
+to provide.
 
 ## How the forum works
 

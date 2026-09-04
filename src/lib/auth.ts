@@ -45,21 +45,59 @@ export function canModerate(role: string | undefined): boolean {
 }
 
 /**
- * Sign-in providers.
+ * Builders Hub as a first-class identity provider.
  *
- * These deliberately mirror build.avax.network, which offers GitHub, Google and
- * an email code. A builder arriving from Builders Hub signs in here with the
- * same credentials and — because accounts are matched on verified email — lands
- * on the same Telescope identity rather than creating a second one.
+ * Discovery-driven, so nothing here is specific to how Ava Labs implement it:
+ * set BUILDERS_HUB_ISSUER to an origin serving
+ * `/.well-known/openid-configuration` and this provider configures itself from
+ * that document. Turning it on is an environment change, not a code change.
  *
- * Builders Hub is currently an OAuth *consumer* (NextAuth with those three
- * providers); it exposes no authorization/token endpoint, so a true
- * "Sign in with Builders Hub" button cannot be implemented yet. When Ava Labs
- * ships one, add it here as an OAuth provider with id "builders-hub": existing
- * users link automatically through the same verified-email matching below.
+ * Until those credentials exist, the providers below mirror the three that
+ * build.avax.network already offers, and accounts are matched on verified
+ * email — so a builder who signs into Builders Hub with GitHub and then signs
+ * in here with GitHub lands on the same Telescope identity either way. That
+ * same email matching is what links an existing account to Builders Hub SSO
+ * the first time someone uses it, with no migration.
  */
+function buildersHubProvider(): Provider | null {
+  const issuer = process.env.BUILDERS_HUB_ISSUER;
+  const clientId = process.env.BUILDERS_HUB_CLIENT_ID;
+  const clientSecret = process.env.BUILDERS_HUB_CLIENT_SECRET;
+
+  if (!issuer || !clientId || !clientSecret) return null;
+
+  return {
+    id: "builders-hub",
+    name: "Builders Hub",
+    type: "oauth",
+    wellKnown: `${issuer.replace(/\/$/, "")}/.well-known/openid-configuration`,
+    authorization: { params: { scope: "openid email profile" } },
+    idToken: true,
+    checks: ["pkce", "state"],
+    clientId,
+    clientSecret,
+    // Standard OIDC claims. `preferred_username` seeds the Telescope handle
+    // when it is present, so handles line up across the two sites.
+    profile(profile: Record<string, unknown>) {
+      return {
+        id: String(profile.sub),
+        name:
+          (profile.name as string | undefined) ??
+          (profile.preferred_username as string | undefined) ??
+          null,
+        email: (profile.email as string | undefined) ?? null,
+        image: (profile.picture as string | undefined) ?? null,
+      };
+    },
+  };
+}
+
 function buildProviders(): Provider[] {
   const providers: Provider[] = [];
+
+  // Listed first so it renders as the primary button once configured.
+  const buildersHub = buildersHubProvider();
+  if (buildersHub) providers.push(buildersHub);
 
   if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
     providers.push(

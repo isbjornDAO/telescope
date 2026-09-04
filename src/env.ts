@@ -11,6 +11,9 @@ export const env = createEnv({
     DATABASE_URL: z.string().min(1).optional(),
     NEXTAUTH_SECRET: z.string().min(1),
 
+    BUILDERS_HUB_ISSUER: z.string().url().optional(),
+    BUILDERS_HUB_CLIENT_ID: z.string().min(1).optional(),
+    BUILDERS_HUB_CLIENT_SECRET: z.string().min(1).optional(),
     GITHUB_CLIENT_ID: z.string().min(1).optional(),
     GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
     GOOGLE_CLIENT_ID: z.string().min(1).optional(),
@@ -32,6 +35,9 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    BUILDERS_HUB_ISSUER: process.env.BUILDERS_HUB_ISSUER,
+    BUILDERS_HUB_CLIENT_ID: process.env.BUILDERS_HUB_CLIENT_ID,
+    BUILDERS_HUB_CLIENT_SECRET: process.env.BUILDERS_HUB_CLIENT_SECRET,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,

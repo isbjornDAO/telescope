@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { Github, Mail, Loader2 } from "lucide-react";
+import { Github, Mail, Loader2, Telescope } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,30 @@ export function SignInButtons({
 
   return (
     <div className="mt-8 flex flex-col gap-3">
+      {has("builders-hub") ? (
+        <>
+          <Button
+            className="h-11 w-full justify-center gap-2"
+            onClick={() => oauth("builders-hub")}
+            disabled={pending !== null}
+          >
+            {pending === "builders-hub" ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Telescope className="h-4 w-4" />
+            )}
+            Continue with Builders Hub
+          </Button>
+          <div className="relative flex items-center">
+            <span className="h-px flex-1 bg-border" />
+            <span className="px-3 text-xs uppercase tracking-wide text-muted-foreground">
+              or
+            </span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+        </>
+      ) : null}
+
       {has("github") ? (
         <Button
           variant="outline"
