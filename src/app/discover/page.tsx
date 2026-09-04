@@ -47,8 +47,8 @@ const DESTINATIONS = [
 
 export default function DiscoverPage() {
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-12 lg:py-16">
-      <h1 className="text-2xl font-semibold tracking-tight">Discover</h1>
+    <div className="mx-auto w-full max-w-3xl px-3 py-6 sm:px-4 sm:py-10">
+      <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Discover</h1>
       <p className="mt-2 max-w-xl text-sm text-muted-foreground">
         Everything worth finding on Avalanche, and where it actually lives.
       </p>

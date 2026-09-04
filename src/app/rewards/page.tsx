@@ -137,7 +137,7 @@ export default function ClaimPage() {
 
   return (
     <div className="w-full">
-      <div className="w-full max-w-screen-lg mx-auto -mt-6 px-4 md:px-8 relative z-10 mb-16 md:mb-24 pb-8">
+      <div className="mx-auto w-full max-w-4xl px-3 py-6 sm:px-4 sm:py-10">
 
         <div className="space-y-6">
           {/* Available Rewards */}

@@ -2,16 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -69,89 +59,47 @@ body {
 }
 
 @layer base {
+  * {
+    @apply border-border;
+  }
+
   body {
-    @apply bg-zinc-200 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100;
+    /* The system UI stack rather than Arial: it matches what people already
+       read on their device, and renders far better on phones. */
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      "Noto Sans",
+      sans-serif,
+      "Apple Color Emoji",
+      "Segoe UI Emoji";
+    /* Background comes from the theme token, so light and dark stay in step
+       with the cards drawn on top. This used to be a hard-coded zinc, which
+       fought the token the cards use. */
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Long URLs and unbroken strings in user-written posts must not widen the
+     page on a phone. */
+  p,
+  h1,
+  h2,
+  h3 {
+    overflow-wrap: break-word;
   }
 }
 
-.mobile-menu-text {
-  display: none;
-}
-
-.bg {
-  min-height: 400px;
-  background-color: #e6f0f5;
-  background-image: url("/bg.png"), url("/bg-tile.png");
-  background-repeat: no-repeat, repeat-x;
-  background-position: center bottom, center center;
-  background-size: contain, auto 100%;
-  position: relative;
-}
-
-.dark .bg {
-  background-color: #1a1a1a;
-  background-image: url("/bg.png"), url("/bg-tile.png");
-  background-repeat: no-repeat, repeat-x;
-  background-position: center bottom, center center;
-  background-size: contain, auto 100%;
-}
-
-@media screen and (max-width: 768px) {
-  .bg {
-    min-height: 240px;
-    background-image: url("/bg.png");
-    background-repeat: no-repeat;
-    background-position: center top;
-    background-size: cover;
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
   }
-
-  .dark .bg {
-    background-image: url("/bg.png");
-    background-repeat: no-repeat;
-    background-position: center top;
-    background-size: cover;
-  }
-
-  .mobile-content-align {
-    margin-top: -3rem !important;
-  }
-}
-
-.snow-button {
-  position: relative;
-  border: 1px solid transparent;
-  border-radius: 0.5rem;
-  padding: 8px 16px;
-  min-width: 8em;
-  text-align: center;
-  color: #fff;
-  background-image: linear-gradient(to bottom, #4f8aae, #416c99, #283470),
-    linear-gradient(to bottom, #416c99, #283470);
-  background-clip: padding-box, border-box;
-  background-origin: padding-box, border-box;
-  transition-property: transform, filter;
-  transition-duration: 0.2s;
-  will-change: transform;
-  resize: both;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.snow-button::after {
-  --overflow-x: 4px;
-  --snow-image: url("/button_snow.webp");
-  content: "";
-  position: absolute;
-  top: -8px;
-  left: calc(var(--overflow-x) * -1);
-  border-image-source: var(--snow-image);
-  border-image-slice: calc(6 * 56 / 20) fill;
-  border-image-width: calc(28px / 3);
-  border-image-repeat: round;
-  width: calc(100% + var(--overflow-x) * 2);
-  height: 22px;
-  filter: drop-shadow(0 2px 1px rgb(0 0 0 / 0.25));
-  opacity: 1;
 }
 
 .tab-content[data-state="inactive"] {
@@ -168,63 +116,31 @@ body {
   -moz-appearance: textfield;
 }
 
+/* Legacy button classes from the previous visual identity, which layered a
+   snow-capped border image over a blue gradient. They are still applied in the
+   wallet connect flow and on the rewards page, so the class names are kept —
+   but they now resolve to the same neutral button styling as the rest of the
+   redesign instead of pulling in the old decoration. */
+.snow-button,
 .snow-button-secondary {
-  position: relative;
-  border: 2px solid #416c99;
-  border-radius: 0.5rem;
-  padding: 8px 16px;
-  min-width: 8em;
-  text-align: center;
-  color: #416c99;
-  background: white;
-  text-decoration: none;
-  display: inline-block;
-  transition-property: transform, filter, background-color;
-  transition-duration: 0.2s;
-  will-change: transform;
-  font-size: 14px;
-  font-weight: 600;
+  @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg
+    border border-transparent bg-primary px-4 text-sm font-medium
+    text-primary-foreground transition-colors;
 }
+
+.snow-button:hover,
 .snow-button-secondary:hover {
-  background-color: #f0f7ff;
-  text-decoration: none;
+  @apply bg-primary/90;
 }
-.snow-button-secondary:active {
-  transform: translateY(2px);
+
+.snow-button-secondary {
+  @apply border-border bg-background text-foreground;
+}
+
+.snow-button-secondary:hover {
+  @apply bg-muted;
 }
 
 .snow-button-card {
-  position: relative;
-  margin-top: 12px;
-}
-
-.snow-button-card::before {
-  --overflow-x: 4px;
-  --snow-image: url("/button_snow.webp");
-  content: "";
-  position: absolute;
-  top: -8px;
-  left: calc(var(--overflow-x) * -1);
-  border-image-source: var(--snow-image);
-  border-image-slice: calc(6 * 56 / 20) fill;
-  border-image-width: calc(28px / 3);
-  border-image-repeat: round;
-  width: calc(100% + var(--overflow-x) * 2);
-  height: 22px;
-  filter: drop-shadow(0 2px 1px rgb(0 0 0 / 0.25));
-  opacity: 1;
-  z-index: 10;
-}
-
-@keyframes fall {
-  0% {
-    transform: translateY(-20px) translateX(0);
-  }
-  100% {
-    transform: translateY(100vh) translateX(20px);
-  }
-}
-
-.animate-fall {
-  animation: fall linear infinite;
+  @apply relative;
 }

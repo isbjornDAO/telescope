@@ -1,18 +1,11 @@
 import { prisma } from "@/lib/prisma";
+import { findOrCreateUserByWallet } from "@/lib/user";
 
 // Award XP and Coins for interacting (1 XP + 1 Coin per day via posting)
 export async function awardPostXP(walletAddress: string): Promise<{ xpAwarded: boolean; newXp: number; newCoins: number; newLevel: number }> {
   try {
     // Ensure user exists
-    let user = await prisma.user.findUnique({
-      where: { address: walletAddress }
-    });
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: { address: walletAddress }
-      });
-    }
+    const user = await findOrCreateUserByWallet(walletAddress);
 
     // Check if user already posted today (UTC)
     const now = new Date();
@@ -48,7 +41,7 @@ export async function awardPostXP(walletAddress: string): Promise<{ xpAwarded: b
 
     // Update user - increment both xp and coins
     await prisma.user.update({
-      where: { address: walletAddress },
+      where: { id: user.id },
       data: {
         xp: newXp,
         coins: newCoins,

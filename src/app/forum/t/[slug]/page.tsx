@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CheckCircle2, Lock } from "lucide-react";
+import { CheckCircle2, ChevronRight, Eye, MessageSquare } from "lucide-react";
 
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/session";
 import { canModerate } from "@/lib/auth";
 import { AUTHOR_FIELDS } from "@/lib/forum-queries";
-import { UserChip } from "@/components/forum/user-chip";
 import { RelativeTime } from "@/components/relative-time";
-import { VoteControl } from "@/components/forum/vote-control";
-import { ReplyList } from "@/components/forum/reply-list";
+import { PostCard } from "@/components/forum/post-card";
 import { ReplyComposer } from "@/components/forum/reply-composer";
 
 async function getTopic(slug: string) {
@@ -21,7 +19,10 @@ async function getTopic(slug: string) {
       category: { select: { slug: true, title: true } },
       replies: {
         where: { deleted: false },
-        orderBy: [{ accepted: "desc" }, { score: "desc" }, { createdAt: "asc" }],
+        // Chronological, the way a forum thread reads. The accepted answer is
+        // surfaced by a jump link at the top instead of being hoisted out of
+        // sequence, so the conversation still makes sense read top to bottom.
+        orderBy: { createdAt: "asc" },
         include: { author: AUTHOR_FIELDS },
       },
     },
@@ -49,7 +50,6 @@ export default async function TopicPage({ params }: { params: { slug: string } }
 
   const viewer = await currentUser();
 
-  // One query for every vote this viewer has on the page, rather than one per post.
   const votes = viewer
     ? Object.fromEntries(
         (
@@ -64,109 +64,104 @@ export default async function TopicPage({ params }: { params: { slug: string } }
       )
     : {};
 
-  // Only the asker or a moderator sees the accept control.
   const canAccept =
     topic.kind === "question" &&
     !!viewer &&
     (viewer.id === topic.authorId || canModerate(viewer.role));
+
+  const acceptedReply = topic.replies.find((reply) => reply.accepted);
 
   prisma.topic
     .update({ where: { id: topic.id }, data: { viewCount: { increment: 1 } } })
     .catch(() => {});
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-8 lg:py-12">
-      <nav className="text-sm text-muted-foreground" aria-label="Breadcrumb">
-        <Link href="/forum" className="hover:underline underline-offset-4">
+    <div className="mx-auto w-full max-w-3xl px-3 py-5 sm:px-4 sm:py-8">
+      <nav
+        className="flex items-center gap-1 text-xs text-muted-foreground"
+        aria-label="Breadcrumb"
+      >
+        <Link href="/" className="hover:text-foreground">
           Forum
         </Link>
-        <span className="px-1.5">/</span>
-        <Link
-          href={`/forum/c/${topic.category.slug}`}
-          className="hover:underline underline-offset-4"
-        >
+        <ChevronRight className="h-3 w-3" aria-hidden />
+        <Link href={`/forum/c/${topic.category.slug}`} className="truncate hover:text-foreground">
           {topic.category.title}
         </Link>
       </nav>
 
-      <article className="mt-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-semibold leading-tight tracking-tight">
-            {topic.title}
-          </h1>
-          {topic.solved ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              Solved
-            </span>
-          ) : null}
-          {topic.locked ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
-              <Lock className="h-3.5 w-3.5" />
-              Locked
-            </span>
-          ) : null}
-        </div>
+      <h1 className="mt-2 text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
+        {topic.title}
+      </h1>
 
-        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-          <UserChip user={topic.author} />
-          <span>asked <RelativeTime date={topic.createdAt} /></span>
-          <span>{topic.viewCount.toLocaleString()} views</span>
-        </div>
-
-        <div className="mt-6 flex gap-4">
-          <VoteControl
-            targetId={topic.slug}
-            kind="topic"
-            score={topic.score}
-            initialValue={votes[topic.id] ?? 0}
-            canVote={!!viewer && viewer.id !== topic.authorId}
-          />
-
-          <div className="min-w-0 flex-1">
-            <div className="prose prose-sm max-w-none whitespace-pre-wrap break-words dark:prose-invert">
-              {topic.body}
-            </div>
-
-            {topic.tags.length > 0 ? (
-              <ul className="mt-5 flex flex-wrap gap-2">
-                {topic.tags.map((tag) => (
-                  <li key={tag}>
-                    <Link
-                      href={`/forum?tag=${encodeURIComponent(tag)}`}
-                      className="rounded-md border border-border px-2 py-0.5 text-xs text-muted-foreground hover:border-foreground/30"
-                    >
-                      {tag}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </div>
-        </div>
-      </article>
-
-      <section className="mt-10" aria-label="Replies">
-        <h2 className="text-lg font-medium">
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1">
+          <MessageSquare className="h-3.5 w-3.5" />
           {topic.replyCount} {topic.replyCount === 1 ? "reply" : "replies"}
-        </h2>
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <Eye className="h-3.5 w-3.5" />
+          {topic.viewCount.toLocaleString()}
+        </span>
+        <span>
+          started <RelativeTime date={topic.createdAt} />
+        </span>
+      </div>
 
-        <ReplyList
-          replies={topic.replies.map((reply) => ({
-            id: reply.id,
-            body: reply.body,
-            accepted: reply.accepted,
-            score: reply.score,
-            createdAt: reply.createdAt.toISOString(),
-            author: reply.author,
-            viewerVote: votes[reply.id] ?? 0,
-          }))}
-          viewerId={viewer?.id ?? null}
-          canAccept={canAccept}
+      {acceptedReply ? (
+        <a
+          href={`#post-${acceptedReply.id}`}
+          className="mt-4 flex items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300 dark:hover:bg-emerald-950"
+        >
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          <span className="min-w-0 flex-1">
+            Solved by{" "}
+            <span className="font-medium">
+              {acceptedReply.author.name ?? acceptedReply.author.handle}
+            </span>
+          </span>
+          <span className="shrink-0 text-xs underline underline-offset-4">
+            Jump to answer
+          </span>
+        </a>
+      ) : null}
+
+      <div className="mt-4 space-y-3">
+        <PostCard
+          postId={topic.id}
+          number={1}
+          author={topic.author}
+          body={topic.body}
+          createdAt={topic.createdAt.toISOString()}
+          score={topic.score}
+          viewerVote={votes[topic.id] ?? 0}
+          isOriginalPost
+          tags={topic.tags}
+          canLike={!!viewer && viewer.id !== topic.authorId}
+          voteEndpoint={`/api/forum/topics/${topic.slug}/vote`}
         />
-      </section>
 
-      <section className="mt-10">
+        {topic.replies.map((reply, index) => (
+          <PostCard
+            key={reply.id}
+            postId={reply.id}
+            number={index + 2}
+            author={reply.author}
+            body={reply.body}
+            createdAt={reply.createdAt.toISOString()}
+            score={reply.score}
+            viewerVote={votes[reply.id] ?? 0}
+            accepted={reply.accepted}
+            isOriginalPost={reply.authorId === topic.authorId}
+            canLike={!!viewer && viewer.id !== reply.authorId}
+            canAccept={canAccept}
+            voteEndpoint={`/api/forum/replies/${reply.id}/vote`}
+            acceptEndpoint={`/api/forum/replies/${reply.id}/accept`}
+          />
+        ))}
+      </div>
+
+      <section className="mt-6">
         {topic.locked ? (
           <p className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
             This topic is locked. No new replies can be posted.

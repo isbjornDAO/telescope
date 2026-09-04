@@ -44,7 +44,7 @@ export const FAQ = () => {
       <CredenzaTrigger asChild>
         <button className="flex items-center gap-2 bg-white dark:bg-zinc-800 rounded-lg p-2 shadow hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
           <Info size={20} />
-          <span className="mobile-menu-text">Info / FAQ</span>
+         
         </button>
       </CredenzaTrigger>
       <CredenzaContent>

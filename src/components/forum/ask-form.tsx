@@ -101,7 +101,7 @@ export function AskForm({
           minLength={10}
           maxLength={160}
           placeholder="Why does my L1 validator fail to sync after a restart?"
-          className="mt-2"
+          className="mt-2 text-base sm:text-sm"
         />
       </div>
 
@@ -114,7 +114,7 @@ export function AskForm({
           value={categorySlug}
           onChange={(event) => setCategorySlug(event.target.value)}
           required
-          className="mt-2 h-10 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-foreground/30"
+          className="mt-2 h-11 w-full rounded-lg border border-border bg-background px-3 text-base outline-none focus:border-foreground/30 sm:h-10 sm:text-sm"
         >
           {categories.map((category) => (
             <option key={category.slug} value={category.slug}>
@@ -136,7 +136,7 @@ export function AskForm({
           minLength={20}
           rows={12}
           placeholder={"What you are trying to do, what you tried, and the exact error you got."}
-          className="mt-2"
+          className="mt-2 text-base sm:text-sm"
         />
       </div>
 
@@ -187,14 +187,14 @@ export function AskForm({
         ) : null}
       </div>
 
-      <div className="flex justify-end gap-3 border-t border-border pt-6">
-        <Button type="button" variant="ghost" onClick={() => router.back()}>
+      <div className="flex flex-col-reverse gap-2 border-t border-border pt-6 sm:flex-row sm:justify-end sm:gap-3">
+        <Button type="button" variant="ghost" className="h-11 sm:h-10" onClick={() => router.back()}>
           Cancel
         </Button>
         <Button
           type="submit"
           disabled={pending || title.trim().length < 10 || body.trim().length < 20}
-          className="gap-2"
+          className="h-11 gap-2 sm:h-10"
         >
           {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           Post {kind}

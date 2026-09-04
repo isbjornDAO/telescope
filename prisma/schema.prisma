@@ -28,11 +28,13 @@ model User {
   bio           String?
   role          String    @default("member") // member | moderator | admin
 
-  // Optional linked wallet, used for reward payouts and on-chain proofs.
-  // IMPORTANT: this field carries a unique index. Leave it ABSENT (undefined)
-  // for users without a wallet — never write an explicit null, because MongoDB
-  // unique indexes reject a second document holding the same null value.
-  address String? @unique
+  // A wallet is an optional linked credential, held in its own model. It used
+  // to be a `String? @unique` here, which is unworkable on MongoDB: Prisma
+  // writes an explicit null for an absent optional scalar, and a unique index
+  // rejects the second document holding that null — so the second wallet-less
+  // signup failed outright. Rows in Wallet exist only for users who linked one,
+  // so the unique index applies to real addresses and nothing collides.
+  wallets Wallet[]
 
   discordId String?
 
@@ -66,6 +68,18 @@ model User {
   artVotes ArtVote[]
 
   @@index([reputation])
+}
+
+model Wallet {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  address   String   @unique
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // The primary wallet receives bounty payouts when a user links more than one.
+  primary   Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 // NextAuth adapter models.

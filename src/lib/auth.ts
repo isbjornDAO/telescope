@@ -1,5 +1,3 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import type { Adapter } from "next-auth/adapters";
 import type { DefaultSession, NextAuthOptions } from "next-auth";
 import type { Provider } from "next-auth/providers/index";
 import GitHubProvider from "next-auth/providers/github";
@@ -8,7 +6,7 @@ import EmailProvider from "next-auth/providers/email";
 import DiscordProvider from "next-auth/providers/discord";
 
 import { prisma } from "@/lib/prisma";
-import { handleFromIdentity } from "@/lib/handle";
+import { telescopeAdapter } from "@/lib/adapter";
 
 declare module "next-auth" {
   interface Session {
@@ -146,7 +144,7 @@ function buildProviders(): Provider[] {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as Adapter,
+  adapter: telescopeAdapter(prisma),
   providers: buildProviders(),
   session: { strategy: "database", maxAge: 30 * 24 * 60 * 60 },
   pages: { signIn: "/signin", verifyRequest: "/signin/check-email" },
@@ -160,8 +158,12 @@ export const authOptions: NextAuthOptions = {
           handle: true,
           role: true,
           reputation: true,
-          address: true,
           email: true,
+          wallets: {
+            where: { primary: true },
+            select: { address: true },
+            take: 1,
+          },
         },
       });
 
@@ -173,7 +175,7 @@ export const authOptions: NextAuthOptions = {
         // survives a role field that was never backfilled.
         role: isAdminEmail(record?.email) ? "admin" : record?.role ?? "member",
         reputation: record?.reputation ?? 0,
-        address: record?.address ?? null,
+        address: record?.wallets[0]?.address ?? null,
       };
 
       return session;
@@ -181,23 +183,15 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     /**
-     * Give every new account a handle and, for a listed admin, the admin role.
-     * Done on creation so the rest of the app can assume a handle exists.
+     * The handle is assigned inside the adapter's createUser, so by here it
+     * already exists. This only grants the admin role to a listed email.
      */
     async createUser({ user }) {
-      const handle = await handleFromIdentity(
-        { name: user.name, email: user.email },
-        async (candidate) =>
-          (await prisma.user.count({ where: { handle: candidate } })) > 0
-      );
+      if (!isAdminEmail(user.email)) return;
 
       await prisma.user.update({
         where: { id: user.id },
-        data: {
-          handle,
-          role: isAdminEmail(user.email) ? "admin" : "member",
-          lastActive: new Date(),
-        },
+        data: { role: "admin", lastActive: new Date() },
       });
     },
     async signIn({ user }) {

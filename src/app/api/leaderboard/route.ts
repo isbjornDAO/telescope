@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       take: limit,
       select: {
         id: true,
-        address: true,
+        wallets: { select: { address: true }, where: { primary: true }, take: 1 },
         name: true,
         handle: true,
         xp: true,

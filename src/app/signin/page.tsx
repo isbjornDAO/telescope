@@ -23,7 +23,7 @@ export default async function SignInPage({
   const available = Object.keys(providers);
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col justify-center px-4 py-16">
+    <div className="mx-auto flex w-full max-w-md flex-col justify-center px-4 py-10 sm:py-16">
       <h1 className="text-2xl font-semibold tracking-tight">
         Sign in to Telescope
       </h1>

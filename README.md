@@ -43,16 +43,33 @@ to provide.
 
 ## How the forum works
 
-- **Questions** can be marked solved. The asker (or a moderator) accepts one
-  reply, which pins it to the top and awards reputation to whoever wrote it.
-- **Discussions** are plain threads with no accepted answer.
-- Votes on topics and replies drive both the post score and author reputation.
-  The awards live in one place, `REPUTATION` in `src/lib/forum.ts`.
-- Profiles are public at `/u/[handle]` and show reputation, questions, answers,
-  and how many of those answers were accepted.
+The forum **is** the site: it renders at `/`, and everything else — Discover,
+Events, Rewards, your profile, moderation — sits behind the menu button in the
+header. `/forum` redirects to `/` so older links keep working.
 
-Pages are server-rendered so questions are indexable — the point of a support
-forum is that the answer is findable from a search engine.
+- Topics are listed the way a conventional forum lists them: avatar, title,
+  category, author, last activity, and reply/view counts in a right-hand column.
+  Categories are chips above the list, reachable at every width.
+- Threads read **chronologically**, with numbered posts and the author
+  identified at the top of each one.
+- **Questions** can be marked solved. The asker (or a moderator) accepts a
+  reply; it keeps its place in the thread and a "Solved by …" banner at the top
+  jumps to it, so the conversation still reads in order.
+- **Discussions** are plain threads with no accepted answer.
+- Posts are liked rather than up/down voted. Likes drive author reputation; the
+  awards live in one place, `REPUTATION` in `src/lib/forum.ts`. The vote API
+  still accepts `-1` if downvotes are ever wanted back.
+- Profiles are public at `/u/[handle]`.
+
+Pages are server-rendered so topics are indexable — the point of a support forum
+is that the answer is findable from a search engine.
+
+### Mobile
+
+The layout is built mobile-first and verified at 390px with a real browser:
+no horizontal overflow on any page, counts in a fixed column rather than
+wrapping metadata, 16px inputs so iOS does not zoom on focus, and touch targets
+at or above 44px.
 
 ## Setup
 
@@ -97,6 +114,16 @@ src/
 Authorisation is decided in route handlers and pages via `requireUser` and
 `requireModerator`. `middleware.ts` only bounces sessionless visitors away from
 `/admin`; it never grants access.
+
+## Wallets
+
+A wallet lives in its own `Wallet` model, not as a column on `User`. This is not
+cosmetic: MongoDB unique indexes treat `null` as a value and Prisma writes an
+explicit null for an absent optional scalar, so a `String? @unique` column on
+User meant the *second* user without a wallet failed to be created. The same
+applies to `handle` (assigned inside the adapter's `createUser`, never null) and
+to `email` (wallet-only accounts get a namespaced placeholder). Any new optional
+unique field on `User` needs the same treatment.
 
 ## Archived
 

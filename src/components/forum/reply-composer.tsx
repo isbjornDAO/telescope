@@ -53,14 +53,18 @@ export function ReplyComposer({ slug }: { slug: string }) {
         id="reply-body"
         value={body}
         onChange={(event) => setBody(event.target.value)}
-        rows={6}
+        rows={5}
         required
         minLength={2}
         placeholder="Share what worked, and why."
-        className="mt-2"
+        className="mt-2 text-base sm:text-sm"
       />
       <div className="mt-3 flex justify-end">
-        <Button type="submit" disabled={pending || body.trim().length < 2} className="gap-2">
+        <Button
+          type="submit"
+          disabled={pending || body.trim().length < 2}
+          className="h-11 w-full gap-2 sm:h-10 sm:w-auto"
+        >
           {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           Post reply
         </Button>

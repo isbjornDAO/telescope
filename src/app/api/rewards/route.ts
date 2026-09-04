@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
     // Get user if wallet address provided
     let user = null;
     if (walletAddress) {
-      user = await prisma.user.findUnique({
-        where: { address: walletAddress },
+      user = await prisma.user.findFirst({
+        where: { wallets: { some: { address: walletAddress } } },
         select: { id: true },
       });
     }

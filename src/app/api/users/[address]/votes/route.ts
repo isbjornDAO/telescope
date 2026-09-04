@@ -11,8 +11,8 @@ export async function GET(
   try {
     const address = addressSchema.parse(params.address);
 
-    const user = await prisma.user.findUnique({
-      where: { address },
+    const user = await prisma.user.findFirst({
+      where: { wallets: { some: { address } } },
       include: {
         votes: {
           include: {

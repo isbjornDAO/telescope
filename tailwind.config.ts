@@ -8,6 +8,18 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+  		screens: {
+  			// Small phones (iPhone SE, 375px) sit below this. Wider phones get the
+  			// author's name alongside the avatar in topic rows; below it, the
+  			// avatar alone identifies the poster and the metadata line stays on
+  			// one line.
+  			xs: '400px',
+  			sm: '640px',
+  			md: '768px',
+  			lg: '1024px',
+  			xl: '1280px',
+  			'2xl': '1536px'
+  		},
   	extend: {
   		colors: {
   			background: 'hsl(var(--background))',

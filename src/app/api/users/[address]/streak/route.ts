@@ -6,8 +6,8 @@ export async function GET(
   { params }: { params: { address: string } }
 ) {
   try {
-    const user = await prisma.user.findUnique({
-      where: { address: params.address },
+    const user = await prisma.user.findFirst({
+      where: { wallets: { some: { address: params.address } } },
       include: {
         votes: {
           orderBy: { votedDate: "desc" },

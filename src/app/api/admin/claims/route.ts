@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
       include: {
         user: {
           select: {
-            address: true,
+            wallets: { select: { address: true }, where: { primary: true }, take: 1 },
             name: true,
         handle: true,
             xp: true,

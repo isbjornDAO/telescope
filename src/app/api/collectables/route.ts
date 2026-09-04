@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { getUserCollectables, getAllCollectables } from "@/lib/collectables";
 
-const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,8 +27,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Find user
-    const user = await prisma.user.findUnique({
-      where: { address: address.toLowerCase() },
+    const user = await prisma.user.findFirst({
+      where: { wallets: { some: { address: address.toLowerCase() } } },
     });
 
     if (!user) {

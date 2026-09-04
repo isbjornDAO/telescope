@@ -176,9 +176,9 @@ export default function CalendarPage() {
   if (loading) {
     return (
       <div className="w-full">
-        <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-4">
+        <div className="mx-auto w-full max-w-4xl px-3 sm:px-4 mb-4">
         </div>
-        <div className="w-full max-w-screen-lg mx-auto px-8 pb-8">
+        <div className="mx-auto w-full max-w-4xl px-3 sm:px-4 pb-8">
           <div className="h-12 w-64 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded mb-8" />
           <div className="h-96 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded" />
         </div>
@@ -188,7 +188,7 @@ export default function CalendarPage() {
 
   return (
     <div className="w-full">
-        <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-4">
+        <div className="mx-auto w-full max-w-4xl px-3 sm:px-4 mb-4">
 
           {isConnected && !isUserStatsLoading && !userStats?.discordId && (
             <div className="mb-6">
@@ -196,7 +196,7 @@ export default function CalendarPage() {
           )}
         </div>
 
-      <div className="w-full max-w-screen-lg mx-auto px-8 pb-8">
+      <div className="mx-auto w-full max-w-4xl px-3 sm:px-4 pb-8">
         {/* Today's Events Section */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
@@ -294,9 +294,12 @@ export default function CalendarPage() {
               </div>
 
               <div className="grid grid-cols-7 gap-1.5">
-                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
-                  <div key={day} className="text-center font-semibold text-xs py-1.5 text-muted-foreground">
-                    {day}
+                {/* Keyed by index: the initials repeat (S, T appear twice), so
+                    the letter itself is not a unique key. */}
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
+                  <div key={index} className="text-center font-semibold text-xs py-1.5 text-muted-foreground">
+                    <span className="sr-only">{['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][index]}</span>
+                    <span aria-hidden>{day}</span>
                   </div>
                 ))}
 

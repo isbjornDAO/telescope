@@ -17,11 +17,11 @@ export default async function AskPage() {
   const categories = await listCategories();
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-8 lg:py-12">
-      <h1 className="text-2xl font-semibold tracking-tight">Ask a question</h1>
+    <div className="mx-auto w-full max-w-3xl px-3 py-5 sm:px-4 sm:py-8">
+      <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">New topic</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Include what you tried and what happened. Questions with detail get
-        answered; questions without it usually do not.
+        Include what you tried and what happened. Topics with detail get answered;
+        topics without it usually do not.
       </p>
 
       <AskForm

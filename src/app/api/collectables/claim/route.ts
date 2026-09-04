@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { awardCollectableByAddress, hasCollectable } from "@/lib/collectables";
-
-const prisma = new PrismaClient();
+import { findOrCreateUserByWallet } from "@/lib/user";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,19 +15,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find or create user
-    let user = await prisma.user.findUnique({
-      where: { address: walletAddress.toLowerCase() },
-    });
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          address: walletAddress.toLowerCase(),
-          name: `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`,
-        },
-      });
-    }
+    const user = await findOrCreateUserByWallet(walletAddress);
 
     // Find the collectable
     const collectable = await prisma.collectable.findUnique({

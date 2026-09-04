@@ -85,7 +85,7 @@ export function DonateModal() {
       <CredenzaTrigger asChild>
         <button className="flex items-center gap-2 bg-white dark:bg-zinc-800 rounded-lg px-4 py-2 h-9 shadow hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
           <Coffee className="h-4 w-4" />
-          <span className="mobile-menu-text">Donate</span>
+          
         </button>
       </CredenzaTrigger>
       <CredenzaContent>

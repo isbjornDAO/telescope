@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 /**
  * Award a collectable to a user
@@ -171,8 +169,8 @@ export async function checkAndAwardAchievements(userId: string) {
  */
 export async function awardCollectableByAddress(address: string, collectableId: string) {
   try {
-    const user = await prisma.user.findUnique({
-      where: { address: address.toLowerCase() }
+    const user = await prisma.user.findFirst({
+      where: { wallets: { some: { address: address.toLowerCase() } } }
     });
 
     if (!user) {

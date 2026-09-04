@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 
 import { prisma } from "@/lib/prisma";
 import { RelativeTime } from "@/components/relative-time";
+import { Avatar } from "@/components/forum/avatar";
 
 async function getProfile(handle: string) {
   return prisma.user.findUnique({
@@ -18,7 +18,7 @@ async function getProfile(handle: string) {
       bio: true,
       reputation: true,
       createdAt: true,
-      address: true,
+      wallets: { select: { address: true }, where: { primary: true }, take: 1 },
     },
   });
 }
@@ -65,24 +65,12 @@ export default async function ProfilePage({
   ]);
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-12">
+    <div className="mx-auto w-full max-w-3xl px-3 py-6 sm:px-4 sm:py-10">
       <header className="flex flex-wrap items-start gap-5">
-        {user.image ? (
-          <Image
-            src={user.image}
-            alt=""
-            width={72}
-            height={72}
-            className="h-18 w-18 rounded-full object-cover"
-          />
-        ) : (
-          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-muted text-xl font-semibold uppercase">
-            {(user.name ?? user.handle ?? "B").slice(0, 1)}
-          </span>
-        )}
+        <Avatar name={user.name ?? user.handle} image={user.image} size={64} />
 
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
             {user.name ?? `@${user.handle}`}
           </h1>
           {user.name ? (
@@ -97,13 +85,13 @@ export default async function ProfilePage({
 
       <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-3 border-y border-border py-5 text-sm">
         <Stat label="Reputation" value={user.reputation.toLocaleString()} />
-        <Stat label="Questions" value={topics.length.toLocaleString()} />
+        <Stat label="Topics" value={topics.length.toLocaleString()} />
         <Stat label="Answers" value={answers.toLocaleString()} />
         <Stat label="Accepted" value={accepted.toLocaleString()} />
       </dl>
 
       <section className="mt-10">
-        <h2 className="text-lg font-medium">Questions</h2>
+        <h2 className="text-lg font-medium">Topics</h2>
 
         {topics.length === 0 ? (
           <p className="mt-4 text-sm text-muted-foreground">Nothing posted yet.</p>

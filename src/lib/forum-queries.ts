@@ -36,6 +36,7 @@ export type TopicListItem = Prisma.TopicGetPayload<{
     viewCount: true;
     solved: true;
     pinned: true;
+    locked: true;
     createdAt: true;
     lastActivity: true;
     author: typeof AUTHOR_FIELDS;
@@ -112,6 +113,7 @@ export async function listTopics({
         viewCount: true,
         solved: true,
         pinned: true,
+        locked: true,
         createdAt: true,
         lastActivity: true,
         author: AUTHOR_FIELDS,

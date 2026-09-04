@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user
-    const user = await prisma.user.findUnique({
-      where: { address: walletAddress },
+    const user = await prisma.user.findFirst({
+      where: { wallets: { some: { address: walletAddress } } },
     });
 
     if (!user) {

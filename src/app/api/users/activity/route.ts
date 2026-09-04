@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { findOrCreateUserByWallet, findUserByWallet } from "@/lib/user";
 
 export async function POST(request: Request) {
   try {
@@ -14,23 +15,20 @@ export async function POST(request: Request) {
 
     // If clear flag is set, just clear this user's activity
     if (clear) {
-      await prisma.user.updateMany({
-        where: { address },
-        data: { lastActive: null }
-      });
+      const existing = await findUserByWallet(address);
+      if (existing) {
+        await prisma.user.update({
+          where: { id: existing.id },
+          data: { lastActive: null }
+        });
+      }
       return NextResponse.json({ success: true });
     }
 
-    // Update or create user with lastActive timestamp
-    await prisma.user.upsert({
-      where: { address },
-      create: {
-        address,
-        lastActive: new Date()
-      },
-      update: {
-        lastActive: new Date()
-      }
+    const user = await findOrCreateUserByWallet(address);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastActive: new Date() }
     });
 
     // Also clean up old activity (remove users inactive for >15 minutes to keep counts accurate)
