@@ -17,7 +17,7 @@ export function TopicRow({ topic }: { topic: TopicListItem }) {
   const author = topic.author.name ?? topic.author.handle ?? "Builder";
 
   return (
-    <article className="flex gap-3 px-3 py-3.5 transition-colors hover:bg-muted/40 sm:gap-4 sm:px-4">
+    <article className="flex gap-3 px-3 py-3.5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-700/40 sm:gap-4 sm:px-4">
       <Link
         href={topic.author.handle ? `/u/${topic.author.handle}` : `/forum/t/${topic.slug}`}
         className="shrink-0 pt-0.5"

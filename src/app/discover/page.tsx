@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+
+import { PageNavigation } from "@/components/page-navigation";
 import { ArrowUpRight, Compass, Rocket, BookOpen } from "lucide-react";
 
 import { externalLinks } from "@/lib/site";
@@ -47,7 +49,9 @@ const DESTINATIONS = [
 
 export default function DiscoverPage() {
   return (
-    <div className="mx-auto w-full max-w-3xl px-3 py-6 sm:px-4 sm:py-10">
+    <div className="mx-auto w-full max-w-screen-lg px-3 py-4 sm:px-4 sm:py-6 md:px-8">
+      <PageNavigation />
+
       <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Discover</h1>
       <p className="mt-2 max-w-xl text-sm text-muted-foreground">
         Everything worth finding on Avalanche, and where it actually lives.

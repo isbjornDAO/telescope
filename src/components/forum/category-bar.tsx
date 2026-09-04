@@ -19,7 +19,14 @@ type Category = {
  * link to the grouped index at /categories, which is where the full taxonomy
  * with descriptions lives.
  */
-export function CategoryBar({ categories }: { categories: Category[] }) {
+export function CategoryBar({
+  categories,
+  basePath = "/",
+}: {
+  categories: Category[];
+  /** Where the "All" chip returns to — the site root, or the current zone. */
+  basePath?: string;
+}) {
   const pathname = usePathname();
   const params = useSearchParams();
   const activeSlug = pathname?.startsWith("/forum/c/")
@@ -43,12 +50,12 @@ export function CategoryBar({ categories }: { categories: Category[] }) {
       <ul className="flex w-max items-center gap-1.5">
         <li>
           <Link
-            href={sort ? `/?sort=${sort}` : "/"}
+            href={sort ? `${basePath}?sort=${sort}` : basePath}
             aria-current={!activeSlug ? "page" : undefined}
             className={`inline-block whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-colors ${
               !activeSlug
                 ? "bg-foreground text-background"
-                : "bg-muted text-muted-foreground hover:text-foreground"
+                : "bg-white text-muted-foreground shadow-sm hover:text-foreground dark:bg-zinc-800"
             }`}
           >
             All
@@ -66,7 +73,7 @@ export function CategoryBar({ categories }: { categories: Category[] }) {
                 className={`inline-block whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-colors ${
                   active
                     ? "bg-foreground text-background"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
+                    : "bg-white text-muted-foreground shadow-sm hover:text-foreground dark:bg-zinc-800"
                 }`}
               >
                 {category.title}

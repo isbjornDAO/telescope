@@ -1,7 +1,9 @@
+import * as React from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import { TopicRow } from "@/components/forum/topic-row";
+import { PageNavigation } from "@/components/page-navigation";
 import { CategoryBar } from "@/components/forum/category-bar";
 import { ForumSearch } from "@/components/forum/search";
 import { Button } from "@/components/ui/button";
@@ -39,6 +41,7 @@ export function ForumView({
   heading,
   description,
   showTabs = true,
+  intro,
 }: {
   topics: TopicListItem[];
   total: number;
@@ -50,21 +53,29 @@ export function ForumView({
   heading?: string;
   description?: string;
   showTabs?: boolean;
+  /** Rendered between the tabs and the topic list — the zone cards on home. */
+  intro?: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto w-full max-w-4xl px-3 py-4 sm:px-4 sm:py-6">
+    <div className="mx-auto w-full max-w-screen-lg px-3 py-4 sm:px-4 sm:py-6 md:px-8">
+      <PageNavigation />
+
       {heading ? (
         <header className="mb-4">
           <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
             {heading}
           </h1>
           {description ? (
-            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+              {description}
+            </p>
           ) : null}
         </header>
       ) : null}
 
-      <CategoryBar categories={categories} />
+      {intro ? <div className="mb-5">{intro}</div> : null}
+
+      <CategoryBar categories={categories} basePath={basePath} />
 
       <div className="mt-3 flex items-center gap-2">
         {showTabs ? (
@@ -96,7 +107,7 @@ export function ForumView({
         ) : null}
 
         <div className="ml-auto flex items-center gap-2">
-          <ForumSearch defaultValue={query ?? ""} />
+          <ForumSearch defaultValue={query ?? ""} basePath={basePath} />
           <Button asChild size="sm" className="shrink-0 gap-1.5">
             <Link href="/forum/ask">
               <Plus className="h-4 w-4" />
@@ -116,7 +127,7 @@ export function ForumView({
         </p>
       ) : null}
 
-      <div className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+      <div className="mt-3 divide-y divide-zinc-100 overflow-hidden rounded-xl bg-white shadow-md dark:divide-zinc-700/60 dark:bg-zinc-800">
         {topics.length === 0 ? (
           <EmptyState query={query} />
         ) : (
@@ -137,10 +148,12 @@ function EmptyState({ query }: { query?: string }) {
   return (
     <div className="px-6 py-16 text-center">
       <p className="text-sm font-medium">
-        {query ? `No topics match “${query}”.` : "No topics yet."}
+        {query ? `Nothing found for “${query}”.` : "Nothing here yet."}
       </p>
       <p className="mt-1 text-sm text-muted-foreground">
-        {query ? "Try a different search, or ask it yourself." : "Start the first one."}
+        {query
+          ? "Try different words — or just ask, someone here probably knows."
+          : "Be the first to post. A half-formed thought is fine."}
       </p>
       <Button asChild className="mt-6">
         <Link href="/forum/ask">New topic</Link>

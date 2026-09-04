@@ -56,7 +56,7 @@ export function ReplyComposer({ slug }: { slug: string }) {
         rows={5}
         required
         minLength={2}
-        placeholder="Share what worked, and why."
+        placeholder="Share what worked, what did not, or just ask a follow-up."
         className="mt-2 text-base sm:text-sm"
       />
       <div className="mt-3 flex justify-end">

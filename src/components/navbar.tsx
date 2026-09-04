@@ -1,78 +1,64 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
-import {
-  Menu,
-  Compass,
-  Calendar,
-  Gift,
-  Telescope,
-  User as UserIcon,
-  LogOut,
-  Shield,
-  ExternalLink,
-  Plus,
-  LayoutGrid,
-} from "lucide-react";
+import { Menu, LogOut, Shield, User as UserIcon, CircleDollarSign } from "lucide-react";
+import { useState } from "react";
 
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar } from "@/components/forum/avatar";
 import { Button } from "@/components/ui/button";
+import { ZONES } from "@/lib/zones";
 import { externalLinks } from "@/lib/site";
 
 /**
- * The forum is the site, so the header carries only the wordmark, a way to
- * start a topic, and a menu. Everything that is not the forum — Discover,
- * Events, Rewards, the profile and moderation — lives behind the menu button
- * rather than competing with the topic list for attention.
+ * The site header, sitting on the polar bear illustration supplied by the `.bg`
+ * wrapper in the root layout. The logo carries the identity, so the header
+ * itself stays light: account, theme, and a menu.
  */
-const SECTIONS = [
-  { href: "/categories", label: "Categories", icon: LayoutGrid },
-  { href: "/discover", label: "Discover", icon: Compass },
-  { href: "/calendar", label: "Events", icon: Calendar },
-  { href: "/rewards", label: "Rewards", icon: Gift },
-];
-
 export function Navbar() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
   const { data: session, status } = useSession();
   const user = session?.user;
-
   const close = () => setOpen(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-4xl items-center gap-2 px-3 sm:px-4">
-        <Link
-          href="/"
-          className="flex shrink-0 items-center gap-2 font-semibold tracking-tight"
-        >
-          <Telescope className="h-5 w-5" aria-hidden />
-          <span>Telescope</span>
+    <header className="relative z-20 w-full">
+      <div className="mx-auto flex w-full max-w-screen-lg items-start justify-between gap-3 px-4 pb-4 pt-4 md:px-8 md:pt-10">
+        <Link href="/" aria-label="Telescope home" className="shrink-0">
+          <Image
+            src="/logo.png"
+            alt="Telescope"
+            width={320}
+            height={80}
+            priority
+            className="w-44 sm:w-56 md:w-72"
+            style={{ height: "auto" }}
+          />
         </Link>
 
-        <div className="ml-auto flex items-center gap-1.5">
-          {/* Icon only: the forum index already carries a labelled "New topic"
-              button in its toolbar, and two of them side by side read as a
-              mistake. This one exists for thread and section pages, which have
-              no toolbar. */}
-          <Button asChild size="icon" variant="ghost" className="h-9 w-9">
-            <Link href="/forum/ask" aria-label="New topic" title="New topic">
-              <Plus className="h-5 w-5" />
+        <div className="flex shrink-0 items-center gap-1.5 md:gap-2">
+          {user ? (
+            <Link
+              href="/rewards"
+              className="flex h-9 items-center gap-1.5 rounded-lg bg-white px-2.5 shadow transition-colors hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 md:px-3"
+              title="Your coins"
+            >
+              <CircleDollarSign className="h-4 w-4 text-yellow-600" />
+              <span className="text-sm font-bold text-yellow-600">
+                {user.reputation ?? 0}
+              </span>
             </Link>
-          </Button>
+          ) : null}
 
           <ThemeToggle />
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <button
-                className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-muted"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow transition-colors hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                 aria-label="Open menu"
               >
                 {user ? (
@@ -102,14 +88,14 @@ export function Navbar() {
                           {user.name ?? user.handle}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {user.reputation.toLocaleString()} reputation
+                          {user.reputation.toLocaleString()} points
                         </p>
                       </div>
                     </Link>
                   ) : (
                     <>
                       <p className="text-sm text-muted-foreground">
-                        Sign in with the same account you use on
+                        Join in — sign in with the same account you use on
                         build.avax.network.
                       </p>
                       <Button asChild className="mt-3 w-full" onClick={close}>
@@ -119,26 +105,34 @@ export function Navbar() {
                   )}
                 </div>
 
-                <nav className="flex-1 p-2" aria-label="Sections">
-                  {SECTIONS.map((section) => {
-                    const Icon = section.icon;
-                    const active = pathname?.startsWith(section.href);
-                    return (
-                      <Link
-                        key={section.href}
-                        href={section.href}
-                        onClick={close}
-                        className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm transition-colors ${
-                          active
-                            ? "bg-muted font-medium"
-                            : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                        }`}
-                      >
-                        <Icon className="h-4 w-4" />
-                        {section.label}
-                      </Link>
-                    );
-                  })}
+                <nav className="flex-1 p-2" aria-label="Menu">
+                  <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Areas
+                  </p>
+                  {ZONES.map((zone) => (
+                    <Link
+                      key={zone.slug}
+                      href={`/z/${zone.slug}`}
+                      onClick={close}
+                      className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+                    >
+                      {zone.label}
+                    </Link>
+                  ))}
+
+                  <div className="my-2 border-t border-border" />
+                  <Link href="/categories" onClick={close} className={MENU_ITEM}>
+                    All categories
+                  </Link>
+                  <Link href="/calendar" onClick={close} className={MENU_ITEM}>
+                    Events
+                  </Link>
+                  <Link href="/rewards" onClick={close} className={MENU_ITEM}>
+                    Rewards
+                  </Link>
+                  <Link href="/discover" onClick={close} className={MENU_ITEM}>
+                    Discover
+                  </Link>
 
                   {user ? (
                     <>
@@ -146,17 +140,13 @@ export function Navbar() {
                       <Link
                         href={user.handle ? `/u/${user.handle}` : "/profile"}
                         onClick={close}
-                        className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+                        className={MENU_ITEM}
                       >
                         <UserIcon className="h-4 w-4" />
                         Profile
                       </Link>
                       {(user.role === "admin" || user.role === "moderator") && (
-                        <Link
-                          href="/admin"
-                          onClick={close}
-                          className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
-                        >
+                        <Link href="/admin" onClick={close} className={MENU_ITEM}>
                           <Shield className="h-4 w-4" />
                           Moderation
                         </Link>
@@ -166,7 +156,7 @@ export function Navbar() {
                           close();
                           signOut({ callbackUrl: "/" });
                         }}
-                        className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+                        className={`w-full ${MENU_ITEM}`}
                       >
                         <LogOut className="h-4 w-4" />
                         Sign out
@@ -180,10 +170,9 @@ export function Navbar() {
                     href={externalLinks.buildersHub}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground"
+                    className="text-xs text-muted-foreground hover:text-foreground"
                   >
-                    Docs on Builders Hub
-                    <ExternalLink className="h-3 w-3" />
+                    Docs on Builders Hub ↗
                   </a>
                 </div>
               </div>
@@ -194,3 +183,6 @@ export function Navbar() {
     </header>
   );
 }
+
+const MENU_ITEM =
+  "flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground";

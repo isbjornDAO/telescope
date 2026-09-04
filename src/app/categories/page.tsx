@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+
+import { PageNavigation } from "@/components/page-navigation";
 import * as Icons from "lucide-react";
 
 import { listCategoryGroups } from "@/lib/forum-queries";
@@ -28,7 +30,9 @@ export default async function CategoriesPage() {
   const groups = await listCategoryGroups();
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-3 py-6 sm:px-4 sm:py-10">
+    <div className="mx-auto w-full max-w-screen-lg px-3 py-4 sm:px-4 sm:py-6 md:px-8">
+      <PageNavigation />
+
       <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
         Categories
       </h1>

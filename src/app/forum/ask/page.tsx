@@ -20,8 +20,9 @@ export default async function AskPage() {
     <div className="mx-auto w-full max-w-3xl px-3 py-5 sm:px-4 sm:py-8">
       <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">New topic</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Include what you tried and what happened. Topics with detail get answered;
-        topics without it usually do not.
+        Say what you are trying to do and where you got stuck. You do not need
+        to be technical, and you do not need the perfect question — people here
+        are happy to help you figure it out.
       </p>
 
       <AskForm

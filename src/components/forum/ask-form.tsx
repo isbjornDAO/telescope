@@ -84,8 +84,8 @@ export function AskForm({
         </div>
         <p className="mt-1.5 text-xs text-muted-foreground">
           {kind === "question"
-            ? "Questions can be marked solved once someone answers them."
-            : "Discussions stay open — no accepted answer."}
+            ? "Pick this if you want an answer — you can mark the reply that solved it."
+            : "Pick this to start a conversation with no single right answer."}
         </p>
       </fieldset>
 
@@ -100,7 +100,7 @@ export function AskForm({
           required
           minLength={10}
           maxLength={160}
-          placeholder="Why does my L1 validator fail to sync after a restart?"
+          placeholder="How do local merchants actually get paid in stablecoins?"
           className="mt-2 text-base sm:text-sm"
         />
       </div>
@@ -135,7 +135,7 @@ export function AskForm({
           required
           minLength={20}
           rows={12}
-          placeholder={"What you are trying to do, what you tried, and the exact error you got."}
+          placeholder={"What you are working on, what you have tried, and where you got stuck. Screenshots, numbers or error messages all help."}
           className="mt-2 text-base sm:text-sm"
         />
       </div>
@@ -155,7 +155,7 @@ export function AskForm({
                 addTag();
               }
             }}
-            placeholder="subnet-evm, avalanche-cli"
+            placeholder="payments, retention, subnet-evm"
             disabled={tags.length >= 5}
           />
           <Button

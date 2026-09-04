@@ -78,10 +78,9 @@
       sans-serif,
       "Apple Color Emoji",
       "Segoe UI Emoji";
-    /* Background comes from the theme token, so light and dark stay in step
-       with the cards drawn on top. This used to be a hard-coded zinc, which
-       fought the token the cards use. */
-    @apply bg-background text-foreground;
+    /* A soft zinc ground rather than the card colour, so the white cards the
+       layout is built from actually read as cards. */
+    @apply bg-zinc-200 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -143,4 +142,32 @@
 
 .snow-button-card {
   @apply relative;
+}
+
+/* The polar bear header. `.bg` wraps the site header in the root layout and
+   supplies the illustration behind it. */
+.bg {
+  min-height: 400px;
+  background-color: #e6f0f5;
+  background-image: url("/bg.png"), url("/bg-tile.png");
+  background-repeat: no-repeat, repeat-x;
+  background-position: center bottom, center center;
+  background-size: contain, auto 100%;
+  position: relative;
+}
+
+.dark .bg {
+  background-color: #1a1a1a;
+}
+
+@media screen and (max-width: 768px) {
+  .bg {
+    /* Shorter than the desktop illustration so the first topics are still
+       visible above the fold on a phone. */
+    min-height: 210px;
+    background-image: url("/bg.png");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: cover;
+  }
 }

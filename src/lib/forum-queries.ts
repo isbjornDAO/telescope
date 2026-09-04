@@ -51,6 +51,7 @@ export type TopicListItem = Prisma.TopicGetPayload<{
  */
 export async function listTopics({
   categorySlug,
+  group,
   tag,
   query,
   sort = "latest",
@@ -58,6 +59,8 @@ export async function listTopics({
   skip = 0,
 }: {
   categorySlug?: string;
+  /** Restrict to one zone, i.e. every category in that Category.group. */
+  group?: string;
   tag?: string;
   query?: string;
   sort?: Sort;
@@ -72,6 +75,12 @@ export async function listTopics({
       select: { id: true },
     });
     where.categoryId = category?.id ?? "000000000000000000000000";
+  } else if (group) {
+    const categories = await prisma.category.findMany({
+      where: { group, archived: false },
+      select: { id: true },
+    });
+    where.categoryId = { in: categories.map((category) => category.id) };
   }
 
   if (tag) where.tags = { has: tag.toLowerCase() };
@@ -129,10 +138,11 @@ export async function listTopics({
   return { topics, total };
 }
 
-export async function listCategories() {
+/** All categories, or only those in one zone when `group` is given. */
+export async function listCategories(group?: string) {
   return orFallback(
     prisma.category.findMany({
-    where: { archived: false },
+    where: { archived: false, ...(group ? { group } : {}) },
     orderBy: { position: "asc" },
     select: {
       slug: true,
@@ -168,6 +178,24 @@ export async function listCategoryGroups(): Promise<
   }
 
   return Array.from(groups, ([group, items]) => ({ group, categories: items }));
+}
+
+/** Topic count per zone, keyed by Category.group. */
+export async function topicCountsByGroup(): Promise<Record<string, number>> {
+  const categories = await orFallback(
+    prisma.category.findMany({
+      where: { archived: false },
+      select: { group: true, _count: { select: { topics: true } } },
+    }),
+    [],
+    "topicCountsByGroup"
+  );
+
+  const counts: Record<string, number> = {};
+  for (const category of categories) {
+    counts[category.group] = (counts[category.group] ?? 0) + category._count.topics;
+  }
+  return counts;
 }
 
 /** Headline numbers for the forum sidebar and the home page. */

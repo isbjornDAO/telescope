@@ -8,7 +8,13 @@ import { Search, X } from "lucide-react";
  * Collapses to an icon button on mobile, where a persistent input would crowd
  * out the sort tabs and the new-topic button on a 390px row.
  */
-export function ForumSearch({ defaultValue }: { defaultValue: string }) {
+export function ForumSearch({
+  defaultValue,
+  basePath = "/",
+}: {
+  defaultValue: string;
+  basePath?: string;
+}) {
   const router = useRouter();
   const [value, setValue] = useState(defaultValue);
   const [expanded, setExpanded] = useState(defaultValue.length > 0);
@@ -16,7 +22,7 @@ export function ForumSearch({ defaultValue }: { defaultValue: string }) {
   function submit(event: React.FormEvent) {
     event.preventDefault();
     const trimmed = value.trim();
-    router.push(trimmed ? `/?q=${encodeURIComponent(trimmed)}` : "/");
+    router.push(trimmed ? `${basePath}?q=${encodeURIComponent(trimmed)}` : basePath);
   }
 
   return (
@@ -55,7 +61,7 @@ export function ForumSearch({ defaultValue }: { defaultValue: string }) {
           onClick={() => {
             setValue("");
             setExpanded(false);
-            if (defaultValue) router.push("/");
+            if (defaultValue) router.push(basePath);
           }}
           aria-label="Close search"
           className="absolute right-1.5 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded text-muted-foreground hover:text-foreground"

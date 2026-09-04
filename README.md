@@ -18,12 +18,26 @@ on it. It deliberately does not duplicate its neighbours:
 | Go-to-market, growth, real-world use, research | Telescope |
 | Hackathons and bounties | Telescope |
 
+## The three areas
+
+The forum is split into visibly separate rooms, so nobody has to decide whether
+their question belongs among validator stack traces:
+
+| Area | Route | For |
+| --- | --- | --- |
+| **Growth** | `/z/growth` | Go-to-market, campaigns, partnerships, real users and on-chain volume |
+| **Real World** | `/z/real-world` | Local pilots, payments, climate, economy, policy, public goods |
+| **Build** | `/z/tech` | The technical room: L1s, contracts, tooling, nodes, help |
+| **Community** | `/z/community` | Hackathons, bounties, everything else |
+
+Areas are defined in `src/lib/zones.ts` and map onto `Category.group`, so the
+navigation and the taxonomy cannot drift apart. Each area page shows only its
+own categories in the filter bar.
+
 ## Categories
 
 Fifteen categories in four sections, seeded by `npm run seed` and grouped on
-`/categories`. The order is deliberate: the growth and real-world conversations
-come first because they are the harder and less-served ones, and the technical
-categories that most developer forums lead with sit below them.
+`/categories`.
 
 **Growth & Go-To-Market** — Go-To-Market · Users & On-Chain Volume · Showcase
 
