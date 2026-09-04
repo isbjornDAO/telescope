@@ -1,143 +1,96 @@
-# Telescope Platform Documentation
+# Telescope
 
-## Development Setup
+The community forum for builders on Avalanche, supporting
+[build.avax.network](https://build.avax.network). Ask a question, get an answer
+you can accept, and find the Team1 hackathons and bounties worth your time.
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+## What Telescope is (and is not)
 
-2. **Set up environment variables:**
-   Create `.env` file in the root directory with:
-   ```plaintext
-   DATABASE_URL="mongodb+srv://<username>:<password>@cluster.xxxxx.mongodb.net/database_name?retryWrites=true&w=majority"
-   DISCORD_CLIENT_ID=your_discord_client_id
-   DISCORD_CLIENT_SECRET=your_discord_client_secret
-   DISCORD_BOT_TOKEN=your_discord_bot_token
-   NEXTAUTH_SECRET=your_nextauth_secret
-   NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_wc_project_id
-   ```
+Telescope does one thing: it is the place builders come to get unstuck and to
+find programmes to enter. It deliberately does not duplicate its neighbours:
 
-3. **Database setup:**
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   ```
+| Need | Where it lives |
+| --- | --- |
+| Docs, courses, developer console | [build.avax.network](https://build.avax.network) |
+| Ecosystem directory (500+ projects) | [cascade.team1.network](https://cascade.team1.network) |
+| Questions, answers, discussion | Telescope |
+| Hackathons and bounties | Telescope |
 
-### Environment Variables Generation
+## Identity
 
-1. **Generate NextAuth secret:**
-   ```bash
-   openssl rand -base64 32
-   ```
+Sign-in mirrors Builders Hub exactly — **GitHub, Google, and an email link** —
+and accounts are matched on verified email, so a builder arriving from
+build.avax.network lands on the same Telescope profile rather than creating a
+second one. Discord remains available for the existing community.
 
-2. **Get Discord credentials:**
-   - Create application at [Discord Developer Portal](https://discord.com/developers/applications)
-   - Add redirect URI: `http://localhost:3000/api/auth/callback/discord`
+A wallet is **not** a login. It is an optional credential you link from your
+profile to receive bounty payouts and claim rewards.
 
-3. **WalletConnect Project ID:**
-   - Create project at [WalletConnect Cloud](https://cloud.walletconnect.com)
-   - Use the project ID in your `.env`
+> Builders Hub is currently an OAuth *consumer* (NextAuth with those three
+> providers) and exposes no authorization or token endpoint, so a literal
+> "Sign in with Builders Hub" button cannot be built yet. `src/lib/auth.ts`
+> keeps a slot for a `builders-hub` provider; when Ava Labs ships one, adding it
+> there links existing users automatically through the same email matching.
 
-4. **MongoDB connection:**
-   - Create free cluster at [MongoDB Atlas](https://www.mongodb.com/atlas)
-   - Whitelist IP `0.0.0.0/0` (temporarily for development)
-   - Get connection string from "Connect" button
-   - PD: Ask for access for production connection string
+## How the forum works
 
-## Data Import Formats
+- **Questions** can be marked solved. The asker (or a moderator) accepts one
+  reply, which pins it to the top and awards reputation to whoever wrote it.
+- **Discussions** are plain threads with no accepted answer.
+- Votes on topics and replies drive both the post score and author reputation.
+  The awards live in one place, `REPUTATION` in `src/lib/forum.ts`.
+- Profiles are public at `/u/[handle]` and show reputation, questions, answers,
+  and how many of those answers were accepted.
 
-Sample data files should be placed in `/prisma/seeds/`
+Pages are server-rendered so questions are indexable — the point of a support
+forum is that the answer is findable from a search engine.
 
-1. **Users (JSON):**
-   ```json
-   {
-     "address": "0x...",
-     "discordId": "123456789",
-     "xp": 0,
-     "level": 1,
-     "streak": 0,
-     "longestStreak": 0
-   }
-   ```
+## Setup
 
-2. **Projects (JSON):**
-   ```json
-   {
-     "name": "Project Name",
-     "description": "Project Description",
-     "avatar": "https://...",
-     "tags": ["defi", "nft"],
-     "social": {
-       "twitter": "https://...",
-       "discord": "https://...",
-       "website": "https://..."
-     }
-   }
-   ```
+```bash
+npm install
+cp .env.example .env    # fill in DATABASE_URL, NEXTAUTH_SECRET, one provider
+npx prisma db push      # sync the schema
+npm run seed            # create the forum categories
+npm run dev
+```
 
-3. **Incubator Projects (JSON):**
-   ```json
-   {
-     "title": "Project Title",
-     "description": "Project Description",
-     "logo": "https://...", // Image should be 120x120px, PNG/JPG format
-     "status": "live",
-     "launchDate": {
-       "$date": "2024-03-20T00:00:00Z"
-     },
-     "createdAt": {
-       "$date": "2024-12-15T19:07:12.808Z"
-     },
-     "tags": ["presale", "new"],
-     "social": {
-       "dexscreener": "https://...",
-       "contractAddress": "0x..."
-     }
-   }
-   ```
+## Scripts
 
-## Data Import Commands
+| Command | Does |
+| --- | --- |
+| `npm run dev` | Development server |
+| `npm run build` | Generate the Prisma client and build |
+| `npm run seed` | Create/refresh forum categories |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint` | ESLint |
+| `npm test` | Jest |
+| `npm run bot` | Discord bot for the events calendar |
 
-1. **Import using mongoimport:**
-   ```bash
-   mongoimport --uri="DATABASE_URL" --collection=User --file=./prisma/seeds/users.json --jsonArray
-   mongoimport --uri="DATABASE_URL" --collection=Project --file=./prisma/seeds/projects.json --jsonArray
-   mongoimport --uri="DATABASE_URL" --collection=IncubatorProject --file=./prisma/seeds/incubator.json --jsonArray
-   ```
+## Architecture
 
-2. **Or use Prisma client:**
-   Create `seed.ts` file and run:
-   ```bash
-   npx prisma db seed
-   ```
+```
+src/
+  app/
+    forum/            Topic list, ask composer, thread and category pages
+    u/[handle]/       Public profiles
+    signin/           Sign-in and email confirmation
+    discover/         Pointers to Cascade and Builders Hub
+    api/forum/        Topics, replies, votes, accepted answers, categories
+  lib/
+    auth.ts           NextAuth providers, roles, admin allowlist
+    session.ts        currentUser / requireUser / requireModerator
+    forum.ts          Validation, slugs, reputation rules
+    forum-queries.ts  Server-side reads for rendered pages
+    vote.ts           Vote, score and reputation in one transaction path
+```
 
-## Required Files
+Authorisation is decided in route handlers and pages via `requireUser` and
+`requireModerator`. `middleware.ts` only bounces sessionless visitors away from
+`/admin`; it never grants access.
 
-1. **Prisma Schema:** `prisma/schema.prisma`
-2. **Environment Config:** `src/env.ts`
-3. **Type Definitions:** `src/types/project.ts`
+## Archived
 
-## Running the Project
-
-- **Start development server:**
-  ```bash
-  npm run dev
-  ```
-
-- **Production build:**
-  ```bash
-  npm run build
-  npm start
-  ```
-
-## Troubleshooting
-
-**Common issues:**
-- MongoDB connection failures: Verify `DATABASE_URL` format and IP whitelisting.
-- Missing Discord env vars: All `DISCORD_` variables must be set.
-- Schema mismatches: Run `npx prisma generate` after schema changes.
-- Vote validation errors: Ensure user has connected Discord account.
-
-For voting system implementation details, see:
-`src/app/api/projects/[projectId]/vote/route.ts` (lines 7-164)
+Project voting, the art programme, the radio player, the news aggregator and the
+anonymous imageboard have been retired. Their Prisma models are retained so the
+historical data in the live database stays readable — no UI points at them.

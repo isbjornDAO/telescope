@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       user = await prisma.user.create({
         data: {
           address: walletAddress.toLowerCase(),
-          username: `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`,
+          name: `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`,
         },
       });
     }

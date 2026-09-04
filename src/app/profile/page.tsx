@@ -1,19 +1,10 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
-export default function Profile() {
-  const { address, isConnected } = useAccount();
-  const router = useRouter();
+import { currentUser } from "@/lib/session";
 
-  useEffect(() => {
-    if (isConnected) {
-      router.push(`/profile/${address}`);
-    }
-
-    if (!isConnected) {
-      router.push("/");
-    }
-  }, [isConnected, router, address]);
+/** Profiles live at /u/[handle]; this just points you at your own. */
+export default async function ProfileRedirect() {
+  const user = await currentUser();
+  if (!user) redirect("/signin?callbackUrl=/profile");
+  redirect(user.handle ? `/u/${user.handle}` : "/forum");
 }

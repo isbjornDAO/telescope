@@ -61,7 +61,7 @@ export async function GET() {
     const session = await getServerSession(authOptions);
     console.log("🎮 Session data:", {
       hasSession: !!session,
-      discordId: session?.discordUser?.id,
+      userId: session?.user?.id,
     });
 
     // Fetch ALL guilds where the bot is present

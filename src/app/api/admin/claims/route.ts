@@ -12,7 +12,8 @@ export async function GET(request: NextRequest) {
         user: {
           select: {
             address: true,
-            username: true,
+            name: true,
+        handle: true,
             xp: true,
             coins: true,
             level: true,

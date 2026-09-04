@@ -1,101 +1,283 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Telescope — community platform for build.avax.network
+//
+// Identity is email-first so a builder arriving from build.avax.network signs in
+// with the same credentials they already use there (GitHub / Google / email code).
+// A wallet is an optional linked credential, not a login.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider     = "mongodb"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
+// ---------------------------------------------------------------------------
+// Identity
+// ---------------------------------------------------------------------------
+
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  address   String   @unique
-  username  String?
-  xp        Int      @default(0) // Total XP earned all-time (for leveling, permanent)
-  coins     Int      @default(0) // Spendable coins (same value as XP but gets spent on rewards)
-  level     Int      @default(1)
-  streak    Int      @default(0)
-  longestStreak  Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lastActive DateTime?
-  votes     Vote[]
-  votesS1   VoteS1[]
-  artVotes  ArtVote[]
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  email         String?   @unique
+  emailVerified DateTime?
+  name          String?
+  handle        String?   @unique // @mention name, generated on first sign-in
+  image         String?
+  bio           String?
+  role          String    @default("member") // member | moderator | admin
+
+  // Optional linked wallet, used for reward payouts and on-chain proofs.
+  // IMPORTANT: this field carries a unique index. Leave it ABSENT (undefined)
+  // for users without a wallet — never write an explicit null, because MongoDB
+  // unique indexes reject a second document holding the same null value.
+  address String? @unique
+
   discordId String?
-  claims    Claim[]
+
+  // Reputation is earned in the forum: upvotes and accepted answers.
+  reputation Int @default(0)
+
+  // Legacy loyalty economy, retained: xp levels the profile, coins are spent.
+  xp            Int @default(0)
+  coins         Int @default(0)
+  level         Int @default(1)
+  streak        Int @default(0)
+  longestStreak Int @default(0)
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lastActive DateTime?
+
+  accounts Account[]
+  sessions Session[]
+
+  topics    Topic[]
+  replies   Reply[]
+  postVotes PostVote[]
+
+  claims       Claim[]
   collectables UserCollectable[]
-  favoriteGames Json[] @default([]) // Array of {title, platform, metascore, imageUrl, url}
-  favoriteMovies Json[] @default([]) // Array of {title, year, rating, imageUrl, url}
+
+  // Legacy relations kept so historical records stay readable.
+  votes    Vote[]
+  votesS1  VoteS1[]
+  artVotes ArtVote[]
+
+  @@index([reputation])
 }
 
-model Project {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String   @unique
-  description String?
-  avatar      String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  social      Social?
-  metadata    Json?    // Will store { likes: number, dislikes: number, voters: number }
-  votes       Vote[]
-  tags        String[] @default([])
-  deleted     Boolean  @default(false)
-  deletedAt   DateTime?
+// NextAuth adapter models.
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type              String
+  provider          String // github | google | email | builders-hub
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
-model Vote {
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+
+  @@index([userId])
+}
+
+model VerificationToken {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String   @db.ObjectId
-  project    Project? @relation(fields: [projectId], references: [id])
-  projectId  String   @db.ObjectId
-  votedDate  DateTime @default(now())
-  type       String   @default("like") // "like" or "dislike"
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
+// ---------------------------------------------------------------------------
+// Forum — questions with accepted answers, plus open discussion
+// ---------------------------------------------------------------------------
 
-model ProjectS1 {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String   @unique
+model Category {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String  @unique // e.g. "subnets", "tooling", "help"
+  title       String
+  description String
+  icon        String? // lucide icon name
+  position    Int     @default(0)
+  archived    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  topics    Topic[]
+
+  @@index([position])
+}
+
+model Topic {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  slug       String @unique
+  title      String
+  body       String
+  // "question" topics can be solved and show an accepted answer.
+  // "discussion" topics are plain threads.
+  kind       String @default("question")
+  tags       String[] @default([])
+
+  categoryId String   @db.ObjectId
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  authorId String @db.ObjectId
+  author   User   @relation(fields: [authorId], references: [id])
+
+  // Denormalised counters — the topic list reads these instead of aggregating.
+  score      Int @default(0)
+  replyCount Int @default(0)
+  viewCount  Int @default(0)
+
+  acceptedReplyId String? @db.ObjectId
+  solved          Boolean @default(false)
+
+  pinned Boolean @default(false)
+  locked Boolean @default(false)
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastActivity DateTime  @default(now())
+  deleted      Boolean   @default(false)
+  deletedAt    DateTime?
+
+  replies Reply[]
+
+  @@index([categoryId, lastActivity])
+  @@index([lastActivity])
+  @@index([solved])
+  @@index([authorId])
+  @@index([tags])
+}
+
+model Reply {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  body    String
+  topicId String @db.ObjectId
+  topic   Topic  @relation(fields: [topicId], references: [id])
+
+  authorId String @db.ObjectId
+  author   User   @relation(fields: [authorId], references: [id])
+
+  // Set when this reply answers the question; mirrored by Topic.acceptedReplyId.
+  accepted Boolean @default(false)
+
+  // Threaded replies: null for a top-level answer.
+  parentId String? @db.ObjectId
+
+  score Int @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+
+  @@index([topicId, createdAt])
+  @@index([authorId])
+}
+
+model PostVote {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Exactly one of these is set; targetType says which.
+  targetId   String @db.ObjectId
+  targetType String // "topic" | "reply"
+
+  value Int // 1 or -1
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, targetId])
+  @@index([targetId])
+}
+
+model Tag {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String  @unique
   description String?
-  avatar      String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  social      Social?
-  metadata    Json?    // Will store { likes: number, dislikes: number, voters: number }
-  votes       VoteS1[]
-  tags        String[] @default([])
-  deleted     Boolean  @default(false)
-  deletedAt   DateTime?
+  topicCount  Int     @default(0)
+
+  @@index([topicCount])
 }
 
-model VoteS1 {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String   @db.ObjectId
-  project    ProjectS1?  @relation(fields: [projectId], references: [id])
-  projectId  String   @db.ObjectId
-  votedDate  DateTime @default(now())
-  type       String   @default("like") // "like" or "dislike"
-}
+// ---------------------------------------------------------------------------
+// Rewards
+// ---------------------------------------------------------------------------
 
-type Social {
-  twitter          String?
-  discord          String?
-  telegram         String?
-  website          String?
-  dexscreener      String?
+model Reward {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  description      String
+  imageUrl         String
+  nftCollectionUrl String
+  tokenId          String?
+  xpRequired       Int
+  totalAvailable   Int
+  claimed          Int       @default(0)
+  active           Boolean   @default(true)
+  limitedTime      Boolean   @default(false)
+  availableUntil   DateTime?
   contractAddress  String?
+  requiredYear     Int?
+  createdAt        DateTime  @default(now())
+  claims           Claim[]
+}
+
+model Claim {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  rewardId   String   @db.ObjectId
+  reward     Reward   @relation(fields: [rewardId], references: [id])
+  claimedAt  DateTime @default(now())
+  coinsSpent Int
+}
+
+model Collectable {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  collectableId    String            @unique
+  name             String
+  description      String
+  imageUrl         String
+  rarity           String            @default("common")
+  category         String?
+  active           Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  userCollectables UserCollectable[]
+}
+
+model UserCollectable {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String      @db.ObjectId
+  user          User        @relation(fields: [userId], references: [id])
+  collectableId String      @db.ObjectId
+  collectable   Collectable @relation(fields: [collectableId], references: [id])
+  acquiredAt    DateTime    @default(now())
+  nftMinted     Boolean     @default(false)
+  nftTokenId    String?
+
+  @@unique([userId, collectableId])
 }
 
 model AdminSettings {
@@ -105,66 +287,121 @@ model AdminSettings {
   updatedAt DateTime @updatedAt
 }
 
+// ---------------------------------------------------------------------------
+// Archived — project voting and the art programme. Read-only history; no UI
+// points at these any more. Kept so nothing in the live database is orphaned.
+// ---------------------------------------------------------------------------
+
+model Project {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String    @unique
+  description String?
+  avatar      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  social      Social?
+  metadata    Json?
+  votes       Vote[]
+  tags        String[]  @default([])
+  deleted     Boolean   @default(false)
+  deletedAt   DateTime?
+}
+
+model Vote {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  project   Project? @relation(fields: [projectId], references: [id])
+  projectId String   @db.ObjectId
+  votedDate DateTime @default(now())
+  type      String   @default("like")
+}
+
+model ProjectS1 {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String    @unique
+  description String?
+  avatar      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  social      Social?
+  metadata    Json?
+  votes       VoteS1[]
+  tags        String[]  @default([])
+  deleted     Boolean   @default(false)
+  deletedAt   DateTime?
+}
+
+model VoteS1 {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String     @db.ObjectId
+  project   ProjectS1? @relation(fields: [projectId], references: [id])
+  projectId String     @db.ObjectId
+  votedDate DateTime   @default(now())
+  type      String     @default("like")
+}
+
+type Social {
+  twitter         String?
+  discord         String?
+  telegram        String?
+  website         String?
+  dexscreener     String?
+  contractAddress String?
+}
+
 model ArtSubmission {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
   artistAddress String
-  artistName   String?
-  discordId    String?
-  title        String
-  description  String?
-  artworkUrl   String
-  cohort       Int      @default(1)
-  prompt       String   // e.g. "Wolfi", "Yield Yak", etc.
-  status       String   @default("pending") // "pending", "approved", "rejected"
-  votesReceived Int     @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  votes        ArtVote[]
+  artistName    String?
+  discordId     String?
+  title         String
+  description   String?
+  artworkUrl    String
+  cohort        Int       @default(1)
+  prompt        String
+  status        String    @default("pending")
+  votesReceived Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  votes         ArtVote[]
 }
 
 model ArtVote {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String   @db.ObjectId
-  user         User     @relation(fields: [userId], references: [id])
-  submissionId String   @db.ObjectId
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String        @db.ObjectId
+  user         User          @relation(fields: [userId], references: [id])
+  submissionId String        @db.ObjectId
   submission   ArtSubmission @relation(fields: [submissionId], references: [id])
   cohort       Int
-  createdAt    DateTime @default(now())
+  createdAt    DateTime      @default(now())
 }
 
-model CoffeeDonation {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  recipientAddress String
-  recipientName   String
-  recipientAvatar String?
-  donorAddress    String
-  amount          Float
-  message         String?
-  transactionHash String?
-  createdAt       DateTime @default(now())
-}
-
+// Legacy anonymous imageboard. Superseded by Category/Topic/Reply.
 model Board {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String   @unique // e.g., "gen", "meme", "defi"
-  title       String   // e.g., "General AVAX"
-  description String
-  createdAt   DateTime @default(now())
-  totalThreadsCreated Int @default(0) // All-time thread count for unlock tracking
-  threads     Thread[]
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  name                String   @unique
+  title               String
+  description         String
+  createdAt           DateTime @default(now())
+  totalThreadsCreated Int      @default(0)
+  threads             Thread[]
 }
 
 model Thread {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  boardId     String   @db.ObjectId
-  board       Board    @relation(fields: [boardId], references: [id])
-  subject     String?  // Optional thread title
-  bumpedAt    DateTime @default(now())
-  createdAt   DateTime @default(now())
-  replyCount  Int      @default(0)
-  posts       Post[]
-  deleted     Boolean  @default(false)
-  deletedAt   DateTime?
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  boardId    String    @db.ObjectId
+  board      Board     @relation(fields: [boardId], references: [id])
+  subject    String?
+  bumpedAt   DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  replyCount Int       @default(0)
+  posts      Post[]
+  deleted    Boolean   @default(false)
+  deletedAt  DateTime?
 }
 
 model Post {
@@ -172,65 +409,10 @@ model Post {
   threadId      String   @db.ObjectId
   thread        Thread   @relation(fields: [threadId], references: [id])
   comment       String
-  imageHash     String?  // Optional IPFS hash or image URL
+  imageHash     String?
   walletAddress String
-  posterId      String   // Unique ID per wallet per board
+  posterId      String
   isOp          Boolean  @default(false)
-  anonymous     Boolean  @default(true) // Whether to hide wallet/discord info
+  anonymous     Boolean  @default(true)
   createdAt     DateTime @default(now())
-}
-
-model Reward {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  name            String
-  description     String
-  imageUrl        String
-  nftCollectionUrl String  // Salvor collection URL
-  tokenId         String?  // Specific token ID if applicable
-  xpRequired      Int      // XP needed to claim
-  totalAvailable  Int      // Total number of rewards
-  claimed         Int      @default(0) // Number already claimed
-  active          Boolean  @default(true)
-  limitedTime     Boolean  @default(false) // Whether this is a limited time offer
-  availableUntil  DateTime? // When the limited time offer expires
-  contractAddress String?  // Contract address to verify interaction with
-  requiredYear    Int?     // Year user must have interacted with contract
-  createdAt       DateTime @default(now())
-  claims          Claim[]
-}
-
-model Claim {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String   @db.ObjectId
-  user        User     @relation(fields: [userId], references: [id])
-  rewardId    String   @db.ObjectId
-  reward      Reward   @relation(fields: [rewardId], references: [id])
-  claimedAt   DateTime @default(now())
-  coinsSpent  Int      // Coins spent at time of claim
-}
-
-model Collectable {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  collectableId    String   @unique // e.g., "snowdog", "puppet", "yak"
-  name             String   // Display name
-  description      String
-  imageUrl         String   // Image for the collectable
-  rarity           String   @default("common") // "common", "rare", "epic", "legendary"
-  category         String?  // e.g., "mascot", "character", "achievement"
-  active           Boolean  @default(true) // Whether this collectable can still be earned
-  createdAt        DateTime @default(now())
-  userCollectables UserCollectable[]
-}
-
-model UserCollectable {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String      @db.ObjectId
-  user           User        @relation(fields: [userId], references: [id])
-  collectableId  String      @db.ObjectId
-  collectable    Collectable @relation(fields: [collectableId], references: [id])
-  acquiredAt     DateTime    @default(now())
-  nftMinted      Boolean     @default(false) // Track if NFT has been minted
-  nftTokenId     String?     // Token ID once NFT is minted
-
-  @@unique([userId, collectableId]) // A user can only have one of each collectable
 }

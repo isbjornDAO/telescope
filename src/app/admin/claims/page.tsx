@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { AdminWrapper } from "@/components/admin/AdminWrapper";
 import { formatDistanceToNow } from "date-fns";
 import { Trophy, Gift, Users } from "lucide-react";
 
@@ -14,7 +13,8 @@ interface Claim {
   coinsSpent: number;
   user: {
     address: string;
-    username: string | null;
+    name: string | null;
+    handle: string | null;
     xp: number;
     coins: number;
     level: number;
@@ -30,7 +30,8 @@ interface Claim {
 
 interface UserStats {
   address: string;
-  username: string | null;
+  name: string | null;
+    handle: string | null;
   xp: number;
   level: number;
   discordId: string | null;
@@ -79,7 +80,7 @@ export default function AdminClaimsPage() {
   const uniqueClaimers = Array.isArray(claims) ? new Set(claims.map((c) => c.user.address)).size : 0;
 
   return (
-    <AdminWrapper>
+    <>
       <div className="container mx-auto py-8 max-w-screen-lg">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Claims Management</h1>
@@ -156,8 +157,8 @@ export default function AdminClaimsPage() {
                         <td className="p-3">
                           <div>
                             <p className="font-mono text-sm">{claim.user.address}</p>
-                            {claim.user.username && (
-                              <p className="text-xs text-muted-foreground">@{claim.user.username}</p>
+                            {claim.user.name && (
+                              <p className="text-xs text-muted-foreground">@{claim.user.name}</p>
                             )}
                           </div>
                         </td>
@@ -223,7 +224,7 @@ export default function AdminClaimsPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm">
-                          {claim.user.username ||
+                          {claim.user.name ||
                             `${claim.user.address.slice(0, 6)}...${claim.user.address.slice(-4)}`}
                         </p>
                         <p className="text-xs text-muted-foreground">
@@ -279,7 +280,7 @@ export default function AdminClaimsPage() {
                         </div>
                         <div>
                           <p className="font-semibold text-sm">
-                            {user.username ||
+                            {user.name ||
                               `${user.address.slice(0, 6)}...${user.address.slice(-4)}`}
                           </p>
                           <p className="text-xs text-muted-foreground">
@@ -303,6 +304,6 @@ export default function AdminClaimsPage() {
           </Card>
         </div>
       </div>
-    </AdminWrapper>
+    </>
   );
 }
