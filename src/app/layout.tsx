@@ -45,7 +45,7 @@ export default function RootLayout({
         <AppProviders>
           <div className="flex min-h-screen flex-col">
             {/* `.bg` supplies the polar bear illustration behind the header. */}
-            <div className="bg border-b-4 border-zinc-300 dark:border-zinc-700">
+            <div className="bg flex flex-col justify-end border-b-4 border-zinc-300 dark:border-zinc-700">
               <Navbar />
             </div>
             <main className="flex-1">{children}</main>

@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { TrendingUp, Globe2, Code2, MessagesSquare, ArrowRight, type LucideIcon } from "lucide-react";
+import { Code2, Compass, Wrench, MessagesSquare, ArrowRight, type LucideIcon } from "lucide-react";
 
-import { ZONES } from "@/lib/zones";
+import { MAIN_ZONES } from "@/lib/zones";
 
 const ICONS: Record<string, LucideIcon> = {
-  TrendingUp,
-  Globe2,
   Code2,
+  Compass,
+  Wrench,
   MessagesSquare,
 };
 
@@ -20,7 +20,7 @@ const ICONS: Record<string, LucideIcon> = {
 export function ZoneCards({ counts }: { counts: Record<string, number> }) {
   return (
     <section aria-label="Areas of the forum" className="grid gap-3 sm:grid-cols-3">
-      {ZONES.filter((zone) => zone.slug !== "community").map((zone) => {
+      {MAIN_ZONES.map((zone) => {
         const Icon = ICONS[zone.icon] ?? MessagesSquare;
         const count = counts[zone.group] ?? 0;
 

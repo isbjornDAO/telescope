@@ -1,56 +1,56 @@
 /**
- * Telescope has three places to go, and they are deliberately different rooms.
+ * Telescope's three areas.
  *
- * A newcomer who wants to talk about a payments pilot in their city should not
- * have to wade through validator sync errors to find the conversation, and a
- * developer debugging an L1 should not have to scroll past growth campaigns.
- * Each zone maps to the `group` field on Category, so the taxonomy and the
- * navigation can never drift apart.
+ * Each is a discussion board plus the things that belong beside that
+ * conversation: Discover carries projects, news and events; Tools carries a
+ * directory of practical software. `group` matches Category.group, so the
+ * navigation and the taxonomy cannot drift apart.
  */
 export type Zone = {
   slug: string;
   /** Must match Category.group exactly. */
   group: string;
   label: string;
-  /** Shown on the zone page, in plain language. */
   tagline: string;
-  icon: "TrendingUp" | "Globe2" | "Code2" | "MessagesSquare";
+  icon: "Code2" | "Compass" | "Wrench" | "MessagesSquare";
 };
 
 export const ZONES: Zone[] = [
   {
-    slug: "growth",
-    group: "Growth & Go-To-Market",
-    label: "Growth",
-    tagline:
-      "Getting Avalanche in front of real people — launches, campaigns, partnerships, and everything that turns interest into on-chain activity.",
-    icon: "TrendingUp",
-  },
-  {
-    slug: "real-world",
-    group: "Real-World Impact",
-    label: "Real World",
-    tagline:
-      "Avalanche doing something useful off the screen — local pilots, payments, climate, the economy, policy, and the good this can actually do.",
-    icon: "Globe2",
-  },
-  {
-    slug: "tech",
+    slug: "code",
     group: "Build",
-    label: "Build",
+    label: "Code",
     tagline:
-      "The technical room. Help with your L1, contracts, tooling and nodes — bring the error message.",
+      "The builders' board. Help with your L1, contracts, tooling and nodes — the technical side of build.avax.network.",
     icon: "Code2",
+  },
+  {
+    slug: "discover",
+    group: "Growth & Go-To-Market",
+    label: "Discover",
+    tagline:
+      "What is happening on Avalanche: featured projects, Team1 news, upcoming events, and how teams are reaching real users.",
+    icon: "Compass",
+  },
+  {
+    slug: "tools",
+    group: "Real-World Impact",
+    label: "Tools",
+    tagline:
+      "Avalanche put to work — local and real-world solutions, plus the practical and financial tools people actually use.",
+    icon: "Wrench",
   },
   {
     slug: "community",
     group: "Community",
     label: "Community",
-    tagline:
-      "Hackathons, bounties, and everything else about the people building here.",
+    tagline: "Hackathons, bounties, and everything else about the people here.",
     icon: "MessagesSquare",
   },
 ];
+
+/** The three that get a tab. Community lives in the menu. */
+export const MAIN_ZONES = ZONES.filter((zone) => zone.slug !== "community");
 
 export function zoneBySlug(slug: string): Zone | undefined {
   return ZONES.find((zone) => zone.slug === slug);

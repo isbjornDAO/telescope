@@ -20,19 +20,27 @@ on it. It deliberately does not duplicate its neighbours:
 
 ## The three areas
 
-The forum is split into visibly separate rooms, so nobody has to decide whether
-their question belongs among validator stack traces:
+Each area is a discussion board plus whatever belongs beside that conversation:
 
-| Area | Route | For |
-| --- | --- | --- |
-| **Growth** | `/z/growth` | Go-to-market, campaigns, partnerships, real users and on-chain volume |
-| **Real World** | `/z/real-world` | Local pilots, payments, climate, economy, policy, public goods |
-| **Build** | `/z/tech` | The technical room: L1s, contracts, tooling, nodes, help |
-| **Community** | `/z/community` | Hackathons, bounties, everything else |
+| Area | Route | Board | Also carries |
+| --- | --- | --- | --- |
+| **Code** | `/z/code` | Help, L1s, contracts, tooling, nodes | — the references live on Builders Hub |
+| **Discover** | `/z/discover` | Go-to-market, users & on-chain volume, showcase | Featured projects, Team1 news, upcoming events |
+| **Tools** | `/z/tools` | Local & IRL, public goods, climate, economy, policy | Directory of practical and financial tools |
+
+**Community** (hackathons, bounties, general) has no tab — it is reached from
+the menu at `/z/community`.
 
 Areas are defined in `src/lib/zones.ts` and map onto `Category.group`, so the
 navigation and the taxonomy cannot drift apart. Each area page shows only its
 own categories in the filter bar.
+
+Navigation is one row: Home, the three areas, and the menu button. The menu
+holds Community, all categories, events, rewards, profile, moderation and the
+theme switch — there is no separate theme control in the header.
+
+Events no longer have a tab. The next few appear in Discover; the full month
+view is still at `/calendar`.
 
 ## Categories
 

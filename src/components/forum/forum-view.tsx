@@ -42,6 +42,7 @@ export function ForumView({
   description,
   showTabs = true,
   intro,
+  aside,
 }: {
   topics: TopicListItem[];
   total: number;
@@ -53,8 +54,10 @@ export function ForumView({
   heading?: string;
   description?: string;
   showTabs?: boolean;
-  /** Rendered between the tabs and the topic list — the zone cards on home. */
+  /** Rendered between the tabs and the topic list — the area cards on home. */
   intro?: React.ReactNode;
+  /** Panels beside the board: projects and news on Discover, tools on Tools. */
+  aside?: React.ReactNode;
 }) {
   return (
     <div className="mx-auto w-full max-w-screen-lg px-3 py-4 sm:px-4 sm:py-6 md:px-8">
@@ -127,19 +130,34 @@ export function ForumView({
         </p>
       ) : null}
 
-      <div className="mt-3 divide-y divide-zinc-100 overflow-hidden rounded-xl bg-white shadow-md dark:divide-zinc-700/60 dark:bg-zinc-800">
-        {topics.length === 0 ? (
-          <EmptyState query={query} />
-        ) : (
-          topics.map((topic) => <TopicRow key={topic.id} topic={topic} />)
-        )}
-      </div>
+      <div
+        className={
+          aside
+            ? "mt-3 grid gap-4 lg:grid-cols-[1fr_300px]"
+            : "mt-3"
+        }
+      >
+        <div className="min-w-0">
+          <div className="divide-y divide-zinc-100 overflow-hidden rounded-xl bg-white shadow-md dark:divide-zinc-700/60 dark:bg-zinc-800">
+            {topics.length === 0 ? (
+              <EmptyState query={query} />
+            ) : (
+              topics.map((topic) => <TopicRow key={topic.id} topic={topic} />)
+            )}
+          </div>
 
-      {total > topics.length ? (
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          Showing {topics.length} of {total} topics
-        </p>
-      ) : null}
+          {total > topics.length ? (
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              Showing {topics.length} of {total} topics
+            </p>
+          ) : null}
+        </div>
+
+        {/* On a phone the extras sit under the board: someone who opened
+            Discover to read the conversation should not scroll past three
+            panels to reach it. */}
+        {aside ? <div className="space-y-4">{aside}</div> : null}
+      </div>
     </div>
   );
 }

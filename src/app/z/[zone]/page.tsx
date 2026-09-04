@@ -5,6 +5,10 @@ import { listTopics, listCategories } from "@/lib/forum-queries";
 import { SORTS, type Sort } from "@/lib/forum";
 import { zoneBySlug, ZONES } from "@/lib/zones";
 import { ForumView } from "@/components/forum/forum-view";
+import { NewsStrip } from "@/components/zones/news-strip";
+import { EventsStrip } from "@/components/zones/events-strip";
+import { FeaturedProjects } from "@/components/zones/featured-projects";
+import { ToolDirectory } from "@/components/zones/tool-directory";
 
 export const revalidate = 30;
 
@@ -23,10 +27,25 @@ export async function generateMetadata({
 }
 
 /**
- * One area of the forum. Only that area's categories appear in the chip bar, so
- * someone reading about a payments pilot is not shown validator troubleshooting
- * alongside it.
+ * An area of the forum: its own discussion board, plus whatever belongs beside
+ * that conversation. Discover carries projects, writing and events; Tools
+ * carries the software directory; Code is the board on its own, because the
+ * references a builder needs already live on Builders Hub.
  */
+function asideFor(slug: string) {
+  if (slug === "discover") {
+    return (
+      <>
+        <FeaturedProjects />
+        <EventsStrip />
+        <NewsStrip />
+      </>
+    );
+  }
+  if (slug === "tools") return <ToolDirectory />;
+  return null;
+}
+
 export default async function ZonePage({
   params,
   searchParams,
@@ -63,6 +82,7 @@ export default async function ZonePage({
       tag={searchParams.tag}
       heading={zone.label}
       description={zone.tagline}
+      aside={asideFor(zone.slug)}
     />
   );
 }
