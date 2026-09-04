@@ -5,8 +5,21 @@ export const siteConfig: SiteConfig = {
   name: "Telescope",
   author: "Team1",
   description:
-    "The community forum for builders on Avalanche. Ask questions, get answers, and find the hackathons and bounties worth your time.",
-  keywords: ["avalanche", "avax", "builders", "forum", "hackathon", "bounty", "web3"],
+    "The Avalanche community forum. Go-to-market and on-chain growth, real-world and public-good uses of Avalanche, and the technical help to build them.",
+  keywords: [
+    "avalanche",
+    "avax",
+    "forum",
+    "go-to-market",
+    "growth",
+    "real world assets",
+    "climate",
+    "policy",
+    "public goods",
+    "builders",
+    "hackathon",
+    "bounty",
+  ],
   url: {
     base: env.NEXT_PUBLIC_APP_URL || "https://isbjorn.xyz",
     author: "https://team1.network",

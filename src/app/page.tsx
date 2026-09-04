@@ -6,7 +6,7 @@ import { ForumView } from "@/components/forum/forum-view";
 
 export const metadata: Metadata = {
   description:
-    "The community forum for builders on Avalanche. Ask questions, get answers, and find hackathons and bounties.",
+    "The Avalanche community forum. Go-to-market and on-chain growth, real-world and public-good uses of Avalanche, and the technical help to build them.",
 };
 
 export const revalidate = 30;

@@ -128,10 +128,13 @@ model VerificationToken {
 
 model Category {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  slug        String  @unique // e.g. "subnets", "tooling", "help"
+  slug        String  @unique // e.g. "gtm", "climate", "l1s"
   title       String
   description String
   icon        String? // lucide icon name
+  // Categories are shown under section headings rather than as one flat list.
+  // Order of sections is set by the lowest position within each.
+  group       String  @default("Community")
   position    Int     @default(0)
   archived    Boolean @default(false)
 

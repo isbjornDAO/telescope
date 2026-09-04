@@ -2,16 +2,22 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { LayoutGrid } from "lucide-react";
 
-type Category = { slug: string; title: string; _count: { topics: number } };
+type Category = {
+  slug: string;
+  title: string;
+  group: string;
+  _count: { topics: number };
+};
 
 /**
- * Horizontally scrollable category chips, pinned above the topic list.
+ * Horizontally scrollable category chips above the topic list.
  *
- * Categories previously lived in a right sidebar, which on mobile stacked below
- * the whole topic list — you had to scroll past every topic to discover the
- * forum even had sections. Here they are the first thing under the tabs at
- * every width.
+ * With fifteen categories across four sections a flat chip row scrolls a long
+ * way, so the active category is pulled to the front and the row ends with a
+ * link to the grouped index at /categories, which is where the full taxonomy
+ * with descriptions lives.
  */
 export function CategoryBar({ categories }: { categories: Category[] }) {
   const pathname = usePathname();
@@ -21,12 +27,20 @@ export function CategoryBar({ categories }: { categories: Category[] }) {
     : null;
   const sort = params.get("sort");
 
+  // Keep the active category visible without scrolling to find it.
+  const ordered = activeSlug
+    ? [
+        ...categories.filter((category) => category.slug === activeSlug),
+        ...categories.filter((category) => category.slug !== activeSlug),
+      ]
+    : categories;
+
   return (
     <nav
       aria-label="Categories"
       className="-mx-3 overflow-x-auto px-3 pb-1 sm:mx-0 sm:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
-      <ul className="flex w-max gap-1.5">
+      <ul className="flex w-max items-center gap-1.5">
         <li>
           <Link
             href={sort ? `/?sort=${sort}` : "/"}
@@ -40,13 +54,15 @@ export function CategoryBar({ categories }: { categories: Category[] }) {
             All
           </Link>
         </li>
-        {categories.map((category) => {
+
+        {ordered.map((category) => {
           const active = activeSlug === category.slug;
           return (
             <li key={category.slug}>
               <Link
                 href={`/forum/c/${category.slug}`}
                 aria-current={active ? "page" : undefined}
+                title={category.group}
                 className={`inline-block whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-colors ${
                   active
                     ? "bg-foreground text-background"
@@ -61,6 +77,16 @@ export function CategoryBar({ categories }: { categories: Category[] }) {
             </li>
           );
         })}
+
+        <li>
+          <Link
+            href="/categories"
+            className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-dashed border-border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+          >
+            <LayoutGrid className="h-3.5 w-3.5" />
+            All categories
+          </Link>
+        </li>
       </ul>
     </nav>
   );

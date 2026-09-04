@@ -19,6 +19,7 @@ type Category = {
   title: string;
   description: string;
   icon: string | null;
+  group: string;
   _count: { topics: number };
 };
 

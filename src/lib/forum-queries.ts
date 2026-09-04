@@ -139,12 +139,35 @@ export async function listCategories() {
       title: true,
       description: true,
       icon: true,
+      group: true,
       _count: { select: { topics: true } },
       },
     }),
     [],
     "listCategories"
   );
+}
+
+export type CategoryListItem = Awaited<ReturnType<typeof listCategories>>[number];
+
+/**
+ * Categories grouped into their sections, in `position` order. Sections are
+ * ordered by the lowest position they contain, so adding a category cannot
+ * reshuffle the sections around it.
+ */
+export async function listCategoryGroups(): Promise<
+  { group: string; categories: CategoryListItem[] }[]
+> {
+  const categories = await listCategories();
+  const groups = new Map<string, CategoryListItem[]>();
+
+  for (const category of categories) {
+    const existing = groups.get(category.group);
+    if (existing) existing.push(category);
+    else groups.set(category.group, [category]);
+  }
+
+  return Array.from(groups, ([group, items]) => ({ group, categories: items }));
 }
 
 /** Headline numbers for the forum sidebar and the home page. */

@@ -15,6 +15,7 @@ import {
   Shield,
   ExternalLink,
   Plus,
+  LayoutGrid,
 } from "lucide-react";
 
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -30,6 +31,7 @@ import { externalLinks } from "@/lib/site";
  * rather than competing with the topic list for attention.
  */
 const SECTIONS = [
+  { href: "/categories", label: "Categories", icon: LayoutGrid },
   { href: "/discover", label: "Discover", icon: Compass },
   { href: "/calendar", label: "Events", icon: Calendar },
   { href: "/rewards", label: "Rewards", icon: Gift },

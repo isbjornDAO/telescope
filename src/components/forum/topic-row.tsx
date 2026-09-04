@@ -100,17 +100,20 @@ function Count({
   icon: Icon,
 }: {
   value: number;
+  /** Plural form; the singular is derived by dropping the trailing "s". */
   label: string;
   icon: typeof MessageSquare;
 }) {
+  const word = value === 1 ? label.replace(/s$/, "") : label;
+
   return (
-    <div className="w-9 sm:w-12" title={`${value.toLocaleString()} ${label}`}>
+    <div className="w-9 sm:w-12" title={`${value.toLocaleString()} ${word}`}>
       <div className="flex items-center justify-end gap-1 text-sm font-medium tabular-nums">
         <Icon className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
         {compact(value)}
       </div>
       <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
-        {label}
+        {word}
       </div>
     </div>
   );

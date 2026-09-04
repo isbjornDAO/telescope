@@ -6,15 +6,38 @@ you can accept, and find the Team1 hackathons and bounties worth your time.
 
 ## What Telescope is (and is not)
 
-Telescope does one thing: it is the place builders come to get unstuck and to
-find programmes to enter. It deliberately does not duplicate its neighbours:
+Telescope is the Avalanche community forum. It covers three things: getting
+Avalanche in front of people, putting it to work in the real world, and building
+on it. It deliberately does not duplicate its neighbours:
 
 | Need | Where it lives |
 | --- | --- |
 | Docs, courses, developer console | [build.avax.network](https://build.avax.network) |
 | Ecosystem directory (500+ projects) | [cascade.team1.network](https://cascade.team1.network) |
 | Questions, answers, discussion | Telescope |
+| Go-to-market, growth, real-world use, research | Telescope |
 | Hackathons and bounties | Telescope |
+
+## Categories
+
+Fifteen categories in four sections, seeded by `npm run seed` and grouped on
+`/categories`. The order is deliberate: the growth and real-world conversations
+come first because they are the harder and less-served ones, and the technical
+categories that most developer forums lead with sit below them.
+
+**Growth & Go-To-Market** — Go-To-Market · Users & On-Chain Volume · Showcase
+
+**Real-World Impact** — Local & IRL Solutions · Public Goods & Social Impact ·
+Climate & Energy · Economy & Markets · Policy & Regulation
+
+**Build** — Help & Troubleshooting · Avalanche L1s & Subnets · Smart Contracts ·
+SDKs, APIs & Tooling · Nodes & Validators
+
+**Community** — Hackathons & Bounties · General
+
+To change the taxonomy, edit `CATEGORIES` in `prisma/seed.ts` and re-run the
+seed. Categories dropped from that list are archived rather than deleted, so
+topics filed under them are never orphaned.
 
 ## Identity
 
