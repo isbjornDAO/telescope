@@ -1,46 +1,87 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
-import { listTopics, listCategories, topicCountsByGroup } from "@/lib/forum-queries";
-import { SORTS, type Sort } from "@/lib/forum";
-import { ForumView } from "@/components/forum/forum-view";
+import { currentUser } from "@/lib/session";
+import { buildFeed, FEED_TABS, type FeedTab } from "@/lib/feed";
+import { listCategories, topicCountsByGroup } from "@/lib/forum-queries";
+import { Timeline } from "@/components/feed/timeline";
+import { PageNavigation } from "@/components/page-navigation";
 import { ZoneCards } from "@/components/forum/zone-cards";
 
 export const metadata: Metadata = {
   description:
-    "The Avalanche community forum. Growth and go-to-market, real-world uses of Avalanche, and help building on it.",
+    "The Avalanche community timeline. Follow builders, discover what is working, and join the conversation.",
 };
 
-export const revalidate = 30;
+export const dynamic = "force-dynamic";
 
+/**
+ * The timeline is the front door. The first page is rendered on the server so
+ * there is content in the HTML for crawlers and on first paint; every page
+ * after it is fetched by the client as you scroll.
+ */
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: { sort?: string; tag?: string; q?: string };
+  searchParams: { tab?: string };
 }) {
-  const sort = (SORTS as readonly string[]).includes(searchParams.sort ?? "")
-    ? (searchParams.sort as Sort)
-    : "latest";
+  const raw = searchParams.tab ?? "discover";
+  const tab: FeedTab = (FEED_TABS as readonly string[]).includes(raw)
+    ? (raw as FeedTab)
+    : "discover";
 
-  const [{ topics, total }, categories, counts] = await Promise.all([
-    listTopics({ sort, tag: searchParams.tag, query: searchParams.q, take: 25 }),
+  const viewer = await currentUser();
+  const [items, categories, counts] = await Promise.all([
+    buildFeed({ tab, viewerId: viewer?.id ?? null, take: 20 }),
     listCategories(),
     topicCountsByGroup(),
   ]);
 
-  // Zone cards belong on the unfiltered front page only; once someone is
-  // searching or filtering they are in the way.
-  const browsing = !searchParams.q && !searchParams.tag;
-
   return (
-    <ForumView
-      topics={topics}
-      total={total}
-      categories={categories}
-      sort={sort}
-      basePath="/"
-      tag={searchParams.tag}
-      query={searchParams.q}
-      intro={browsing ? <ZoneCards counts={counts} /> : undefined}
-    />
+    <div className="mx-auto w-full max-w-screen-lg px-0 md:px-8 md:py-6">
+      {/* Desktop keeps the card tabs and the area cards; on mobile the bottom
+          bar and the timeline's own tab strip do that work. */}
+      <div className="hidden md:block">
+        <PageNavigation />
+        <div className="mb-5">
+          <ZoneCards counts={counts} />
+        </div>
+      </div>
+
+      <div className="md:grid md:gap-6 md:grid-cols-[1fr_280px]">
+        <div className="min-w-0 md:overflow-hidden md:rounded-xl md:bg-white md:shadow-md md:dark:bg-zinc-800">
+          <Suspense fallback={null}>
+            <Timeline initialTab={tab} initialItems={items} />
+          </Suspense>
+        </div>
+
+        <aside className="hidden md:block">
+          <section className="sticky top-6 rounded-xl bg-white p-4 shadow-md dark:bg-zinc-800">
+            <h2 className="text-sm font-semibold">Categories</h2>
+            <ul className="mt-2 space-y-0.5">
+              {categories.slice(0, 8).map((category) => (
+                <li key={category.slug}>
+                  <a
+                    href={`/forum/c/${category.slug}`}
+                    className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm hover:bg-muted"
+                  >
+                    <span className="truncate">{category.title}</span>
+                    <span className="tabular-nums text-xs text-muted-foreground">
+                      {category._count.topics}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a
+              href="/categories"
+              className="mt-3 inline-block text-xs font-medium text-muted-foreground hover:text-foreground"
+            >
+              All categories →
+            </a>
+          </section>
+        </aside>
+      </div>
+    </div>
   );
 }

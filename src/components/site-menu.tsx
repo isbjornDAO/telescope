@@ -31,7 +31,8 @@ const ITEM =
  * including the theme switch — the header only has room for one control beside
  * the tabs, and a theme toggle is not worth a permanent slot.
  */
-export function SiteMenu() {
+/** `compact` drops the raised card styling for the mobile app bar. */
+export function SiteMenu({ compact = false }: { compact?: boolean } = {}) {
   const [open, setOpen] = useState(false);
   const { data: session, status } = useSession();
   const user = session?.user;
@@ -41,7 +42,7 @@ export function SiteMenu() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <button
-          className="flex h-[42px] w-[42px] items-center justify-center rounded-xl border-2 border-white bg-white shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 sm:h-[46px] sm:w-[46px]"
+          className={`flex items-center justify-center rounded-xl transition-colors ${compact ? "h-9 w-9 hover:bg-muted" : "h-[42px] w-[42px] border-2 border-white bg-white shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 sm:h-[46px] sm:w-[46px]"}`}
           aria-label="Menu"
         >
           {user ? (

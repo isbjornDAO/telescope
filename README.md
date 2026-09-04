@@ -18,6 +18,49 @@ on it. It deliberately does not duplicate its neighbours:
 | Go-to-market, growth, real-world use, research | Telescope |
 | Hackathons and bounties | Telescope |
 
+## The timeline
+
+The front page is a ranked timeline; the forum is what you land in when you open
+a post. Same content, two ways of reading it.
+
+| Tab | What it ranks by |
+| --- | --- |
+| **Discover** | Engagement velocity, weighted towards categories you post and reply in, people you follow, and solved questions. Excludes your own posts. |
+| **Following** | Posts by people you follow, plus threads they replied to, newest first. |
+| **Trending** | Pure engagement velocity — replies count for more than likes, views for very little. |
+| **Everything** | Chronological firehose. |
+
+Ranking lives in `src/lib/feed.ts` and runs in the application, not the
+database: MongoDB cannot express the decay curve, so each tab pulls a bounded
+candidate window ordered by an indexed field and scores it in memory. That is
+fast and easy to tune at this size. If the window stops containing the best
+results, that is the signal to move scoring into a materialised column.
+
+Follows live in the `Follow` model with denormalised counts on `User`, updated
+in the same transaction as the edge so profiles never show drifting numbers.
+
+## Install as an app
+
+Telescope is an installable PWA. On Android and desktop Chrome an install
+prompt appears once the browser reports it is installable; on iOS it is
+Share → Add to Home Screen, since Safari does not support the prompt event.
+
+- `public/manifest.webmanifest` — standalone display, shortcuts to New post,
+  Trending and Following.
+- `public/sw.js` — caches the app shell and hashed static assets so a cold
+  launch paints instantly, and serves `/offline` when a navigation fails. It
+  never caches HTML or API responses: a timeline serving yesterday's posts from
+  cache is worse than one that says it is offline.
+- Mobile gets a bottom tab bar, a floating compose button and safe-area insets;
+  `viewportFit: "cover"` is what makes those insets resolve on a notched
+  iPhone. Desktop keeps the polar bear header and card tabs.
+
+Icons live in `public/icons/`, generated once from `public/logo.png` with
+`sharp` and committed — including maskable variants inset for launcher
+cropping. If the logo changes, regenerate them with a throwaway `npx sharp-cli`
+run rather than adding a build-time dependency for something that changes
+roughly never.
+
 ## The three areas
 
 Each area is a discussion board plus whatever belongs beside that conversation:

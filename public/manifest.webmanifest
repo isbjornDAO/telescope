@@ -1,0 +1,23 @@
+{
+  "name": "Telescope — Avalanche community",
+  "short_name": "Telescope",
+  "description": "Follow builders on Avalanche, discover what is working, and join the conversation.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#e6f0f5",
+  "theme_color": "#e6f0f5",
+  "categories": ["social", "news", "developer"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "New post", "url": "/forum/ask", "description": "Start a new topic" },
+    { "name": "Trending", "url": "/?tab=trending", "description": "What is hot right now" },
+    { "name": "Following", "url": "/?tab=following", "description": "Posts from people you follow" }
+  ]
+}

@@ -6,6 +6,8 @@ import { CheckCircle2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { RelativeTime } from "@/components/relative-time";
 import { Avatar } from "@/components/forum/avatar";
+import { FollowButton } from "@/components/feed/follow-button";
+import { currentUser } from "@/lib/session";
 
 async function getProfile(handle: string) {
   return prisma.user.findUnique({
@@ -17,6 +19,8 @@ async function getProfile(handle: string) {
       image: true,
       bio: true,
       reputation: true,
+      followerCount: true,
+      followingCount: true,
       createdAt: true,
       wallets: { select: { address: true }, where: { primary: true }, take: 1 },
     },
@@ -45,6 +49,14 @@ export default async function ProfilePage({
   const user = await getProfile(params.handle);
   if (!user) notFound();
 
+  const viewer = await currentUser();
+  const isSelf = viewer?.id === user.id;
+  const alreadyFollowing = viewer
+    ? (await prisma.follow.count({
+        where: { followerId: viewer.id, followingId: user.id },
+      })) > 0
+    : false;
+
   const [topics, answers, accepted] = await Promise.all([
     prisma.topic.findMany({
       where: { authorId: user.id, deleted: false },
@@ -66,7 +78,7 @@ export default async function ProfilePage({
 
   return (
     <div className="mx-auto w-full max-w-3xl px-3 py-6 sm:px-4 sm:py-10">
-      <header className="flex flex-wrap items-start gap-5">
+      <header className="flex flex-wrap items-start gap-4 sm:gap-5">
         <Avatar name={user.name ?? user.handle} image={user.image} size={64} />
 
         <div className="min-w-0">
@@ -81,9 +93,19 @@ export default async function ProfilePage({
             Joined <RelativeTime date={user.createdAt} />
           </p>
         </div>
+
+        {!isSelf && user.handle ? (
+          <FollowButton
+            handle={user.handle}
+            initialFollowing={alreadyFollowing}
+            signedIn={!!viewer}
+          />
+        ) : null}
       </header>
 
       <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-3 border-y border-border py-5 text-sm">
+        <Stat label="Followers" value={user.followerCount.toLocaleString()} />
+        <Stat label="Following" value={user.followingCount.toLocaleString()} />
         <Stat label="Reputation" value={user.reputation.toLocaleString()} />
         <Stat label="Topics" value={topics.length.toLocaleString()} />
         <Stat label="Answers" value={answers.toLocaleString()} />

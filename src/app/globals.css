@@ -171,3 +171,32 @@
     background-size: cover;
   }
 }
+
+@layer utilities {
+  /* iOS standalone mode draws over the home indicator; these keep fixed
+     furniture clear of it, and fall back to 0 where the inset is unsupported. */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .bottom-safe {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 4.75rem);
+  }
+
+  /* Room for the fixed tab bar under every page on mobile. */
+  .pb-nav {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 3.75rem);
+  }
+}
+
+@media (display-mode: standalone) {
+  /* Installed as an app: nothing here should feel like a web page. */
+  body {
+    overscroll-behavior-y: none;
+  }
+
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
