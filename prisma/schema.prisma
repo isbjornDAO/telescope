@@ -9,93 +9,696 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider     = "mongodb"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
 model User {
+  id             String            @id @default(auto()) @map("_id") @db.ObjectId
+  address        String            @unique
+  username       String?
+  xp             Int               @default(0) // Total XP earned all-time (for leveling, permanent)
+  coins          Int               @default(0) // Spendable coins (same value as XP but gets spent on rewards)
+  level          Int               @default(1)
+  streak         Int               @default(0)
+  longestStreak  Int               @default(0)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  lastActive     DateTime?
+  votes          Vote[]
+  votesS1        VoteS1[]
+  artVotes       ArtVote[]
+  discordId      String?
+  claims         Claim[]
+  collectables   UserCollectable[]
+  favoriteGames  Json[]            @default([]) // Array of {title, platform, metascore, imageUrl, url}
+  favoriteMovies Json[]            @default([]) // Array of {title, year, rating, imageUrl, url}
+
+  // ── World (Telescope World Rules v0.1) ─────────────────────────────
+  handle                    String?   @unique // chosen pseudonymous name
+  bio                       String?
+  nodeType                  NodeType  @default(NODE)
+  trustScore                Float     @default(0) // recomputed nightly, see lib/world/trust.ts
+  standing                  Float     @default(0) // season-earned, capped by config
+  regionId                  String?   @db.ObjectId
+  region                    Region?   @relation(fields: [regionId], references: [id])
+  factionId                 String?   @db.ObjectId
+  faction                   Faction?  @relation("FactionMembers", fields: [factionId], references: [id])
+  factionJoinedSeasonNumber Int? // moving factions is allowed between seasons only
+  anchoredAt                DateTime? // when a region verified this node in person
+  elderSince                DateTime?
+  scoutQueriesUsed          Int       @default(0) // per season
+  scoutQueriesSeasonNumber  Int? // season the counter belongs to
+  scoutDailyUsed            Int       @default(0)
+  scoutDailyDate            String? // YYYY-MM-DD of scoutDailyUsed
+  scoutExtraQueries         Int       @default(0) // purchased capacity
+  scoutPublicKey            String? // bring-your-own agent key (v2)
+  lastWorldActive           DateTime?
+
+  vouchesGiven    Vouch[]        @relation("VouchesGiven")
+  vouchesReceived Vouch[]        @relation("VouchesReceived")
+  proofs          Proof[]
+  crewMemberships CrewMember[]
+  intents         ScoutIntent[]
+  reviews         Review[]
+  feedback        Feedback[]
+  checkIns        EventCheckIn[]
+  entriesAuthored Entry[]        @relation("EntryAuthor")
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// World enums
+// ─────────────────────────────────────────────────────────────────────
+
+enum NodeType {
+  NODE
+  ANCHOR
+  ELDER
+}
+
+enum VouchType {
+  IN_PERSON
+  SHIPPED_TOGETHER
+  SHARED_VISION
+}
+
+enum VouchStatus {
+  PENDING // in-person: waiting for region attestation
+  ACTIVE
+  REVOKED
+  SLASHED
+}
+
+enum ProofSource {
+  BUILDERS_HUB
+  MANUAL
+  TELESCOPE
+}
+
+enum ProofKind {
+  SHIPPED
+  HACKATHON
+  ACTIVITY
+}
+
+enum Tournament {
+  GTM
+  LOCAL_SYSTEMS
+  RESEARCH_PAPERS
+}
+
+enum SeasonStatus {
+  UPCOMING
+  ACTIVE
+  VOTING
+  CLOSED
+  VESTED
+}
+
+enum RoundStatus {
+  PENDING
+  OPEN
+  CLOSED
+}
+
+enum EntryStatus {
+  DRAFT
+  SUBMITTED
+  ACTIVE
+  ELIMINATED
+  FINALIST
+  WINNER
+  WITHDRAWN
+}
+
+enum IntentType {
+  ROLE
+  PARTNER_PROJECT
+  REGION_ADOPT
+  RESEARCH_QUESTION
+}
+
+enum MatchStatus {
+  OFFERED
+  ACCEPTED_A
+  ACCEPTED_B
+  MATCHED
+  DECLINED
+  EXPIRED
+}
+
+enum ScoutMessageType {
+  INTENT
+  CLAIM
+  QUERY
+  OFFER
+  ACCEPT
+  DECLINE
+  DISCLOSE
+  ATTEST
+}
+
+enum StandingTarget {
+  USER
+  CREW
+  FACTION
+  REGION
+}
+
+enum AllianceStatus {
+  PROPOSED
+  ACTIVE
+  DISSOLVED
+}
+
+enum FindingStatus {
+  PROPOSED
+  CONFIRMED
+  APPEALED
+  UPHELD
+  OVERTURNED
+}
+
+enum AdmissionStatus {
+  PROPOSED
+  ADMITTED
+  REJECTED
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Regions: local clusters that anchor the trust graph
+// ─────────────────────────────────────────────────────────────────────
+
+model Region {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  name           String   @unique
+  slug           String   @unique
+  description    String?
+  country        String?
+  lat            Float? // for the Arctic map projection
+  lng            Float?
+  isChapter      Boolean  @default(true) // Team1 chapter
+  runsNode       Boolean  @default(false) // (proposal) Iggy L1 validator
+  adminAddresses String[] @default([]) // wallets that may attest in-person vouches
+  standing       Float    @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  users   User[]
+  crews   Crew[]
+  events  RegionEvent[]
+  vouches Vouch[]
+  entries Entry[]
+}
+
+model RegionEvent {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  address   String   @unique
-  username  String?
-  xp        Int      @default(0) // Total XP earned all-time (for leveling, permanent)
-  coins     Int      @default(0) // Spendable coins (same value as XP but gets spent on rewards)
-  level     Int      @default(1)
-  streak    Int      @default(0)
-  longestStreak  Int      @default(0)
+  regionId  String   @db.ObjectId
+  region    Region   @relation(fields: [regionId], references: [id])
+  name      String
+  startsAt  DateTime
+  endsAt    DateTime
+  codeHash  String // sha256 of the QR / check-in code, never the code itself
+  createdBy String // wallet address of the region admin
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lastActive DateTime?
-  votes     Vote[]
-  votesS1   VoteS1[]
-  artVotes  ArtVote[]
-  discordId String?
-  claims    Claim[]
-  collectables UserCollectable[]
-  favoriteGames Json[] @default([]) // Array of {title, platform, metascore, imageUrl, url}
-  favoriteMovies Json[] @default([]) // Array of {title, year, rating, imageUrl, url}
+
+  checkIns EventCheckIn[]
+  vouches  Vouch[]
+}
+
+model EventCheckIn {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  eventId     String      @db.ObjectId
+  event       RegionEvent @relation(fields: [eventId], references: [id])
+  userId      String      @db.ObjectId
+  user        User        @relation(fields: [userId], references: [id])
+  checkedInAt DateTime    @default(now())
+
+  @@unique([eventId, userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Trust graph
+// ─────────────────────────────────────────────────────────────────────
+
+model Vouch {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  type         VouchType
+  weight       Float // link weight from config at creation
+  budgetCost   Float // vouch budget spent by the voucher
+  status       VouchStatus  @default(ACTIVE)
+  fromUserId   String       @db.ObjectId
+  from         User         @relation("VouchesGiven", fields: [fromUserId], references: [id])
+  toUserId     String       @db.ObjectId
+  to           User         @relation("VouchesReceived", fields: [toUserId], references: [id])
+  seasonNumber Int? // budget accounting
+  regionId     String?      @db.ObjectId // in-person: attesting region
+  region       Region?      @relation(fields: [regionId], references: [id])
+  eventId      String?      @db.ObjectId // in-person: the room
+  event        RegionEvent? @relation(fields: [eventId], references: [id])
+  attestedBy   String? // region admin wallet
+  attestedAt   DateTime?
+  crewId       String?      @db.ObjectId // shipped-together
+  proofId      String?      @db.ObjectId // shipped-together
+  note         String? // shared-vision: what was reviewed (private to both parties)
+  fromVisible  Boolean      @default(false) // voucher chose to be visible on the receiver's profile
+  toVisible    Boolean      @default(false)
+  commitment   String // keccak/sha256 commitment of (from,to,type,createdAt)
+  onchainTx    String? // C-Chain tx carrying the commitment (MVP settlement)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([fromUserId, toUserId, type])
+  @@index([toUserId, status])
+  @@index([fromUserId, seasonNumber])
+}
+
+model Proof {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String      @db.ObjectId
+  user         User        @relation(fields: [userId], references: [id])
+  source       ProofSource
+  kind         ProofKind
+  title        String
+  description  String?
+  externalRef  String? // Builder's Hub id; never shown publicly
+  proofHash    String // sha256 over (source, externalRef, userId): the public proof
+  verified     Boolean     @default(false)
+  verifiedBy   String? // "builders-hub" | admin wallet
+  crewId       String?     @db.ObjectId
+  crew         Crew?       @relation(fields: [crewId], references: [id])
+  seasonNumber Int?
+  shippedAt    DateTime?
+  createdAt    DateTime    @default(now())
+
+  @@index([userId])
+}
+
+model SlashingFinding {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  targetUserId    String        @db.ObjectId
+  proposedById    String        @db.ObjectId
+  regionId        String?       @db.ObjectId
+  rationale       String // published
+  elderApprovals  String[]      @default([]) // Elder user ids
+  anchorApprovals String[]      @default([]) // region anchor user ids
+  status          FindingStatus @default(PROPOSED)
+  appealText      String?
+  appealedAt      DateTime?
+  resolvedAt      DateTime?
+  createdAt       DateTime      @default(now())
+}
+
+model ElderAdmission {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  candidateId   String          @db.ObjectId
+  nominatedById String          @db.ObjectId
+  statement     String // expertise and standing outside the world
+  approvals     String[]        @default([]) // user ids of Elders / region anchors
+  status        AdmissionStatus @default(PROPOSED)
+  createdAt     DateTime        @default(now())
+  resolvedAt    DateTime?
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Crews, factions, alliances
+// ─────────────────────────────────────────────────────────────────────
+
+model Crew {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  avatar      String?
+  regionId    String?  @db.ObjectId // region of origin
+  region      Region?  @relation(fields: [regionId], references: [id])
+  factionId   String?  @db.ObjectId
+  faction     Faction? @relation(fields: [factionId], references: [id])
+  standing    Float    @default(0)
+  createdById String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members CrewMember[]
+  entries Entry[]
+  proofs  Proof[]
+}
+
+model CrewMember {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  crewId   String    @db.ObjectId
+  crew     Crew      @relation(fields: [crewId], references: [id])
+  userId   String    @db.ObjectId
+  user     User      @relation(fields: [userId], references: [id])
+  role     String?
+  isLead   Boolean   @default(false)
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
+
+  @@unique([crewId, userId])
+  @@index([userId])
+}
+
+model Faction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  slug        String   @unique
+  vision      String // what the faction exists to build
+  description String?
+  avatar      String?
+  standing    Float    @default(0)
+  treasury    Float    @default(0) // ledger balance (Season One: manual payout)
+  founderId   String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members         User[]          @relation("FactionMembers")
+  crews           Crew[]
+  entries         Entry[]
+  treasuryEntries TreasuryEntry[]
+}
+
+model Alliance {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  seasonNumber Int
+  name         String
+  factionIds   String[]       @default([]) // all parties
+  acceptedIds  String[]       @default([]) // parties that accepted
+  terms        String // how standing is shared, in plain words
+  shareSplit   Json // { [factionId]: fraction }
+  status       AllianceStatus @default(PROPOSED)
+  proposedById String         @db.ObjectId
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  entries Entry[]
+}
+
+model TreasuryEntry {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  factionId    String   @db.ObjectId
+  faction      Faction  @relation(fields: [factionId], references: [id])
+  amount       Float
+  reason       String
+  seasonNumber Int?
+  paidOut      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
+
+model StandingEvent {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  targetType     StandingTarget
+  targetId       String         @db.ObjectId
+  amount         Float // gross amount awarded
+  reason         String
+  seasonNumber   Int?
+  entryId        String?        @db.ObjectId
+  vestsAt        DateTime? // GTM: day 90
+  vestedFraction Float? // null until vested; 1.0 for LS/RP
+  createdAt      DateTime       @default(now())
+
+  @@index([targetType, targetId])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Seasons and tournaments
+// ─────────────────────────────────────────────────────────────────────
+
+model Season {
+  id                   String       @id @default(auto()) @map("_id") @db.ObjectId
+  number               Int          @unique
+  name                 String // "Winter I"
+  theme                String
+  researchQuestion     String
+  startsAt             DateTime // week 0
+  submissionsClose     DateTime // end of week 4
+  endsAt               DateTime // end of week 6
+  status               SeasonStatus @default(UPCOMING)
+  panelIds             String[]     @default([]) // Local Systems Elders, published before submissions
+  reviewerPoolIds      String[]     @default([]) // Research Papers blind pool
+  poolAmount           Float        @default(0) // season pool, sponsor funded
+  sponsors             String[]     @default([])
+  retentionCheckAt     DateTime? // endsAt + 90 days
+  standingDecayApplied Boolean      @default(false)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  rounds  Round[]
+  entries Entry[]
+  intents ScoutIntent[]
+}
+
+model Round {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  seasonId    String      @db.ObjectId
+  season      Season      @relation(fields: [seasonId], references: [id])
+  tournament  Tournament
+  index       Int // 0 = Open
+  name        String
+  threshold   Float // share of total weighted votes (0..1); 0.5 = majority
+  opensAt     DateTime
+  closesAt    DateTime
+  status      RoundStatus @default(PENDING)
+  ballotCount Int         @default(0)
+  totalWeight Float? // published at close
+  tally       Json? // { [entryId]: weight } published at close
+  tallyHash   String? // sha256 commitment of the tally
+  advancedIds String[]    @default([])
+  closedAt    DateTime?
+
+  ballots Ballot[]
+
+  @@unique([seasonId, tournament, index])
+}
+
+model Entry {
+  id                     String      @id @default(auto()) @map("_id") @db.ObjectId
+  seasonId               String      @db.ObjectId
+  season                 Season      @relation(fields: [seasonId], references: [id])
+  tournament             Tournament
+  title                  String
+  summary                String
+  body                   String? // design doc / paper text (markdown)
+  url                    String? // live product
+  repoUrl                String?
+  deployedOn             String? // C-Chain | L1 | Iggy
+  authorId               String      @db.ObjectId
+  author                 User        @relation("EntryAuthor", fields: [authorId], references: [id])
+  crewId                 String?     @db.ObjectId
+  crew                   Crew?       @relation(fields: [crewId], references: [id])
+  factionId              String?     @db.ObjectId
+  faction                Faction?    @relation(fields: [factionId], references: [id])
+  allianceId             String?     @db.ObjectId
+  alliance               Alliance?   @relation(fields: [allianceId], references: [id])
+  regionId               String?     @db.ObjectId // LS: the community it serves
+  region                 Region?     @relation(fields: [regionId], references: [id])
+  ethicsStatement        String? // LS: who it serves, who it could harm
+  roadmap                Json? // GTM: [{ milestone, due, done }]
+  metrics                Json? // GTM: [{ label, value, at }]
+  meaningfulTxDefinition String? // GTM: what counts as an active user
+  meaningfulTxApproved   Boolean     @default(false)
+  revealAuthorship       Boolean     @default(true) // RP: reveal at season end
+  status                 EntryStatus @default(DRAFT)
+  eliminatedRound        Int?
+  isVictor               Boolean     @default(false)
+  finalScore             Float?
+  retentionDay0          Int?
+  retentionDay90         Int?
+  retentionRatio         Float?
+  vestedFraction         Float?
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+
+  reviews          Review[]
+  feedback         Feedback[]
+  retentionReports RetentionReport[]
+
+  @@index([seasonId, tournament, status])
+}
+
+// A ballot is one voter's full allocation for one round, stored encrypted.
+// voterKey = HMAC(roundId, voterId) so uniqueness is enforced without
+// revealing who voted. entryId is kept only for aggregate counts.
+model Ballot {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  roundId    String   @db.ObjectId
+  round      Round    @relation(fields: [roundId], references: [id])
+  voterKey   String
+  ciphertext String // AES-GCM of { voterId, nodeType, factionId, allianceFactionIds, baseWeight, allocations: [{entryId, share}] }
+  createdAt  DateTime @default(now())
+
+  @@unique([roundId, voterKey])
+}
+
+model Review {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  entryId     String     @db.ObjectId
+  entry       Entry      @relation(fields: [entryId], references: [id])
+  reviewerId  String     @db.ObjectId
+  reviewer    User       @relation(fields: [reviewerId], references: [id])
+  tournament  Tournament
+  stage       String // "round" | "final"
+  approve     Boolean? // LS panel round
+  score       Int? // LS panel final 1-10
+  advances    Int? // RP 1-10
+  rigour      Int? // RP 1-10
+  buildable   Int? // RP 1-10
+  comment     String?
+  submittedAt DateTime?
+  createdAt   DateTime   @default(now())
+
+  @@unique([entryId, reviewerId, stage])
+  @@index([reviewerId, submittedAt])
+}
+
+// GTM products report their active wallets; only trust-graph wallets count.
+model RetentionReport {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  entryId      String   @db.ObjectId
+  entry        Entry    @relation(fields: [entryId], references: [id])
+  reportedById String   @db.ObjectId
+  walletCount  Int // wallets reported
+  activeCount  Int // wallets with trust score > 0, deduplicated
+  reportedAt   DateTime @default(now())
+
+  @@index([entryId, reportedAt])
+}
+
+model Feedback {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  entryId   String   @db.ObjectId
+  entry     Entry    @relation(fields: [entryId], references: [id])
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Scouts (hosted service, MVP)
+// ─────────────────────────────────────────────────────────────────────
+
+model ScoutIntent {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String     @db.ObjectId
+  user        User       @relation(fields: [userId], references: [id])
+  seasonId    String?    @db.ObjectId
+  season      Season?    @relation(fields: [seasonId], references: [id])
+  type        IntentType
+  text        String // private context; only tags + type + proofs leave the scout
+  tags        String[]   @default([])
+  constraints Json? // { minTrust?: number, regionSlug?: string, factionVisible?: boolean }
+  active      Boolean    @default(true)
+  expiresAt   DateTime
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([userId, active])
+  @@index([type, active])
+}
+
+model ScoutMatch {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  intentAId   String      @db.ObjectId // the asking scout's intent
+  intentBId   String      @db.ObjectId
+  userAId     String      @db.ObjectId
+  userBId     String      @db.ObjectId
+  status      MatchStatus @default(OFFERED)
+  score       Float // fit score computed by the hosted scout
+  offer       Json // { claimsA, claimsB, wouldDiscloseA, wouldDiscloseB, reason }
+  disclosureA String? // AES-GCM package from A, readable by B after MATCHED
+  disclosureB String?
+  queryCost   Int         @default(1)
+  expiresAt   DateTime
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userAId, status])
+  @@index([userBId, status])
+}
+
+// QUERY logs are retained 30 days for abuse detection, then deleted by the cleanup job.
+model ScoutLog {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  type        ScoutMessageType
+  fromUserId  String           @db.ObjectId
+  toUserId    String?          @db.ObjectId
+  payloadHash String
+  paid        Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+
+  @@index([createdAt])
+}
+
+model ScoutTopUp {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  txHash     String   @unique
+  amountUsdc Float
+  queries    Int
+  createdAt  DateTime @default(now())
 }
 
 model Project {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String   @unique
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String    @unique
   description String?
   avatar      String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   social      Social?
-  metadata    Json?    // Will store { likes: number, dislikes: number, voters: number }
+  metadata    Json? // Will store { likes: number, dislikes: number, voters: number }
   votes       Vote[]
-  tags        String[] @default([])
-  deleted     Boolean  @default(false)
+  tags        String[]  @default([])
+  deleted     Boolean   @default(false)
   deletedAt   DateTime?
 }
 
 model Vote {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String   @db.ObjectId
-  project    Project? @relation(fields: [projectId], references: [id])
-  projectId  String   @db.ObjectId
-  votedDate  DateTime @default(now())
-  type       String   @default("like") // "like" or "dislike"
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  project   Project? @relation(fields: [projectId], references: [id])
+  projectId String   @db.ObjectId
+  votedDate DateTime @default(now())
+  type      String   @default("like") // "like" or "dislike"
 }
 
-
 model ProjectS1 {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String   @unique
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String    @unique
   description String?
   avatar      String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   social      Social?
-  metadata    Json?    // Will store { likes: number, dislikes: number, voters: number }
+  metadata    Json? // Will store { likes: number, dislikes: number, voters: number }
   votes       VoteS1[]
-  tags        String[] @default([])
-  deleted     Boolean  @default(false)
+  tags        String[]  @default([])
+  deleted     Boolean   @default(false)
   deletedAt   DateTime?
 }
 
 model VoteS1 {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String   @db.ObjectId
-  project    ProjectS1?  @relation(fields: [projectId], references: [id])
-  projectId  String   @db.ObjectId
-  votedDate  DateTime @default(now())
-  type       String   @default("like") // "like" or "dislike"
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String     @db.ObjectId
+  project   ProjectS1? @relation(fields: [projectId], references: [id])
+  projectId String     @db.ObjectId
+  votedDate DateTime   @default(now())
+  type      String     @default("like") // "like" or "dislike"
 }
 
 type Social {
-  twitter          String?
-  discord          String?
-  telegram         String?
-  website          String?
-  dexscreener      String?
-  contractAddress  String?
+  twitter         String?
+  discord         String?
+  telegram        String?
+  website         String?
+  dexscreener     String?
+  contractAddress String?
 }
 
 model AdminSettings {
@@ -106,65 +709,65 @@ model AdminSettings {
 }
 
 model ArtSubmission {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
   artistAddress String
-  artistName   String?
-  discordId    String?
-  title        String
-  description  String?
-  artworkUrl   String
-  cohort       Int      @default(1)
-  prompt       String   // e.g. "Wolfi", "Yield Yak", etc.
-  status       String   @default("pending") // "pending", "approved", "rejected"
-  votesReceived Int     @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  votes        ArtVote[]
+  artistName    String?
+  discordId     String?
+  title         String
+  description   String?
+  artworkUrl    String
+  cohort        Int       @default(1)
+  prompt        String // e.g. "Wolfi", "Yield Yak", etc.
+  status        String    @default("pending") // "pending", "approved", "rejected"
+  votesReceived Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  votes         ArtVote[]
 }
 
 model ArtVote {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String   @db.ObjectId
-  user         User     @relation(fields: [userId], references: [id])
-  submissionId String   @db.ObjectId
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String        @db.ObjectId
+  user         User          @relation(fields: [userId], references: [id])
+  submissionId String        @db.ObjectId
   submission   ArtSubmission @relation(fields: [submissionId], references: [id])
   cohort       Int
-  createdAt    DateTime @default(now())
+  createdAt    DateTime      @default(now())
 }
 
 model CoffeeDonation {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
   recipientAddress String
-  recipientName   String
-  recipientAvatar String?
-  donorAddress    String
-  amount          Float
-  message         String?
-  transactionHash String?
-  createdAt       DateTime @default(now())
+  recipientName    String
+  recipientAvatar  String?
+  donorAddress     String
+  amount           Float
+  message          String?
+  transactionHash  String?
+  createdAt        DateTime @default(now())
 }
 
 model Board {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String   @unique // e.g., "gen", "meme", "defi"
-  title       String   // e.g., "General AVAX"
-  description String
-  createdAt   DateTime @default(now())
-  totalThreadsCreated Int @default(0) // All-time thread count for unlock tracking
-  threads     Thread[]
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  name                String   @unique // e.g., "gen", "meme", "defi"
+  title               String // e.g., "General AVAX"
+  description         String
+  createdAt           DateTime @default(now())
+  totalThreadsCreated Int      @default(0) // All-time thread count for unlock tracking
+  threads             Thread[]
 }
 
 model Thread {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  boardId     String   @db.ObjectId
-  board       Board    @relation(fields: [boardId], references: [id])
-  subject     String?  // Optional thread title
-  bumpedAt    DateTime @default(now())
-  createdAt   DateTime @default(now())
-  replyCount  Int      @default(0)
-  posts       Post[]
-  deleted     Boolean  @default(false)
-  deletedAt   DateTime?
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  boardId    String    @db.ObjectId
+  board      Board     @relation(fields: [boardId], references: [id])
+  subject    String? // Optional thread title
+  bumpedAt   DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  replyCount Int       @default(0)
+  posts      Post[]
+  deleted    Boolean   @default(false)
+  deletedAt  DateTime?
 }
 
 model Post {
@@ -172,65 +775,65 @@ model Post {
   threadId      String   @db.ObjectId
   thread        Thread   @relation(fields: [threadId], references: [id])
   comment       String
-  imageHash     String?  // Optional IPFS hash or image URL
+  imageHash     String? // Optional IPFS hash or image URL
   walletAddress String
-  posterId      String   // Unique ID per wallet per board
+  posterId      String // Unique ID per wallet per board
   isOp          Boolean  @default(false)
   anonymous     Boolean  @default(true) // Whether to hide wallet/discord info
   createdAt     DateTime @default(now())
 }
 
 model Reward {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  name            String
-  description     String
-  imageUrl        String
-  nftCollectionUrl String  // Salvor collection URL
-  tokenId         String?  // Specific token ID if applicable
-  xpRequired      Int      // XP needed to claim
-  totalAvailable  Int      // Total number of rewards
-  claimed         Int      @default(0) // Number already claimed
-  active          Boolean  @default(true)
-  limitedTime     Boolean  @default(false) // Whether this is a limited time offer
-  availableUntil  DateTime? // When the limited time offer expires
-  contractAddress String?  // Contract address to verify interaction with
-  requiredYear    Int?     // Year user must have interacted with contract
-  createdAt       DateTime @default(now())
-  claims          Claim[]
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  description      String
+  imageUrl         String
+  nftCollectionUrl String // Salvor collection URL
+  tokenId          String? // Specific token ID if applicable
+  xpRequired       Int // XP needed to claim
+  totalAvailable   Int // Total number of rewards
+  claimed          Int       @default(0) // Number already claimed
+  active           Boolean   @default(true)
+  limitedTime      Boolean   @default(false) // Whether this is a limited time offer
+  availableUntil   DateTime? // When the limited time offer expires
+  contractAddress  String? // Contract address to verify interaction with
+  requiredYear     Int? // Year user must have interacted with contract
+  createdAt        DateTime  @default(now())
+  claims           Claim[]
 }
 
 model Claim {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String   @db.ObjectId
-  user        User     @relation(fields: [userId], references: [id])
-  rewardId    String   @db.ObjectId
-  reward      Reward   @relation(fields: [rewardId], references: [id])
-  claimedAt   DateTime @default(now())
-  coinsSpent  Int      // Coins spent at time of claim
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  rewardId   String   @db.ObjectId
+  reward     Reward   @relation(fields: [rewardId], references: [id])
+  claimedAt  DateTime @default(now())
+  coinsSpent Int // Coins spent at time of claim
 }
 
 model Collectable {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  collectableId    String   @unique // e.g., "snowdog", "puppet", "yak"
-  name             String   // Display name
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  collectableId    String            @unique // e.g., "snowdog", "puppet", "yak"
+  name             String // Display name
   description      String
-  imageUrl         String   // Image for the collectable
-  rarity           String   @default("common") // "common", "rare", "epic", "legendary"
-  category         String?  // e.g., "mascot", "character", "achievement"
-  active           Boolean  @default(true) // Whether this collectable can still be earned
-  createdAt        DateTime @default(now())
+  imageUrl         String // Image for the collectable
+  rarity           String            @default("common") // "common", "rare", "epic", "legendary"
+  category         String? // e.g., "mascot", "character", "achievement"
+  active           Boolean           @default(true) // Whether this collectable can still be earned
+  createdAt        DateTime          @default(now())
   userCollectables UserCollectable[]
 }
 
 model UserCollectable {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String      @db.ObjectId
-  user           User        @relation(fields: [userId], references: [id])
-  collectableId  String      @db.ObjectId
-  collectable    Collectable @relation(fields: [collectableId], references: [id])
-  acquiredAt     DateTime    @default(now())
-  nftMinted      Boolean     @default(false) // Track if NFT has been minted
-  nftTokenId     String?     // Token ID once NFT is minted
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String      @db.ObjectId
+  user          User        @relation(fields: [userId], references: [id])
+  collectableId String      @db.ObjectId
+  collectable   Collectable @relation(fields: [collectableId], references: [id])
+  acquiredAt    DateTime    @default(now())
+  nftMinted     Boolean     @default(false) // Track if NFT has been minted
+  nftTokenId    String? // Token ID once NFT is minted
 
   @@unique([userId, collectableId]) // A user can only have one of each collectable
 }
