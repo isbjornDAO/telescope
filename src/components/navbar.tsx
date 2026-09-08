@@ -3,33 +3,43 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, Home, CircleDollarSign, Calendar, Monitor, Library, Newspaper, Palette, Gift, User, Settings, Radio as RadioIcon } from "lucide-react";
-import { useAccount } from "wagmi";
-import { Address } from "viem";
+import { Menu, Globe2, Snowflake, Radar, Link2, Users, Flag, MapPin, MessageSquare, User, Crown, BookOpen, Sparkles, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { FAQ } from "@/components/faq";
 import { ConnectButton } from "@/components/connect-button";
 import { BackButton } from "@/components/back-button";
 import { DonateModal } from "@/components/donate-modal";
-import { ArtClubModal } from "@/components/art-club-modal";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useUserStats } from "@/hooks/use-user-stats";
+import { useWorldSession } from "@/hooks/use-world";
 
-// Play random shop sound
-const playShopSound = () => {
-  const soundIndex = Math.floor(Math.random() * 5) + 1;
-  const audio = new Audio(`/sounds/UI_TradingPost_OpenMenu_0${soundIndex}.ogg`);
-  audio.volume = 0.5;
-  audio.play().catch(() => {}); // Ignore errors if autoplay is blocked
-};
+const LINKS = [
+  { href: "/", label: "World", icon: Globe2 },
+  { href: "/seasons", label: "Seasons", icon: Snowflake },
+  { href: "/scout", label: "Scout", icon: Radar },
+  { href: "/trust", label: "Trust", icon: Link2 },
+  { href: "/crews", label: "Crews", icon: Users },
+  { href: "/factions", label: "Factions", icon: Flag },
+  { href: "/regions", label: "Regions", icon: MapPin },
+  { href: "/forum", label: "Forum", icon: MessageSquare },
+  { href: "/rules", label: "World rules", icon: BookOpen },
+];
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { address, isConnected } = useAccount();
-  const { data: userStats } = useUserStats(address as Address, isConnected);
+  const { me, isSignedIn } = useWorldSession();
   const pathname = usePathname();
+
+  const item = (href: string, label: string, Icon: typeof Globe2) => {
+    const active = href === "/" ? pathname === "/" : pathname?.startsWith(href);
+    return (
+      <Link key={href} href={href} className={`flex items-center gap-3 text-base p-2 rounded-lg ${active ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
+        <Icon className="h-5 w-5" />
+        <span>{label}</span>
+      </Link>
+    );
+  };
 
   return (
     <header className="w-full bg-transparent border-b-4 border-zinc-300 dark:border-zinc-700">
@@ -37,108 +47,54 @@ export function Navbar() {
         <div className="flex items-center gap-4 absolute left-4 top-4 md:left-8 md:top-12 z-10">
           <BackButton />
         </div>
-        <Image
-          src="/logo.png"
-          alt="Telescope"
-          className="flex items-end absolute md:relative left-4 md:left-0 -bottom-4 md:-bottom-4 w-80 md:w-80"
-          width={320}
-          height={80}
-          style={{ width: 'auto', height: 'auto' }}
-        />
+        <Link href="/" className="contents">
+          <Image
+            src="/logo.png"
+            alt="Telescope"
+            className="flex items-end absolute md:relative left-4 md:left-0 -bottom-4 md:-bottom-4 w-80 md:w-80"
+            width={320}
+            height={80}
+            style={{ width: "auto", height: "auto" }}
+          />
+        </Link>
         <div className="flex items-center relative z-10 justify-center gap-1.5 md:gap-2 md:self-auto">
-          {isConnected && userStats && (
-            <Link
-              href="/shop"
-              onClick={playShopSound}
-            >
+          {isSignedIn && me && (
+            <Link href="/trust" title="Your weight: season-earned trust">
               <div className="flex items-center gap-1 md:gap-1.5 bg-white dark:bg-zinc-800 rounded-lg px-2 md:px-3 py-1.5 md:py-2 h-8 md:h-9 shadow cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
-                <CircleDollarSign className="h-3.5 w-3.5 md:h-4 md:w-4 text-yellow-600" />
-                <span className="font-bold text-xs md:text-sm text-yellow-600">{userStats.coins || 0}</span>
+                <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4 text-sky-500" />
+                <span className="font-bold text-xs md:text-sm text-sky-700 dark:text-sky-300 tabular-nums">{(me.standing ?? 0).toFixed(2)}</span>
               </div>
             </Link>
           )}
-          {/* Desktop buttons */}
           <div className="hidden md:flex items-center gap-2 [&_.mobile-menu-text]:hidden">
-            <ArtClubModal />
             <DonateModal />
             <FAQ />
           </div>
-          {/* Theme toggle - visible on both mobile and desktop */}
           <ThemeToggle />
           <ConnectButton />
-          {/* Mobile menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <button className="md:hidden p-1.5 md:p-2 rounded-lg bg-white dark:bg-zinc-800 shadow hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
+              <button className="md:hidden p-1.5 md:p-2 rounded-lg bg-white dark:bg-zinc-800 shadow hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors" aria-label="Menu">
                 <Menu className="h-5 w-5 md:h-6 md:w-6" />
               </button>
             </SheetTrigger>
             <SheetContent side="right">
-              <nav className="flex flex-col gap-3 mt-8">
-                {/* Profile Section */}
-                {isConnected && (
+              <nav className="flex flex-col gap-2 mt-8">
+                {isSignedIn && me && (
                   <>
-                    <Link href="/profile" className="flex items-center gap-3 text-base p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800" onClick={() => setIsOpen(false)}>
-                      <User className="h-5 w-5" />
-                      <span>Profile</span>
-                    </Link>
+                    {item(`/profile/${me.handle ?? me.address}`, me.name ?? "Profile", User)}
+                    {(me.isElder || me.nodeType === "ANCHOR") && item("/elders", "Elders", Crown)}
+                    {me.isAdmin && item("/world-admin", "World admin", Settings)}
                     <div className="border-t border-zinc-200 dark:border-zinc-700" />
                   </>
                 )}
-
-                {/* All Navigation Links */}
-                <Link href="/" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname === "/" ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
-                  <Home className="h-5 w-5" />
-                  <span>Home</span>
-                </Link>
-                <Link href="/calendar" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname === "/calendar" ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
-                  <Calendar className="h-5 w-5" />
-                  <span>Calendar</span>
-                </Link>
-                <Link href="/forum" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname?.startsWith("/forum") ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
-                  <Monitor className="h-5 w-5" />
-                  <span>Forum</span>
-                </Link>
-                <Link href="/radio" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname === "/radio" ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
-                  <RadioIcon className="h-5 w-5" />
-                  <span>Radio</span>
-                </Link>
-                <Link href="/projects" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname === "/projects" ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
-                  <Library className="h-5 w-5" />
-                  <span>Projects</span>
-                </Link>
-                <Link href="/news" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname?.startsWith("/news") ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
-                  <Newspaper className="h-5 w-5" />
-                  <span>News</span>
-                </Link>
-                <Link href="/artists" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname?.startsWith("/artists") ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
-                  <Palette className="h-5 w-5" />
-                  <span>Artists</span>
-                </Link>
-                <Link href="/shop" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname?.startsWith("/shop") ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
-                  <Gift className="h-5 w-5" />
-                  <span>Shop</span>
-                </Link>
-
+                {LINKS.map((l) => item(l.href, l.label, l.icon))}
                 <div className="border-t border-zinc-200 dark:border-zinc-700" />
-
-                {/* Settings and Theme */}
-                <Link href="/settings" className={`flex items-center gap-3 text-base p-2 rounded-lg ${pathname === "/settings" ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}`} onClick={() => setIsOpen(false)}>
-                  <Settings className="h-5 w-5" />
-                  <span>Settings</span>
-                </Link>
-
                 <div className="flex items-center justify-between p-2">
                   <span className="text-sm font-semibold">Theme</span>
                   <ThemeToggle />
                 </div>
-
                 <div className="border-t border-zinc-200 dark:border-zinc-700" />
-
-                {/* FAQ, Art Club, and Donate */}
-                <div className="[&_button]:w-full [&_button]:justify-start [&_button]:text-base [&_button]:h-auto [&_button]:py-3 [&_.mobile-menu-text]:inline">
-                  <ArtClubModal />
-                </div>
                 <div className="[&_button]:w-full [&_button]:justify-start [&_button]:text-base [&_button]:h-auto [&_button]:py-3 [&_.mobile-menu-text]:inline">
                   <DonateModal />
                 </div>

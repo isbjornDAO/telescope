@@ -60,16 +60,12 @@ export function nodeLabel(nodeType: NodeType): string {
 }
 
 /** Research Papers: reviewers see the paper, not the author, crew, faction or region. */
+const IDENTIFYING_KEYS = ["authorId", "crewId", "factionId", "allianceId", "regionId"] as const;
+
 export function blindEntry<T extends Partial<Entry>>(entry: T) {
-  const {
-    authorId: _a,
-    crewId: _c,
-    factionId: _f,
-    allianceId: _al,
-    regionId: _r,
-    ...rest
-  } = entry as Entry;
-  return { ...rest, blind: true as const };
+  const rest: Record<string, unknown> = { ...entry };
+  for (const k of IDENTIFYING_KEYS) delete rest[k];
+  return { ...(rest as Omit<T, (typeof IDENTIFYING_KEYS)[number]>), blind: true as const };
 }
 
 /** Public shape of an entry. RP entries stay private until the season closes. */

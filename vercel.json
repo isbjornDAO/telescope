@@ -31,6 +31,18 @@
         "Pragma": "no-cache",
         "Expires": "0"
       }
+    },
+    {
+      "src": "/api/world/(.*)",
+      "headers": {
+        "Cache-Control": "no-cache, no-store, must-revalidate"
+      }
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/world/jobs/tick",
+      "schedule": "15 3 * * *"
     }
   ]
 }

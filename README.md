@@ -1,5 +1,25 @@
 # Telescope Platform Documentation
 
+Telescope is a world, not a social network. Start with [`docs/README.md`](docs/README.md) (World Rules v0.1) and [`docs/build-decisions.md`](docs/build-decisions.md). `CLAUDE.md` maps the world code.
+
+## The world in one paragraph
+
+Every person has a profile and a scout. People form crews; crews form factions. Trust is a graph of vouches anchored in rooms, and every vouch is a stake. Twice a year a season runs three tournaments: Local Systems (panel of Elders), Research Papers (blind review), GTM (community vote weighted by trust). What you win is standing.
+
+## World quickstart
+
+```bash
+npm install
+npx prisma db push            # new world models
+npm run seed:world            # Team1 regions on the Arctic map
+SEED_SEASON=1 SEASON_START=2026-10-05 npm run seed:world   # optional: Winter I
+npm run dev
+```
+
+- Set `WORLD_ADMIN_ADDRESSES` in `.env` to reach `/world-admin` (seed Elders and Anchors, create regions and seasons).
+- The nightly heartbeat is `GET /api/world/jobs/tick` (Vercel cron in `vercel.json`, protected by `CRON_SECRET`).
+- Tests: `npm test` (trust score, voting, retention, scout).
+
 ## Development Setup
 
 1. **Install dependencies:**

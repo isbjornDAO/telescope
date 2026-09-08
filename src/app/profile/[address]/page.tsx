@@ -1,777 +1,229 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useUserStats } from "@/hooks/use-user-stats";
-import { useForumStats } from "@/hooks/use-forum-stats";
-import { useAvaxBadge } from "@/hooks/use-avax-badge";
-import { useQuery } from "@tanstack/react-query";
-import { formatDistanceToNow, format } from "date-fns";
 import { useState } from "react";
-// import { VoteStreak } from "@/components/vote-streak";
-import { ConnectDiscordAlert } from "@/components/connect-discord-alert";
-import { useUserDiscord } from "@/hooks/use-user-discord";
-import { Address } from "viem";
+import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useAccount } from "wagmi";
-import { UserBadge } from "@/components/user-badge";
-import { MessageSquare, ThumbsUp, Award, ExternalLink, Package, Lock, Gamepad2, Film, Plus, X } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Package, Link2, Radar, Flag, Users, MapPin, Pencil, Upload, Plus } from "lucide-react";
+import { useWorldQuery, useWorldSession, useWorldMutation, worldFetch } from "@/hooks/use-world";
+import { WorldPage, Frost, SectionTitle, NodeBadge, Empty, LoadingBlock, ErrorBlock, TournamentBadge, StatusBadge, Weight, fmtDate } from "@/components/world/primitives";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-interface VoteHistory {
-  votes: {
-    projectId: string;
-    projectName: string;
-    votedDate: string;
-    type: "like" | "dislike";
-    season: string;
-  }[];
-  currentStreak: number;
-  longestStreak: number;
+interface Profile {
+  handle: string | null;
+  name: string;
+  bio: string | null;
+  nodeType: "NODE" | "ANCHOR" | "ELDER";
+  band: string;
+  standing: number;
+  region: { name: string; slug: string } | null;
+  faction: { name: string; slug: string; vision: string; standing: number } | null;
+  crews: { name: string; slug: string; standing: number; role: string | null; isLead: boolean; faction: { name: string; slug: string } | null }[];
+  shipped: { id: string; kind: string; source: string; title: string; description: string | null; proofHash: string; verified: boolean; shippedAt: string | null; crew: { name: string; slug: string } | null }[];
+  trust: { vouchesAtLeast: number; inPersonAtLeast: number; shippedTogetherAtLeast: number; sharedVisionAtLeast: number; regions: { slug: string; name: string; atLeast: number }[]; band: string; visibleVouchers: { handle: string; type: string }[] };
+  lookingFor: { type: string; tags: string[]; expiresAt: string }[];
+  seasonHistory: { id: string; title: string; tournament: string; status: string; isVictor: boolean; season: { number: number; name: string } }[];
+  standingHistory: { id: string; amount: number; reason: string; createdAt: string; vestedFraction: number | null }[];
+  since: string;
+  // private
+  address?: string;
+  trustScore?: number;
+  vouchBudget?: { total: number; spent: number; remaining: number };
 }
 
-interface ForumPost {
-  id: string;
-  comment: string;
-  threadId: string;
-  threadSubject: string | null;
-  boardName: string;
-  boardTitle: string;
-  isOp: boolean;
-  createdAt: string;
-  imageHash: string | null;
-}
-
+const INTENT_LABEL: Record<string, string> = { ROLE: "a role to fill", PARTNER_PROJECT: "a partner project", REGION_ADOPT: "a region to bring a tool to", RESEARCH_QUESTION: "a research question" };
 
 export default function ProfilePage() {
   const params = useParams();
-  const addressParam = params.address as Address;
-  const [showVoteHistory, setShowVoteHistory] = useState(false);
-  const [showForumPosts, setShowForumPosts] = useState(false);
-  const [showEditGames, setShowEditGames] = useState(false);
-  const [showEditMovies, setShowEditMovies] = useState(false);
-  const [gameSearch, setGameSearch] = useState("");
-  const [movieSearch, setMovieSearch] = useState("");
-
-  const { address: connectedAddress } = useAccount();
-  const isOwnProfile = addressParam === connectedAddress;
-
-  const { data: userStats, isLoading: isLoadingStats } = useUserStats(
-    addressParam,
-    !!addressParam
-  );
-  const { data: discordUser, isLoading: isLoadingDiscordUser } = useUserDiscord(
-    userStats?.discordId || ""
-  );
-  const { data: forumStats, isLoading: isLoadingForumStats } = useForumStats(addressParam);
-  const { data: avaxBadge } = useAvaxBadge(addressParam);
-
-  const { data: voteHistory, isLoading: isLoadingHistory } =
-    useQuery<VoteHistory>({
-      queryKey: ["voteHistory", addressParam],
-      queryFn: async () => {
-        if (!addressParam) throw new Error("No address");
-        const response = await fetch(`/api/users/${addressParam}/votes`);
-        if (!response.ok) throw new Error("Failed to fetch vote history");
-        return response.json();
-      },
-      enabled: !!addressParam,
-    });
-
-  const { data: forumPosts, isLoading: isLoadingForumPosts } =
-    useQuery<ForumPost[]>({
-      queryKey: ["forumPosts", addressParam],
-      queryFn: async () => {
-        if (!addressParam) throw new Error("No address");
-        const response = await fetch(`/api/users/${addressParam}/forum-posts`);
-        if (!response.ok) throw new Error("Failed to fetch forum posts");
-        return response.json();
-      },
-      enabled: !!addressParam && showForumPosts, // Only load when dialog is open
-    });
-
-  const { data: collectables, isLoading: isLoadingCollectables } =
-    useQuery<any[]>({
-      queryKey: ["collectables", addressParam],
-      queryFn: async () => {
-        if (!addressParam) throw new Error("No address");
-        const response = await fetch(`/api/collectables?address=${addressParam}`);
-        if (!response.ok) throw new Error("Failed to fetch collectables");
-        const data = await response.json();
-        return data.filter((c: any) => c.hasClaimed);
-      },
-      enabled: !!addressParam,
-    });
-
-  const { data: favorites, isLoading: isLoadingFavorites } =
-    useQuery<{ favoriteGames: any[], favoriteMovies: any[] }>({
-      queryKey: ["favorites", addressParam],
-      queryFn: async () => {
-        if (!addressParam) throw new Error("No address");
-        const response = await fetch(`/api/users/${addressParam}/favorites`);
-        if (!response.ok) throw new Error("Failed to fetch favorites");
-        return response.json();
-      },
-      enabled: !!addressParam,
-    });
-
-
-  if (!addressParam) {
-    return (
-      <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16 bg-white dark:bg-zinc-800 rounded-lg py-16 shadow flex items-center justify-center flex-col gap-4">
-        <div className="flex flex-col items-center">
-          <Skeleton className="w-64 h-6 mb-4" />
-          <Skeleton className="w-48 h-4" />
-        </div>
-      </div>
-    );
-  }
-
-  if (isLoadingStats || isLoadingHistory || isLoadingDiscordUser) {
-    return (
-      <div className="w-full max-w-screen-lg mx-auto -mt-6 px-8 relative z-10 mb-16">
-        {/* Discord Alert Skeleton */}
-        {isOwnProfile && !discordUser && (
-          <div className="mb-8">
-            <div className="w-full h-20 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
-          </div>
-        )}
-
-        {/* Profile Header Skeleton */}
-        <div className="bg-white dark:bg-zinc-800 rounded-md shadow p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-700 animate-pulse" />
-              <div className="space-y-2">
-                <div className="w-48 h-6 rounded bg-zinc-100 dark:bg-zinc-700 animate-pulse" />
-                <div className="w-32 h-4 rounded bg-zinc-100 dark:bg-zinc-700 animate-pulse" />
-              </div>
-            </div>
-            <div className="text-right space-y-2">
-              <div className="w-24 h-6 rounded bg-zinc-100 dark:bg-zinc-700 animate-pulse ml-auto" />
-              <div className="w-40 h-4 rounded bg-zinc-100 dark:bg-zinc-700 animate-pulse ml-auto" />
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Grid Skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow p-6">
-            <div className="w-32 h-6 rounded bg-zinc-100 dark:bg-zinc-700 animate-pulse mb-4" />
-            <div className="w-20 h-10 rounded bg-zinc-100 dark:bg-zinc-700 animate-pulse mb-2" />
-            <div className="w-24 h-4 rounded bg-zinc-100 dark:bg-zinc-700 animate-pulse" />
-          </div>
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow p-6">
-            <div className="w-32 h-6 rounded bg-zinc-100 dark:bg-zinc-700 animate-pulse mb-4" />
-            <div className="w-20 h-10 rounded bg-zinc-100 dark:bg-zinc-700 animate-pulse mb-2" />
-            <div className="w-24 h-4 rounded bg-zinc-100 dark:bg-zinc-700 animate-pulse" />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const key = decodeURIComponent(String(params.address));
+  const { me, isSignedIn } = useWorldSession();
+  const isOwn = !!me?.signedIn && (me.address?.toLowerCase() === key.toLowerCase() || (!!me.handle && me.handle === key));
+  const url = isOwn && isSignedIn ? "/api/world/me" : `/api/world/profiles/${encodeURIComponent(key)}`;
+  const { data, isLoading, error } = useWorldQuery<Profile>(["profile", key, isOwn], url);
 
   return (
-    <div className="w-full max-w-screen-lg mx-auto -mt-6 px-4 md:px-8 relative z-10 mb-8 md:mb-16">
-      {/* Show Discord alert if no Discord account is connected and on own profile */}
-      {isOwnProfile && !discordUser && (
-        <div className="mb-8">
-          <ConnectDiscordAlert />
-        </div>
-      )}
-
-      {/* Profile Header */}
-      <div className="bg-white dark:bg-zinc-800 rounded-md shadow p-4 md:p-6 mb-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-20 w-20">
-              {discordUser?.avatar_url ? (
-                <AvatarImage
-                  src={discordUser.avatar_url}
-                  alt={discordUser.username}
-                />
-              ) : (
-                <AvatarFallback>
-                  {addressParam?.substring(2, 4).toUpperCase()}
-                </AvatarFallback>
-              )}
-            </Avatar>
-            <div>
-              <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                {discordUser?.global_name ||
-                  `${addressParam?.substring(0, 6)}...${addressParam?.substring(
-                    38
-                  )}`}
-                <UserBadge address={addressParam} />
-              </h1>
-              {/* TODO: Create badge component */}
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                {discordUser?.username &&
-                  `${addressParam?.substring(0, 6)}...
-                ${addressParam?.substring(38)} • @${discordUser.username}`}
-              </p>
-            </div>
-          </div>
-          <div className="w-full sm:w-auto text-left sm:text-right flex-shrink-0">
-            <p className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100">
-              Level {userStats?.level}
-            </p>
-            <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
-              {userStats?.xp} XP • {userStats?.xpForNextLevel} XP until next level
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Badges Section */}
-      {(avaxBadge || forumStats?.isSuperOG || (voteHistory && voteHistory.votes.length > 0)) && (
-        <Card className="p-6 mb-8">
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-            <Award className="h-5 w-5" />
-            Badges
-          </h2>
-          <div className="flex flex-wrap gap-4 items-center">
-            {avaxBadge && (
-              <div className="flex items-center gap-3">
-                <Badge variant="secondary" className="text-sm px-4 py-2">
-                  {avaxBadge.classOf}
-                </Badge>
-                <a
-                  href={`https://snowtrace.io/tx/${avaxBadge.firstTxHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground hover:underline flex items-center gap-1"
-                >
-                  First tx: {format(new Date(avaxBadge.firstTxDate), 'MMM d, yyyy')}
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </div>
-            )}
-            {forumStats?.isSuperOG && (
-              <div className="flex items-center gap-3">
-                <Badge variant="secondary" className="text-sm px-4 py-2">
-                  Super OG
-                </Badge>
-                <span className="text-xs text-muted-foreground">First 100 to post on forum</span>
-              </div>
-            )}
-            {voteHistory && (() => {
-              const seasons = new Set<string>();
-              voteHistory.votes.forEach(vote => {
-                if (vote.season === 'Season 1') seasons.add('Season 1');
-                if (vote.season === 'Current Season') seasons.add('Season 2');
-              });
-              return Array.from(seasons).sort().map(season => (
-                <div key={season} className="flex items-center gap-3">
-                  <Badge variant="secondary" className="text-sm px-4 py-2">
-                    {season === 'Season 1' ? 'Season 1 Participant' : 'Season 2 Participant'}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">Voted in {season === 'Season 1' ? 'S1' : 'S2'}</span>
+    <WorldPage>
+      {isLoading && <LoadingBlock lines={6} />}
+      {error && <ErrorBlock error={error} />}
+      {data && (
+        <div className="space-y-6">
+          <Frost>
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{data.name}</h1>
+                  <NodeBadge nodeType={data.nodeType} band={data.band} />
                 </div>
-              ));
-            })()}
-          </div>
-        </Card>
-      )}
-
-      {/* Collectables Grid - 20 boxes */}
-      <Card className="p-6 mb-8">
-        <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-          <Package className="h-5 w-5" />
-          Collectables
-        </h2>
-        {isLoadingCollectables ? (
-          <div className="flex gap-3 flex-wrap">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <Skeleton key={i} className="w-20 h-20" />
-            ))}
-          </div>
-        ) : (
-          <div className="flex gap-3 flex-wrap">
-            {Array.from({ length: 10 }).map((_, index) => {
-              const collectable = collectables?.[index];
-              const isLocked = !collectable;
-              const isSnowdog = collectable?.name === 'Snowdog';
-              
-              return (
-                <div key={index} className="flex flex-col items-center gap-1">
-                  <div
-                    className={`w-20 h-20 rounded-lg border-2 flex items-center justify-center transition-all ${
-                      isLocked
-                        ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700'
-                        : isSnowdog
-                        ? 'bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 border-blue-400 dark:border-blue-400 shadow-[0_0_15px_rgba(96,165,250,0.6)]'
-                        : 'bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 border-zinc-300 dark:border-zinc-600 hover:border-blue-400 dark:hover:border-blue-600'
-                    }`}
-                  >
-                    {isLocked ? (
-                      <Lock className="h-6 w-6 text-zinc-400 dark:text-zinc-600" />
-                    ) : (
-                      <img
-                        src={collectable.imageUrl}
-                        alt={collectable.name}
-                        className={`object-contain ${isSnowdog ? 'w-[180%] h-[180%]' : 'w-full h-full p-2'}`}
-                      />
-                    )}
-                  </div>
-                  <span className={`text-[10px] text-center ${
-                    isLocked 
-                      ? 'text-zinc-600 dark:text-zinc-400' 
-                      : isSnowdog 
-                      ? 'text-blue-500 dark:text-blue-300 font-semibold' 
-                      : 'text-zinc-600 dark:text-zinc-400'
-                  }`}>
-                    {isLocked ? 'redacted' : collectable.name}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </Card>
-
-      {/* Games & Movies Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {/* Favorite Games */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-            <Gamepad2 className="h-5 w-5" />
-            Games I Like
-          </h2>
-          {isLoadingFavorites ? (
-            <div className="space-y-3">
-              <Skeleton className="w-full h-20" />
-              <Skeleton className="w-full h-20" />
-            </div>
-          ) : favorites && favorites.favoriteGames && favorites.favoriteGames.length > 0 ? (
-            <div className="space-y-3">
-              {favorites.favoriteGames.slice(0, 5).map((game: any, idx: number) => (
-                <a
-                  key={idx}
-                  href={game.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-2 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700/50 transition-colors"
-                >
-                  {game.imageUrl && (
-                    <img src={game.imageUrl} alt={game.title} className="w-12 h-16 object-cover rounded" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm line-clamp-1">{game.title}</p>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      {game.platform && <span>{game.platform}</span>}
-                      {game.metascore && (
-                        <>
-                          <span>•</span>
-                          <span className="font-semibold text-green-600 dark:text-green-500">{game.metascore}</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </a>
-              ))}
-              {isOwnProfile && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowEditGames(true)}
-                  className="w-full flex items-center justify-center gap-2 mt-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Edit Games</span>
-                </Button>
-              )}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-sm text-muted-foreground mb-3">No games added yet</p>
-              {isOwnProfile && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowEditGames(true)}
-                  className="flex items-center justify-center gap-2 mx-auto"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Add Games</span>
-                </Button>
-              )}
-            </div>
-          )}
-        </Card>
-
-        {/* Favorite Movies */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-            <Film className="h-5 w-5" />
-            Movies I Like
-          </h2>
-          {isLoadingFavorites ? (
-            <div className="space-y-3">
-              <Skeleton className="w-full h-20" />
-              <Skeleton className="w-full h-20" />
-            </div>
-          ) : favorites && favorites.favoriteMovies && favorites.favoriteMovies.length > 0 ? (
-            <div className="space-y-3">
-              {favorites.favoriteMovies.slice(0, 5).map((movie: any, idx: number) => (
-                <a
-                  key={idx}
-                  href={movie.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-2 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700/50 transition-colors"
-                >
-                  {movie.imageUrl && (
-                    <img src={movie.imageUrl} alt={movie.title} className="w-12 h-16 object-cover rounded" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm line-clamp-1">{movie.title}</p>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      {movie.year && <span>{movie.year}</span>}
-                      {movie.rating && (
-                        <>
-                          <span>•</span>
-                          <span className="font-semibold text-yellow-600 dark:text-yellow-500">⭐ {movie.rating}</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </a>
-              ))}
-              {isOwnProfile && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowEditMovies(true)}
-                  className="w-full flex items-center justify-center gap-2 mt-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Edit Movies</span>
-                </Button>
-              )}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-sm text-muted-foreground mb-3">No movies added yet</p>
-              {isOwnProfile && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowEditMovies(true)}
-                  className="flex items-center justify-center gap-2 mx-auto"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Add Movies</span>
-                </Button>
-              )}
-            </div>
-          )}
-        </Card>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {/* Forum Stats */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
-            Forum Activity
-          </h2>
-          {isLoadingForumStats ? (
-            <div className="space-y-3">
-              <Skeleton className="w-full h-4" />
-              <Skeleton className="w-full h-4" />
-              <Skeleton className="w-full h-4" />
-            </div>
-          ) : forumStats ? (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">
-                    {forumStats.totalPosts}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Total Posts</div>
+                <p className="text-sm text-muted-foreground mt-1">{data.bio || (isOwn ? "No bio yet. Say what you build, not who you are." : "A profile is a name they chose.")}</p>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm mt-3">
+                  {data.region && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5 text-sky-500" /><Link href={`/regions/${data.region.slug}`} className="hover:underline">{data.region.name}</Link></span>}
+                  {data.faction && <span className="flex items-center gap-1"><Flag className="h-3.5 w-3.5 text-sky-500" /><Link href={`/factions/${data.faction.slug}`} className="hover:underline">{data.faction.name}</Link></span>}
+                  {data.crews.map((c) => <span key={c.slug} className="flex items-center gap-1"><Users className="h-3.5 w-3.5 text-sky-500" /><Link href={`/crews/${c.slug}`} className="hover:underline">{c.name}</Link>{c.isLead && <span className="text-xs text-muted-foreground">lead</span>}</span>)}
+                  <span className="text-muted-foreground">in the world since {fmtDate(data.since)}</span>
                 </div>
               </div>
-              {forumStats.boardsPostedIn && forumStats.boardsPostedIn.length > 0 && (
-                <div className="pt-3 border-t border-zinc-200 dark:border-zinc-700">
-                  <div className="text-xs text-muted-foreground mb-2">Most Active Boards</div>
-                  <div className="flex flex-wrap gap-2">
-                    {forumStats.boardsPostedIn.slice(0, 3).map((board) => (
-                      <a
-                        key={board.name}
-                        href={`/forum/${board.name}`}
-                        className="text-xs px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-                      >
-                        /{board.name}/
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {isOwnProfile && forumStats && forumStats.totalPosts > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowForumPosts(true)}
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <MessageSquare className="h-4 w-4" />
-                  <span>View Post History</span>
-                </Button>
-              )}
+              <div className="text-right shrink-0">
+                <div className="text-lg"><Weight value={data.standing} /></div>
+                {isOwn && data.trustScore !== undefined && <div className="text-xs text-muted-foreground">trust score {data.trustScore.toFixed(3)} · only you see this number</div>}
+                {isOwn && <div className="mt-2"><EditProfile profile={data} /></div>}
+              </div>
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">No forum activity yet</p>
-          )}
-        </Card>
+          </Frost>
 
-        {/* Project Voting Stats */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-            <ThumbsUp className="h-5 w-5" />
-            Voting Activity
-          </h2>
-          {isLoadingHistory ? (
-            <div className="space-y-3">
-              <Skeleton className="w-full h-4" />
-              <Skeleton className="w-full h-4" />
-              <Skeleton className="w-full h-4" />
-            </div>
-          ) : voteHistory ? (
-            <>
-              {(() => {
-                const season1Count = voteHistory.votes.filter(v => v.season === 'Season 1').length;
-                const season2Count = voteHistory.votes.filter(v => v.season === 'Current Season').length;
-
-                return (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">
-                          {voteHistory.votes.length}
-                        </div>
-                        <div className="text-sm text-muted-foreground">Total Votes</div>
-                      </div>
-                    </div>
-                    {(season1Count > 0 || season2Count > 0) && (
-                      <div className="pt-3 border-t border-zinc-200 dark:border-zinc-700">
-                        <div className="text-xs text-muted-foreground mb-2">Seasons Participated</div>
-                        <div className="flex flex-wrap gap-2">
-                          {season1Count > 0 && (
-                            <div className="text-xs px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded flex items-center gap-1">
-                              Season 1
-                              <span className="font-semibold ml-1">({season1Count})</span>
-                            </div>
-                          )}
-                          {season2Count > 0 && (
-                            <div className="text-xs px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded flex items-center gap-1">
-                              Season 2
-                              <span className="font-semibold ml-1">({season2Count})</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    {isOwnProfile && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowVoteHistory(true)}
-                        className="w-full flex items-center justify-center gap-2"
-                      >
-                        <ThumbsUp className="h-4 w-4" />
-                        <span>View Vote History</span>
-                      </Button>
-                    )}
-                  </div>
-                );
-              })()}
-            </>
-          ) : (
-            <p className="text-sm text-muted-foreground">No voting activity yet</p>
-          )}
-        </Card>
-      </div>
-
-      {/* Vote Streak */}
-      {/* <VoteStreak /> */}
-
-      {/* Vote History Modal */}
-      <Dialog open={showVoteHistory} onOpenChange={setShowVoteHistory}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ThumbsUp className="h-5 w-5" />
-              Your Voting History
-            </DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            {voteHistory && voteHistory.votes.length > 0 ? (
-              <>
-                <div className="divide-y divide-zinc-200 dark:divide-zinc-700">
-                  {voteHistory.votes.map((vote) => (
-                    <div
-                      key={`${vote.projectId}-${vote.votedDate}`}
-                      className="p-4 flex items-center justify-between hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors rounded"
-                    >
-                      <div>
-                        <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                          {vote.projectName}
-                        </p>
-                        <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
-                          <span>
-                            {formatDistanceToNow(new Date(vote.votedDate), {
-                              addSuffix: true,
-                            })}
-                          </span>
-                          <span>•</span>
-                          <span>Season {vote.season === 'Season 1' ? '1' : '2'}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-sm ${vote.type === "like" ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"}`}>
-                          {vote.type === "like" ? "👍" : "👎"}
-                        </span>
-                        <div className="text-sm text-zinc-500 dark:text-zinc-400">+1 XP</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="text-center text-muted-foreground py-8">No votes yet</p>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Games Dialog */}
-      <Dialog open={showEditGames} onOpenChange={setShowEditGames}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Gamepad2 className="h-5 w-5" />
-              Edit Your Favorite Games
-            </DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            <p className="text-sm text-muted-foreground mb-4">
-              Enter game titles manually. Full Metacritic integration coming soon!
-            </p>
-            <div className="space-y-2">
-              <input
-                type="text"
-                placeholder="Search Metacritic for games..."
-                value={gameSearch}
-                onChange={(e) => setGameSearch(e.target.value)}
-                className="w-full px-3 py-2 rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800"
-              />
-              <p className="text-xs text-muted-foreground italic">
-                Note: Manual entry for now. Type game name and press Enter to add.
-              </p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Movies Dialog */}
-      <Dialog open={showEditMovies} onOpenChange={setShowEditMovies}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Film className="h-5 w-5" />
-              Edit Your Favorite Movies
-            </DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            <p className="text-sm text-muted-foreground mb-4">
-              Enter movie titles manually. Full IMDB integration coming soon!
-            </p>
-            <div className="space-y-2">
-              <input
-                type="text"
-                placeholder="Search IMDB for movies..."
-                value={movieSearch}
-                onChange={(e) => setMovieSearch(e.target.value)}
-                className="w-full px-3 py-2 rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800"
-              />
-              <p className="text-xs text-muted-foreground italic">
-                Note: Manual entry for now. Type movie name and press Enter to add.
-              </p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Forum Posts Modal */}
-      <Dialog open={showForumPosts} onOpenChange={setShowForumPosts}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              Your Forum Activity
-            </DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            {forumPosts && forumPosts.length > 0 ? (
-              <div className="space-y-3">
-                {forumPosts.map((post) => (
-                  <a
-                    key={post.id}
-                    href={`/forum/${post.boardName}/${post.threadId}`}
-                    className="p-4 block hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors rounded-lg border border-zinc-200 dark:border-zinc-700"
-                    onClick={() => setShowForumPosts(false)}
-                  >
-                    <div className="flex items-start gap-4">
-                      {post.imageHash && (
-                        <img
-                          src={`https://ipfs.io/ipfs/${post.imageHash}`}
-                          alt="Post attachment"
-                          className="w-16 h-16 rounded object-cover flex-shrink-0"
-                        />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant={post.isOp ? "default" : "secondary"} className="text-xs">
-                            {post.isOp ? "Thread" : "Reply"}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            /{post.boardName}/
-                          </span>
-                        </div>
-                        {post.threadSubject && (
-                          <p className="font-medium text-sm text-zinc-900 dark:text-zinc-100 mb-2">
-                            {post.threadSubject}
-                          </p>
-                        )}
-                        <p className="text-sm text-zinc-700 dark:text-zinc-300 line-clamp-2 mb-2">
-                          {post.comment}
-                        </p>
-                        <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-                          <span>
-                            {formatDistanceToNow(new Date(post.createdAt), {
-                              addSuffix: true,
-                            })}
-                          </span>
-                          <span>•</span>
-                          <span>{post.boardTitle}</span>
-                        </div>
-                      </div>
-                      <ExternalLink className="h-4 w-4 text-zinc-400 flex-shrink-0 mt-1" />
-                    </div>
-                  </a>
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Layer 1: shipped */}
+            <Frost>
+              <SectionTitle icon={<Package className="h-4 w-4 text-sky-500" />} right={isOwn ? <AddProof /> : undefined}>What they shipped</SectionTitle>
+              {data.shipped.length === 0 && <Empty>No proofs yet. {isOwn ? "Import from Builder\u2019s Hub or add one." : ""}</Empty>}
+              <ul className="space-y-2">
+                {data.shipped.map((p) => (
+                  <li key={p.id} className="text-sm">
+                    <div className="font-semibold flex items-center gap-2">{p.title} {p.verified ? <span className="text-[10px] rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 px-1.5">proof</span> : <span className="text-[10px] rounded bg-zinc-200 dark:bg-zinc-700 px-1.5">unverified</span>}</div>
+                    <div className="text-xs text-muted-foreground">{p.kind.toLowerCase()} · {p.source === "BUILDERS_HUB" ? "Builder's Hub" : p.source.toLowerCase()}{p.crew ? ` · with ${p.crew.name}` : ""}{p.shippedAt ? ` · ${fmtDate(p.shippedAt)}` : ""}</div>
+                    <div className="text-[10px] font-mono text-muted-foreground truncate" title={p.proofHash}>{p.proofHash.slice(0, 18)}…</div>
+                  </li>
                 ))}
-              </div>
-            ) : (
-              <p className="text-center text-muted-foreground py-8">No posts yet</p>
-            )}
+              </ul>
+            </Frost>
+
+            {/* Layer 2: trust */}
+            <Frost>
+              <SectionTitle icon={<Link2 className="h-4 w-4 text-sky-500" />}>Who vouches</SectionTitle>
+              <p className="text-xs text-muted-foreground mb-3">Shown as proofs and aggregates. Names only where both sides chose to be visible.</p>
+              <ul className="text-sm space-y-1">
+                <li>At least <b>{data.trust.vouchesAtLeast}</b> vouches</li>
+                <li>At least <b>{data.trust.inPersonAtLeast}</b> in person · <b>{data.trust.shippedTogetherAtLeast}</b> shipped together · <b>{data.trust.sharedVisionAtLeast}</b> shared vision</li>
+                {data.trust.regions.map((r) => <li key={r.slug}>At least <b>{r.atLeast}</b> in-person from <Link href={`/regions/${r.slug}`} className="hover:underline">{r.name}</Link></li>)}
+                <li>Ice: <b>{data.trust.band}</b></li>
+              </ul>
+              {data.trust.visibleVouchers.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-1">
+                  {data.trust.visibleVouchers.map((v) => <Link key={v.handle + v.type} href={`/profile/${v.handle}`} className="text-xs rounded-full border px-2 py-0.5 hover:bg-sky-50 dark:hover:bg-sky-900/30">{v.handle}</Link>)}
+                </div>
+              )}
+              {isOwn && data.vouchBudget && <p className="text-xs text-muted-foreground mt-3">Your vouch budget this season: {data.vouchBudget.remaining} of {data.vouchBudget.total}. <Link href="/trust" className="underline">Manage</Link></p>}
+            </Frost>
+
+            {/* Layer 3: looking for */}
+            <Frost>
+              <SectionTitle icon={<Radar className="h-4 w-4 text-sky-500" />} right={isOwn ? <Link href="/scout" className="text-xs text-sky-600 hover:underline">edit</Link> : undefined}>Looking for right now</SectionTitle>
+              {data.lookingFor.length === 0 && <Empty>{isOwn ? "Nothing yet. Tell your scout." : "Nothing this season."}</Empty>}
+              <ul className="space-y-2 text-sm">
+                {data.lookingFor.map((i, k) => (
+                  <li key={k}>
+                    <div className="font-semibold">{INTENT_LABEL[i.type] ?? i.type}</div>
+                    <div className="flex flex-wrap gap-1 mt-1">{i.tags.map((t) => <span key={t} className="text-[11px] rounded bg-sky-50 dark:bg-sky-900/30 px-1.5 py-0.5">{t}</span>)}</div>
+                    <div className="text-[11px] text-muted-foreground">renews {fmtDate(i.expiresAt)}</div>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[11px] text-muted-foreground mt-3">Scouts talk to scouts. Details are private until both humans accept a match.</p>
+            </Frost>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <Frost>
+              <SectionTitle>Season history</SectionTitle>
+              {data.seasonHistory.length === 0 && <Empty>No entries yet.</Empty>}
+              <ul className="divide-y divide-zinc-200 dark:divide-zinc-700 text-sm">
+                {data.seasonHistory.map((e) => (
+                  <li key={e.id} className="py-2 flex items-center justify-between gap-2">
+                    <div className="min-w-0"><Link href={`/entries/${e.id}`} className="font-semibold hover:underline">{e.isVictor ? "👑 " : ""}{e.title}</Link><div className="text-xs text-muted-foreground">{e.season.name}</div></div>
+                    <div className="flex gap-1 shrink-0"><TournamentBadge tournament={e.tournament} /><StatusBadge status={e.status} /></div>
+                  </li>
+                ))}
+              </ul>
+            </Frost>
+            <Frost>
+              <SectionTitle>Weight history</SectionTitle>
+              {data.standingHistory.length === 0 && <Empty>Standing is season-earned trust. It belongs to whoever earned it and does not travel.</Empty>}
+              <ul className="divide-y divide-zinc-200 dark:divide-zinc-700 text-sm">
+                {data.standingHistory.map((s) => (
+                  <li key={s.id} className="py-2 flex justify-between gap-2"><span className="text-muted-foreground">{s.reason}</span><span className={s.amount < 0 ? "text-red-600" : "text-emerald-600"}>{s.amount > 0 ? "+" : ""}{s.amount}{s.vestedFraction === null ? " (vesting)" : ""}</span></li>
+                ))}
+              </ul>
+            </Frost>
+          </div>
+        </div>
+      )}
+    </WorldPage>
+  );
+}
+
+function EditProfile({ profile }: { profile: Profile }) {
+  const [open, setOpen] = useState(false);
+  const [handle, setHandle] = useState(profile.handle ?? "");
+  const [bio, setBio] = useState(profile.bio ?? "");
+  const [regionSlug, setRegionSlug] = useState(profile.region?.slug ?? "");
+  const { data: regions } = useWorldQuery<{ name: string; slug: string }[]>(["regions"], "/api/world/regions");
+  const save = useWorldMutation(async () => {
+    await worldFetch("/api/world/me", { method: "PATCH", body: { handle: handle || undefined, bio, regionSlug: regionSlug || null } });
+    setOpen(false);
+  });
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild><Button size="sm" variant="outline"><Pencil className="h-3.5 w-3.5 mr-1" /> Edit</Button></DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Your profile</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div><Label>Name you chose</Label><Input value={handle} onChange={(e) => setHandle(e.target.value.toLowerCase())} placeholder="3–24 letters, digits, underscores" /></div>
+          <div><Label>Bio</Label><Textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={280} placeholder="What you build. Not who you are." /></div>
+          <div>
+            <Label>Home region</Label>
+            <Select value={regionSlug || "none"} onValueChange={(v) => setRegionSlug(v === "none" ? "" : v)}>
+              <SelectTrigger><SelectValue placeholder="Pick a region" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No region yet</SelectItem>
+                {(regions ?? []).map((r) => <SelectItem key={r.slug} value={r.slug}>{r.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          {save.error && <p className="text-sm text-red-600">{(save.error as Error).message}</p>}
+          <Button className="snow-button" onClick={() => save.mutate(undefined)} disabled={save.isPending}>Save</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddProof() {
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [kind, setKind] = useState("SHIPPED");
+  const [description, setDescription] = useState("");
+  const [externalRef, setExternalRef] = useState("");
+  const add = useWorldMutation(async () => {
+    await worldFetch("/api/world/me/proofs", { method: "POST", body: { title, kind, description: description || undefined, externalRef: externalRef || undefined } });
+    setOpen(false);
+    setTitle(""); setDescription(""); setExternalRef("");
+  });
+  const importHub = useWorldMutation(async () => worldFetch<{ imported: number }>("/api/world/me/proofs/import", { method: "POST" }));
+  return (
+    <div className="flex gap-1">
+      <Button size="sm" variant="ghost" onClick={() => importHub.mutate(undefined)} disabled={importHub.isPending} title="Import from Builder's Hub"><Upload className="h-3.5 w-3.5" /></Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild><Button size="sm" variant="ghost"><Plus className="h-3.5 w-3.5" /></Button></DialogTrigger>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Add a proof</DialogTitle></DialogHeader>
+          <p className="text-xs text-muted-foreground">Builder&apos;s Hub import verifies automatically. Manual proofs show as unverified until a world admin confirms them against the source.</p>
+          <div className="space-y-3">
+            <div><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} /></div>
+            <div>
+              <Label>Kind</Label>
+              <Select value={kind} onValueChange={setKind}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="SHIPPED">Shipped product</SelectItem><SelectItem value="HACKATHON">Hackathon</SelectItem><SelectItem value="ACTIVITY">Activity</SelectItem></SelectContent></Select>
+            </div>
+            <div><Label>Description</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} /></div>
+            <div><Label>Source reference (private)</Label><Input value={externalRef} onChange={(e) => setExternalRef(e.target.value)} placeholder="Builder's Hub project id, repo, tx…" /></div>
+            {add.error && <p className="text-sm text-red-600">{(add.error as Error).message}</p>}
+            <Button className="snow-button" onClick={() => add.mutate(undefined)} disabled={add.isPending || !title}>Add</Button>
           </div>
         </DialogContent>
       </Dialog>
+      {importHub.error && <span className="text-[11px] text-muted-foreground self-center">{(importHub.error as Error).message}</span>}
     </div>
   );
 }

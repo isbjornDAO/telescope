@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export const GET = handle(async (req: NextRequest) => {
   const user = await requireWorldUser(req);
-  const [pub, priv] = await Promise.all([publicProfile(user), privateProfile(user)]);
+  const [pub, priv] = await Promise.all([publicProfile(user, { owner: true }), privateProfile(user)]);
   return ok({ ...pub, ...priv }, noStore);
 });
 

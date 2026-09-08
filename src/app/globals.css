@@ -228,3 +228,67 @@ body {
 .animate-fall {
   animation: fall linear infinite;
 }
+/* ── Telescope world: cold, bright, vast ───────────────────────────── */
+:root {
+  --ice-cap-0: #f4fbff;
+  --ice-cap-1: #dbeefb;
+  --ice-cap-2: #b9d8ee;
+  --ice-line: #8fb8d6;
+  --ice-pole: #0ea5e9;
+  --ice-route: #38bdf8;
+  --ice-scout: #0284c7;
+  --ice-floe: #ffffff;
+  --ice-floe-stroke: #7cb6d9;
+  --ice-floe-halo: #bae6fd;
+  --ice-in-person: #0ea5e9;
+  --ice-shipped: #2563eb;
+  --ice-vision: #93c5fd;
+  --ice-crack: #ef4444;
+  --frost-bg: rgba(255, 255, 255, 0.86);
+  --frost-border: rgba(147, 197, 253, 0.35);
+}
+.dark {
+  --ice-cap-0: #16344a;
+  --ice-cap-1: #0f2536;
+  --ice-cap-2: #0a1a27;
+  --ice-line: #2b5f80;
+  --ice-pole: #38bdf8;
+  --ice-route: #38bdf8;
+  --ice-scout: #7dd3fc;
+  --ice-floe: #1e3a52;
+  --ice-floe-stroke: #60a5fa;
+  --ice-floe-halo: #1d4ed8;
+  --ice-in-person: #38bdf8;
+  --ice-shipped: #60a5fa;
+  --ice-vision: #3b82f6;
+  --ice-crack: #f87171;
+  --frost-bg: rgba(39, 39, 42, 0.86);
+  --frost-border: rgba(96, 165, 250, 0.2);
+}
+
+.frost {
+  background: var(--frost-bg);
+  border: 1px solid var(--frost-border);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 8px 24px -16px rgb(14 165 233 / 0.35);
+  backdrop-filter: blur(6px);
+}
+
+.ice-pill { border-color: var(--ice-floe-stroke); color: #0c4a6e; background: #f0f9ff; }
+.dark .ice-pill { color: #bae6fd; background: #0c2a3d; }
+.ice-pill-anchor { border-color: #0ea5e9; color: #0369a1; background: #e0f2fe; }
+.dark .ice-pill-anchor { color: #7dd3fc; background: #0b3550; }
+.ice-pill-elder { border-color: #f59e0b; color: #92400e; background: #fffbeb; }
+.dark .ice-pill-elder { color: #fcd34d; background: #3b2a08; }
+
+.map-label {
+  font-size: 11px;
+  fill: #0c4a6e;
+  font-family: Arial, Helvetica, sans-serif;
+  pointer-events: none;
+}
+.dark .map-label { fill: #bae6fd; }
+.map-region { cursor: pointer; }
+.map-region:hover circle:nth-child(2) { stroke-width: 3; }
+.arctic-map { filter: drop-shadow(0 12px 24px rgb(14 165 233 / 0.18)); }
+
+.tabular-nums { font-variant-numeric: tabular-nums; }

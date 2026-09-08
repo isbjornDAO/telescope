@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { handle, ok, noStore } from "@/lib/world/api";
 import { WorldError } from "@/lib/world/errors";
 import { getWorldSession } from "@/lib/world/session";
-import { activeEntriesForRound } from "@/lib/world/seasons";
 import { voterKey } from "@/lib/world/crypto";
 import { voterBaseWeight } from "@/lib/world/voting";
 import { displayName } from "@/lib/world/privacy";

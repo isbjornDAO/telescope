@@ -75,7 +75,7 @@ export async function alliedFactionIds(factionId: string | null, seasonNumber: n
 }
 
 /** The three-layer public profile. Aggregates and proofs, never names unless chosen. */
-export async function publicProfile(user: User) {
+export async function publicProfile(user: User, opts: { owner?: boolean } = {}) {
   const [aggregates, proofs, crews, faction, region, intents, entries, standingEvents] = await Promise.all([
     loadTrustAggregates(user.id, user.trustScore),
     prisma.proof.findMany({
@@ -119,7 +119,10 @@ export async function publicProfile(user: User) {
       const p = publicEntry(e, closed);
       return { id: p.id, title: p.blind ? "Research paper (private)" : p.title, tournament: p.tournament, status: p.status, isVictor: p.isVictor, season: e.season };
     }),
-    standingHistory: standingEvents,
+    // A slashing penalty reveals who the node staked on. Only the owner sees the finding.
+    standingHistory: standingEvents.map((e) =>
+      !opts.owner && e.amount < 0 && e.reason.startsWith("Slashing") ? { ...e, reason: "Stake called on a vouch (see findings)" } : e
+    ),
     since: user.createdAt,
   };
 }

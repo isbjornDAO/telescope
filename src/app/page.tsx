@@ -1,405 +1,125 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+
 import Link from "next/link";
-import Image from "next/image";
-import { User, Wallet, TrendingUp, Newspaper, Calendar, Clock, Users, ChevronRight } from "lucide-react";
-import { useAccount } from "wagmi";
-import { PageNavigation } from "@/components/page-navigation";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useUserStats } from "@/hooks/use-user-stats";
-import { useUserDiscord } from "@/hooks/use-user-discord";
-import { CollectSnowdogButton } from "@/components/collect-snowdog-button";
-import { Address } from "viem";
-import { formatDistanceToNow, format } from "date-fns";
+import { ArrowRight, Radar, Snowflake, Users, Flag, MapPin, Link2, Crown, MessageSquare } from "lucide-react";
+import { useWorldQuery, useWorldSession } from "@/hooks/use-world";
+import { WorldPage, Frost, Stat, SectionTitle, SeasonStrip, Empty, LoadingBlock, ErrorBlock, Weight } from "@/components/world/primitives";
+import { ArcticMap, type MapRegion } from "@/components/world/arctic-map";
+import { SignInInline } from "@/components/world/world-gate";
+import { Button } from "@/components/ui/button";
 
-interface Thread {
-  id: string;
-  subject: string | null;
-  bumpedAt: string;
-  createdAt: string;
-  replyCount: number;
-  boardName: string;
-  posts: Array<{
-    id: string;
-    comment: string;
-    imageHash: string | null;
-  }>;
-}
-
-interface NewsArticle {
-  title: string;
-  link: string;
-  pubDate: string;
-  creator: string;
-  source: string;
-  image: string | null;
-}
-
-interface DiscordEvent {
-  id: string;
-  name: string;
-  description: string;
-  scheduledStartTime: string;
-  scheduledEndTime: string | null;
-  guildId: string;
-  guildName: string;
-  guildIcon: string | null;
-  guildInvite?: string;
-  userCount?: number;
+interface Overview {
+  version: string;
+  season: { number: number; name: string; theme: string; researchQuestion: string; phase: string; week: number; weeks: number; entries: Record<string, number> } | null;
+  counts: { nodes: number; anchors: number; elders: number; crews: number; factions: number; regions: number; vouches: number; activeIntents: number; matchesThisWeek: number };
+  regions: MapRegion[];
+  topFactions: { name: string; slug: string; vision: string; standing: number; crews: number; members: number }[];
+  victor: { id: string; title: string; url: string | null; crew: { name: string; slug: string } | null; season: { name: string; number: number } } | null;
 }
 
 export default function Home() {
-  const { address, isConnected } = useAccount();
-  const { data: userStats, isLoading: isUserStatsLoading } = useUserStats(
-    address as Address,
-    isConnected
-  );
-  const { data: discordUser } = useUserDiscord(userStats?.discordId || "");
-  const [trendingThreads, setTrendingThreads] = useState<Thread[]>([]);
-  const [recentArticles, setRecentArticles] = useState<NewsArticle[]>([]);
-  const [todaysEvents, setTodaysEvents] = useState<DiscordEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const calculateTrendingScore = useCallback((thread: Thread): number => {
-    const now = new Date().getTime();
-    const bumpedAt = new Date(thread.bumpedAt).getTime();
-    const createdAt = new Date(thread.createdAt).getTime();
-    const hoursSinceLastBump = (now - bumpedAt) / (1000 * 60 * 60);
-    const hoursSinceCreation = (now - createdAt) / (1000 * 60 * 60);
-    const engagementScore = (thread.replyCount * 10) / (hoursSinceLastBump + 2);
-    const recencyBonus = hoursSinceCreation < 24 ? 5 : 0;
-    return engagementScore + recencyBonus;
-  }, []);
-
-  const fetchHomeData = useCallback(async () => {
-    try {
-      // Fetch trending threads, news, and events in parallel
-      const [threadsResponse, newsResponse, eventsResponse] = await Promise.all([
-        fetch("/api/forum/trending"),
-        fetch("/api/news"),
-        fetch("/api/discord/events")
-      ]);
-
-      const threadsData = await threadsResponse.json();
-      const newsData = await newsResponse.json();
-      const eventsData = await eventsResponse.json();
-
-      if (Array.isArray(threadsData)) {
-        const threadsWithScores = threadsData.map(thread => ({
-          ...thread,
-          trendingScore: calculateTrendingScore(thread)
-        }));
-
-        const trending = threadsWithScores
-          .sort((a, b) => b.trendingScore - a.trendingScore)
-          .slice(0, 6);
-
-        setTrendingThreads(trending);
-      }
-
-      if (Array.isArray(newsData)) {
-        setRecentArticles(newsData.slice(0, 6));
-      }
-
-      // Filter for today's events
-      if (eventsData.events && Array.isArray(eventsData.events)) {
-        const today = new Date();
-        const filtered = eventsData.events.filter((event: DiscordEvent) => {
-          const eventDate = new Date(event.scheduledStartTime);
-          return (
-            eventDate >= new Date() && // Future events only
-            eventDate.getDate() === today.getDate() &&
-            eventDate.getMonth() === today.getMonth() &&
-            eventDate.getFullYear() === today.getFullYear()
-          );
-        });
-        setTodaysEvents(filtered);
-      }
-    } catch (error) {
-      console.error("Error fetching home data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [calculateTrendingScore]);
-
-  useEffect(() => {
-    fetchHomeData();
-  }, [fetchHomeData]);
+  const { data, isLoading, error } = useWorldQuery<Overview>(["overview"], "/api/world/overview");
+  const { me, isSignedIn } = useWorldSession();
 
   return (
-    <div className="w-full">
-      <div className="w-full max-w-screen-lg mx-auto -mt-6 px-4 md:px-8 relative z-10 mb-8 md:mb-16 mobile-content-align">
-        <PageNavigation />
-
+    <WorldPage>
+      {isLoading && <LoadingBlock lines={6} />}
+      {error && <ErrorBlock error={error} />}
+      {data && (
         <div className="space-y-6">
-          {/* User Profile / Connect Wallet */}
-          <Card className="p-4 md:p-6">
-            {isConnected ? (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
-                <div className="flex items-center gap-4">
-                  {discordUser?.avatar_url ? (
-                    <img
-                      src={discordUser.avatar_url}
-                      alt="Profile"
-                      className="w-12 h-12 rounded-lg object-cover"
-                    />
-                  ) : (
-                    <div className="p-3 bg-primary/10 rounded-lg">
-                      <User className="h-6 w-6 text-primary" />
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-sm text-muted-foreground">Connected Wallet</p>
-                    <p className="font-mono text-sm font-semibold">
-                      {discordUser?.username || userStats?.username || `${address?.slice(0, 6)}...${address?.slice(-4)}`}
-                    </p>
-                    {discordUser?.username && (
-                      <p className="text-xs text-muted-foreground">
-                        {address?.slice(0, 6)}...{address?.slice(-4)}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                {!isUserStatsLoading && userStats && (
-                  <div className="flex flex-col gap-2 min-w-[280px]">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold">Level {userStats.level || 1}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {userStats.progress.currentProgress} XP • {userStats.xpForNextLevel} XP next
-                      </span>
-                    </div>
-                    <div className="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2">
-                      <div
-                        className="bg-blue-500 h-2 rounded-full transition-all"
-                        style={{ width: `${Math.min(100, (userStats.progress.currentProgress / userStats.progress.totalNeeded) * 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-zinc-100 rounded-lg">
-                  <Wallet className="h-6 w-6 text-zinc-600" />
-                </div>
+          {/* Season banner */}
+          <Frost>
+            {data.season ? (
+              <div className="grid md:grid-cols-[1fr_auto] gap-4 items-start">
                 <div>
-                  <p className="font-semibold">Connect Your Wallet</p>
-                  <p className="text-sm text-muted-foreground">
-                    Connect your wallet to vote on projects and participate in the community
-                  </p>
+                  <div className="text-[11px] uppercase tracking-wider text-sky-600 dark:text-sky-300 font-semibold flex items-center gap-1">
+                    <Snowflake className="h-3.5 w-3.5" /> {data.season.name} · {data.season.phase}
+                  </div>
+                  <h1 className="text-2xl md:text-3xl font-bold tracking-tight mt-1">{data.season.theme}</h1>
+                  <p className="text-sm text-muted-foreground mt-1"><span className="font-semibold text-foreground">Research question:</span> {data.season.researchQuestion}</p>
+                  <div className="mt-4"><SeasonStrip week={data.season.week} weeks={data.season.weeks} phase={data.season.phase} /></div>
+                </div>
+                <div className="flex flex-col gap-2 min-w-[200px]">
+                  <Link href={`/seasons/${data.season.number}`}><Button className="snow-button w-full">Open the season <ArrowRight className="h-4 w-4 ml-1" /></Button></Link>
+                  {data.season.phase === "building" && <Link href={`/seasons/${data.season.number}/enter`}><Button variant="outline" className="w-full">Enter a tournament</Button></Link>}
+                  <div className="text-xs text-muted-foreground grid grid-cols-3 gap-1 text-center mt-1">
+                    <div><div className="font-bold text-foreground">{data.season.entries.GTM ?? 0}</div>GTM</div>
+                    <div><div className="font-bold text-foreground">{data.season.entries.LOCAL_SYSTEMS ?? 0}</div>Local</div>
+                    <div><div className="font-bold text-foreground">{data.season.entries.RESEARCH_PAPERS ?? 0}</div>Papers</div>
+                  </div>
                 </div>
               </div>
-            )}
-          </Card>
-
-          {/* Collect Snowdog Button */}
-          {isConnected && (
-            <CollectSnowdogButton address={address as Address} />
-          )}
-
-          {/* Today's Events Section */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-bold">Today</h2>
-                {todaysEvents.length > 0 && (
-                  <div className="px-2 py-0.5 bg-primary/10 rounded-md">
-                    <span className="text-xs font-semibold text-primary">{todaysEvents.length}</span>
-                  </div>
-                )}
-              </div>
-              <Link href="/calendar" className="text-sm text-primary hover:underline">
-                View calendar
-              </Link>
-            </div>
-            {loading ? (
-              <div className="h-32 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded-lg" />
             ) : (
-              <Card className="p-4 bg-gradient-to-br from-white to-zinc-50 dark:from-zinc-900 dark:to-zinc-800">
-                {todaysEvents.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Calendar className="h-10 w-10 text-muted-foreground mx-auto mb-2 opacity-50" />
-                    <p className="text-sm text-muted-foreground font-semibold mb-1">No events today</p>
-                    <p className="text-xs text-muted-foreground">Check the calendar for upcoming events</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {todaysEvents.map((event) => (
-                      <Link key={event.id} href="/calendar">
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center p-3 rounded-lg hover:bg-white dark:hover:bg-zinc-800 transition-all cursor-pointer">
-                          {/* Column 1: Icon & Title */}
-                          <div className="md:col-span-5 flex items-center gap-3">
-                            {event.guildIcon && (
-                              <img src={event.guildIcon} alt="" className="w-10 h-10 rounded-lg shadow-md flex-shrink-0" />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <div className="font-bold text-sm line-clamp-1">{event.name}</div>
-                              <div className="text-xs text-muted-foreground">{event.guildName}</div>
-                            </div>
-                          </div>
-
-                          {/* Column 2: Time */}
-                          <div className="md:col-span-3 flex items-center gap-2">
-                            <Clock className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                            <div className="text-xs">
-                              <div className="font-semibold">
-                                {format(new Date(event.scheduledStartTime), 'h:mm a')}
-                              </div>
-                              <div className="text-muted-foreground">
-                                in {formatDistanceToNow(new Date(event.scheduledStartTime)).replace('about ', '')}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Column 3: Interested */}
-                          <div className="md:col-span-3 flex items-center gap-2">
-                            {event.userCount !== undefined && event.userCount > 0 && (
-                              <>
-                                <Users className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                                <span className="text-xs"><strong>{event.userCount}</strong> interested</span>
-                              </>
-                            )}
-                          </div>
-
-                          {/* Column 4: Arrow */}
-                          <div className="md:col-span-1 flex justify-end">
-                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </Card>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Telescope is a world, not a social network.</h1>
+                  <p className="text-sm text-muted-foreground mt-1 max-w-2xl">Find your team, find other teams, connect the regions of Avalanche solving real problems where they live. The first winter is being prepared. Scouts are already roaming.</p>
+                </div>
+                <Link href="/rules"><Button variant="outline">Read the world rules</Button></Link>
+              </div>
             )}
-          </div>
+          </Frost>
 
-          {/* Recent News */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold flex items-center gap-2">
-                <Newspaper className="h-5 w-5" />
-                Recent Articles
-              </h2>
-              <Link href="/news" className="text-sm text-primary hover:underline">
-                View all
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {loading ? (
-                <>
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="h-48 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded-lg" />
-                  ))}
-                </>
-              ) : recentArticles.length > 0 ? (
-                recentArticles.slice(0, 6).map((article, idx) => (
-                  <Link key={idx} href={article.link} target="_blank">
-                    <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer h-full">
-                      {article.image && (
-                        <div className="w-full h-32 overflow-hidden relative">
-                          <Image
-                            src={article.image}
-                            alt={article.title}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      )}
-                      <div className="p-4 flex flex-col gap-2">
-                        <h3 className="font-semibold text-sm line-clamp-2">{article.title}</h3>
-                        <div className="flex gap-2 items-center">
-                          <Badge variant="outline" className="text-xs">
-                            {article.source}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(new Date(article.pubDate), { addSuffix: true })}
-                          </span>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                ))
-              ) : (
-                <Card className="p-8 text-center col-span-3">
-                  <p className="text-muted-foreground text-sm">No articles yet</p>
-                </Card>
-              )}
+          {/* Map + counts */}
+          <div className="grid lg:grid-cols-[1.3fr_1fr] gap-6">
+            <Frost className="p-3 md:p-4">
+              <SectionTitle icon={<MapPin className="h-4 w-4 text-sky-500" />} right={<Link href="/regions" className="text-xs text-sky-600 hover:underline">all regions</Link>}>The Arctic</SectionTitle>
+              {data.regions.length ? <ArcticMap regions={data.regions} /> : <Empty>No regions yet. Regions are local clusters; Telescope is the network that connects them.</Empty>}
+              <p className="text-[11px] text-muted-foreground mt-2">Floes are regions. Bright cores hold Anchors. The moving lights are scouts, roaming between rooms.</p>
+            </Frost>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <Stat label="Nodes with trust" value={data.counts.nodes} hint={`${data.counts.anchors} anchors · ${data.counts.elders} elders`} />
+                <Stat label="Vouches staked" value={data.counts.vouches} hint="every vouch is a stake" />
+                <Stat label="Crews" value={data.counts.crews} hint={`${data.counts.factions} factions`} />
+                <Stat label="Scouts looking" value={data.counts.activeIntents} hint={`${data.counts.matchesThisWeek} offers this week`} />
+              </div>
+              <Frost>
+                <SectionTitle icon={<Radar className="h-4 w-4 text-sky-500" />}>What to do now</SectionTitle>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2"><Radar className="h-4 w-4 mt-0.5 text-sky-500" /><span><Link href="/scout" className="font-semibold hover:underline">Tell your scout what you are looking for.</Link> It searches while you sleep and only brings back matches worth a conversation.</span></li>
+                  <li className="flex items-start gap-2"><Link2 className="h-4 w-4 mt-0.5 text-sky-500" /><span><Link href="/trust" className="font-semibold hover:underline">Get vouched in a room.</Link> Trust is earned in rooms. Votes with no path to an Anchor weigh nothing.</span></li>
+                  <li className="flex items-start gap-2"><Users className="h-4 w-4 mt-0.5 text-sky-500" /><span><Link href="/crews" className="font-semibold hover:underline">Form a crew,</Link> then <Link href="/factions" className="font-semibold hover:underline">a faction</Link> around a vision. Crews ship; factions last.</span></li>
+                  <li className="flex items-start gap-2"><MessageSquare className="h-4 w-4 mt-0.5 text-sky-500" /><span><Link href="/forum" className="font-semibold hover:underline">Argue about what is worth building.</Link></span></li>
+                </ul>
+                {!isSignedIn && <div className="mt-3"><SignInInline /></div>}
+                {isSignedIn && me?.handle == null && <p className="text-xs text-muted-foreground mt-3">Pick a name for your profile on <Link href={`/profile/${me?.address}`} className="underline">your profile</Link>. A name you chose, never a legal identity.</p>}
+              </Frost>
             </div>
           </div>
 
-          {/* Trending Threads */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                Trending Threads
-              </h2>
-              <Link href="/forum" className="text-sm text-primary hover:underline">
-                View all
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {loading ? (
-                <>
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="h-24 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded-lg" />
-                  ))}
-                </>
-              ) : trendingThreads.length > 0 ? (
-                trendingThreads.map((thread) => (
-                  <Link key={thread.id} href={`/forum/thread/${thread.id}`}>
-                    <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer h-full">
-                      <div className="flex gap-3 p-3">
-                        {thread.posts[0]?.imageHash && (
-                          <div className="w-20 h-20 flex-shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800 p-2">
-                            <img
-                              src={thread.posts[0].imageHash}
-                              alt={thread.subject || 'Thread image'}
-                              className="w-full h-full object-cover rounded"
-                            />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-col gap-2">
-                            <div className="flex justify-between items-start gap-2">
-                              {thread.subject && (
-                                <h3 className="font-semibold text-sm truncate flex-1">
-                                  {thread.subject}
-                                </h3>
-                              )}
-                              <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                {formatDistanceToNow(new Date(thread.bumpedAt), { addSuffix: true })}
-                              </span>
-                            </div>
-                            <p className="text-xs text-muted-foreground line-clamp-2">
-                              {thread.posts[0]?.comment || "No content"}
-                            </p>
-                            <div className="flex gap-2 items-center">
-                              <Badge variant="outline" className="text-xs border-zinc-300 dark:border-zinc-700" style={{ color: '#3c688f' }}>
-                                /{thread.boardName}/
-                              </Badge>
-                              <span className="text-xs text-white dark:text-zinc-400">
-                                {thread.replyCount} replies
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                ))
+          {/* Weight + Victor */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <Frost>
+              <SectionTitle icon={<Flag className="h-4 w-4 text-sky-500" />} right={<Link href="/factions" className="text-xs text-sky-600 hover:underline">all factions</Link>}>Factions carrying weight</SectionTitle>
+              {data.topFactions.length === 0 && <Empty>No faction has earned weight yet. Weight is what a bear needs to survive the winter.</Empty>}
+              <ul className="divide-y divide-zinc-200 dark:divide-zinc-700">
+                {data.topFactions.map((f, i) => (
+                  <li key={f.slug} className="py-2 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <Link href={`/factions/${f.slug}`} className="font-semibold hover:underline">{i + 1}. {f.name}</Link>
+                      <p className="text-xs text-muted-foreground truncate">{f.vision}</p>
+                    </div>
+                    <div className="text-sm whitespace-nowrap"><Weight value={f.standing} /></div>
+                  </li>
+                ))}
+              </ul>
+            </Frost>
+            <Frost>
+              <SectionTitle icon={<Crown className="h-4 w-4 text-amber-500" />}>The Victor&apos;s seat</SectionTitle>
+              {data.victor ? (
+                <div>
+                  <Link href={`/entries/${data.victor.id}`} className="text-xl font-bold hover:underline">{data.victor.title}</Link>
+                  <p className="text-sm text-muted-foreground">by {data.victor.crew?.name ?? "a crew"} · best dapp on Avalanche, {data.victor.season.name}</p>
+                  {data.victor.url && <a href={data.victor.url} target="_blank" rel="noreferrer" className="text-sm text-sky-600 hover:underline mt-2 inline-block">Use the product →</a>}
+                </div>
               ) : (
-                <Card className="p-8 text-center col-span-3">
-                  <p className="text-muted-foreground text-sm">No threads yet</p>
-                </Card>
+                <Empty>Empty until the first winter ends. The community chooses its Victor, weighted by trust, and the title only fully vests if the product keeps its users for 90 days.</Empty>
               )}
-            </div>
+            </Frost>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </WorldPage>
   );
 }
