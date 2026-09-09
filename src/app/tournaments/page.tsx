@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Trophy, Crown } from "lucide-react";
+import { Trophy, Crown, Users, Landmark, FileText } from "lucide-react";
 import { useWorldQuery } from "@/hooks/use-world";
-import { WorldPage, Frost, Empty, LoadingBlock, ErrorBlock, fmtDate } from "@/components/world/primitives";
+import { WorldPage, Frost, fmtDate } from "@/components/world/primitives";
 
 interface SeasonRow {
   number: number; name: string; theme: string; researchQuestion: string;
@@ -11,17 +11,20 @@ interface SeasonRow {
   victor: { id: string; title: string; crew: { name: string; slug: string } | null } | null;
 }
 
+/** The three tournaments a season runs. One line each — the rules live in docs/. */
+const TOURNAMENTS = [
+  { name: "GTM", icon: Users, line: "Crews ship a product. Everyone votes, the bracket decides." },
+  { name: "Local Systems", icon: Landmark, line: "Design without code. A published panel judges." },
+  { name: "Research Papers", icon: FileText, line: "Write it up. Reviewers see the paper, never the author." },
+];
+
 export default function TournamentsPage() {
-  const { data, isLoading, error } = useWorldQuery<SeasonRow[]>(["seasons"], "/api/world/seasons");
+  const { data } = useWorldQuery<SeasonRow[]>(["seasons"], "/api/world/seasons");
   const live = data?.find((s) => s.phase === "building" || s.phase === "voting");
   const past = (data ?? []).filter((s) => s !== live);
 
   return (
     <WorldPage title="Tournaments">
-      {isLoading && <LoadingBlock />}
-      {error && <ErrorBlock error={error} />}
-      {data && data.length === 0 && <Empty>No tournament running yet.</Empty>}
-
       {live && (
         <Link href={`/tournaments/${live.number}`} className="block">
           <Frost className="hover:border-sky-400 transition-colors">
@@ -35,6 +38,23 @@ export default function TournamentsPage() {
             </div>
           </Frost>
         </Link>
+      )}
+
+      {/* The three tournaments are the page until a season opens. They are
+          static, so a slow or failing season list never blanks them out. */}
+      {!live && (
+        <div className="grid gap-3 sm:grid-cols-3">
+          {TOURNAMENTS.map(({ name, icon: Icon, line }) => (
+            <Frost key={name} className="flex flex-col gap-2">
+              <Icon className="h-5 w-5 text-sky-500" />
+              <div className="font-semibold">{name}</div>
+              <p className="text-sm text-muted-foreground flex-1">{line}</p>
+              <span className="inline-flex self-start rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                Coming soon
+              </span>
+            </Frost>
+          ))}
+        </div>
       )}
 
       {past.length > 0 && (
