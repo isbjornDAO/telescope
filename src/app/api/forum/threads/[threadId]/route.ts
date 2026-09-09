@@ -1,8 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createHash } from "crypto";
 import { awardPostXP } from "@/lib/xp-system";
 import { notifyNewReply } from "@/lib/discord/notify";
+import { viewerFromRequest } from "@/lib/world/viewer";
+import { audienceFromBody, canReadThread, distinctPosterCount, ownerOf, readablePosts } from "@/lib/world/forum-access";
+import { describeMissing, isOwner, serializeAudience } from "@/lib/world/audience";
 
 // Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
@@ -16,7 +19,7 @@ function generatePosterId(walletAddress: string, boardName: string): string {
 }
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { threadId: string } }
 ) {
   try {
@@ -39,9 +42,28 @@ export async function GET(
       );
     }
 
-    // Enrich posts with user data
+    const viewer = await viewerFromRequest(request);
+    const verdict = canReadThread(thread, thread.board.audience, viewer);
+    if (!verdict.allowed) {
+      // 404, not 403: a reader who may not open this thread should not be
+      // able to confirm it exists, and the requirement tells them what
+      // would open a thread like it without confirming this one does.
+      return NextResponse.json({ error: "Thread not found", requirement: describeMissing(verdict.missing) }, { status: 404 });
+    }
+
+    const posterCount = distinctPosterCount(thread.posts);
+
+    // Enrich posts with user data.
+    //
+    // Only for posts whose author chose to be named. An anonymous post used
+    // to be shipped with its author's Discord id, username and avatar and
+    // hidden in the client, which is not anonymity — it is a payload the
+    // browser was asked not to look at. Skipping the lookup also spares an
+    // outbound Discord call per anonymous post.
     const postsWithUserData = await Promise.all(
       thread.posts.map(async (post) => {
+        if (post.anonymous !== false) return { ...post, user: undefined };
+
         const user = await prisma.user.findUnique({
           where: { address: post.walletAddress },
           select: { createdAt: true, discordId: true, username: true }
@@ -89,9 +111,17 @@ export async function GET(
       })
     );
 
+    // Withhold the posts inside this thread that the reader may not open,
+    // and drop the wallet of every author who asked to stay anonymous.
+    const posts = readablePosts(postsWithUserData, thread.board.audience, thread.audience, viewer);
+    const { ownerAddress: _owner, ...threadRest } = thread;
+    void _owner;
+
     return NextResponse.json({
-      ...thread,
-      posts: postsWithUserData
+      ...threadRest,
+      posts,
+      posterCount,
+      mine: isOwner(viewer, ownerOf(thread))
     });
   } catch (error) {
     console.error("Error fetching thread:", error);
@@ -103,12 +133,14 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { threadId: string } }
 ) {
   try {
     const { threadId } = params;
-    const { comment, imageHash, walletAddress, boardName, anonymous } = await request.json();
+    const body = await request.json();
+    const { comment, imageHash, walletAddress, boardName, anonymous } = body;
+    const audience = audienceFromBody(body);
 
     if (!comment || !walletAddress || !boardName) {
       return NextResponse.json(
@@ -120,6 +152,7 @@ export async function POST(
     const thread = await prisma.thread.findUnique({
       where: { id: threadId },
       include: {
+        board: { select: { audience: true } },
         posts: {
           where: { isOp: true },
           take: 1
@@ -132,6 +165,13 @@ export async function POST(
         { error: "Thread not found" },
         { status: 404 }
       );
+    }
+
+    // You cannot write into a thread you may not read. Checked against the
+    // session, never against the wallet the body claims to be.
+    const viewer = await viewerFromRequest(request);
+    if (!canReadThread(thread, thread.board.audience, viewer).allowed) {
+      return NextResponse.json({ error: "Thread not found" }, { status: 404 });
     }
 
     const posterId = generatePosterId(walletAddress, boardName);
@@ -159,7 +199,8 @@ export async function POST(
           walletAddress,
           posterId,
           isOp: isOpPost,
-          anonymous: anonymous !== undefined ? anonymous : true
+          anonymous: anonymous !== undefined ? anonymous : true,
+          audience: serializeAudience(audience) as never
         }
       });
 

@@ -135,6 +135,14 @@ p {
   }
 }
 
+/* On a touch screen every button clears 44px, the smallest target a thumb
+   hits reliably. Pointer devices keep the tighter original height. */
+@media (pointer: coarse) {
+  .snow-button {
+    min-height: 44px;
+  }
+}
+
 .snow-button {
   position: relative;
   border: 1px solid transparent;

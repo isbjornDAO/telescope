@@ -286,13 +286,13 @@ export default function CalendarPage() {
             <Card className="p-4 shadow-lg">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Button onClick={previousMonth} variant="outline" size="sm" className="h-8 w-8 p-0 hover:bg-primary/10">
+                  <Button onClick={previousMonth} variant="outline" size="sm" aria-label="Previous month" className="h-11 w-11 md:h-8 md:w-8 p-0 hover:bg-primary/10">
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <h3 className="text-lg font-bold">
                     {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                   </h3>
-                  <Button onClick={nextMonth} variant="outline" size="sm" className="h-8 w-8 p-0 hover:bg-primary/10">
+                  <Button onClick={nextMonth} variant="outline" size="sm" aria-label="Next month" className="h-11 w-11 md:h-8 md:w-8 p-0 hover:bg-primary/10">
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -350,12 +350,12 @@ export default function CalendarPage() {
                                   {/* Hover tooltip */}
                                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none whitespace-nowrap z-50">
                                     <div className="font-semibold mb-1">{event.name}</div>
-                                    <div className="flex items-center gap-1.5 text-[10px] opacity-90">
+                                    <div className="flex items-center gap-1.5 text-xs opacity-90">
                                       <Clock className="h-2.5 w-2.5" />
                                       {format(new Date(event.scheduledStartTime), 'h:mm a')}
                                     </div>
                                     {event.userCount !== undefined && event.userCount > 0 && (
-                                      <div className="flex items-center gap-1.5 text-[10px] opacity-90 mt-0.5">
+                                      <div className="flex items-center gap-1.5 text-xs opacity-90 mt-0.5">
                                         <Users className="h-2.5 w-2.5" />
                                         {event.userCount} interested
                                       </div>
@@ -412,7 +412,7 @@ export default function CalendarPage() {
                               )}
                               <div className="flex-1 min-w-0">
                                 <div className="font-bold text-xs line-clamp-1">{server.guildName}</div>
-                                <div className="text-[10px] text-muted-foreground">
+                                <div className="text-xs text-muted-foreground">
                                   {server.events.length} {server.events.length === 1 ? 'event' : 'events'}
                                 </div>
                               </div>
@@ -443,7 +443,7 @@ export default function CalendarPage() {
                                     )}
                                     <div className="flex-1 min-w-0">
                                       <div className="text-xs font-semibold line-clamp-1 mb-0.5">{event.name}</div>
-                                      <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                      <div className="text-xs text-muted-foreground flex items-center gap-1">
                                         <Clock className="h-2.5 w-2.5" />
                                         {format(new Date(event.scheduledStartTime), 'MMM d · h:mm a')}
                                       </div>
@@ -474,8 +474,8 @@ export default function CalendarPage() {
 
               {/* Add Server Button */}
               <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                <Link href="/calendar/invite-bot">
-                  <button className="w-full p-3 rounded-lg bg-gradient-to-br from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/15 transition-all cursor-pointer border-2 border-dashed border-primary/30 hover:border-primary/50">
+                <Link href="/calendar/invite-bot" className="block">
+                  <button className="w-full min-h-11 p-3 rounded-lg bg-gradient-to-br from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/15 transition-all cursor-pointer border-2 border-dashed border-primary/30 hover:border-primary/50">
                     <div className="flex items-center justify-center gap-2">
                       <Plus className="h-4 w-4 text-primary" />
                       <span className="font-bold text-xs text-primary">Add a server</span>

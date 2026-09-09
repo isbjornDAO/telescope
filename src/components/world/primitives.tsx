@@ -49,7 +49,7 @@ export function SectionTitle({ icon, children, right }: { icon?: ReactNode; chil
 export function Stat({ label, value, hint, className }: { label: string; value: ReactNode; hint?: ReactNode; className?: string }) {
   return (
     <div className={cn("frost rounded-xl px-4 py-3", className)}>
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="text-2xl font-bold leading-tight mt-0.5 tabular-nums">{value}</div>
       {hint && <div className="text-xs text-muted-foreground mt-0.5">{hint}</div>}
     </div>
@@ -60,7 +60,7 @@ export function NodeBadge({ nodeType, band, className }: { nodeType?: "NODE" | "
   const icon = nodeType === "ELDER" ? <Crown className="h-3 w-3" /> : nodeType === "ANCHOR" ? <Anchor className="h-3 w-3" /> : <Snowflake className="h-3 w-3" />;
   const label = nodeType === "ELDER" ? "Elder" : nodeType === "ANCHOR" ? "Anchor" : "Node";
   return (
-    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold", nodeType === "ELDER" ? "ice-pill-elder" : nodeType === "ANCHOR" ? "ice-pill-anchor" : "ice-pill", className)}>
+    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold", nodeType === "ELDER" ? "ice-pill-elder" : nodeType === "ANCHOR" ? "ice-pill-anchor" : "ice-pill", className)}>
       {icon}
       {label}
       {band && band !== "none" && <span className="opacity-70">· {band} ice</span>}
@@ -70,7 +70,7 @@ export function NodeBadge({ nodeType, band, className }: { nodeType?: "NODE" | "
 
 export function TournamentBadge({ tournament }: { tournament: string }) {
   const map: Record<string, string> = { GTM: "GTM", LOCAL_SYSTEMS: "Local Systems", RESEARCH_PAPERS: "Research Papers" };
-  return <span className="inline-flex rounded-md bg-sky-100 text-sky-900 dark:bg-sky-900/40 dark:text-sky-100 px-2 py-0.5 text-[11px] font-semibold">{map[tournament] ?? tournament}</span>;
+  return <span className="inline-flex rounded-md bg-sky-100 text-sky-900 dark:bg-sky-900/40 dark:text-sky-100 px-2 py-0.5 text-xs font-semibold">{map[tournament] ?? tournament}</span>;
 }
 
 export function StatusBadge({ status }: { status: string }) {
@@ -79,7 +79,7 @@ export function StatusBadge({ status }: { status: string }) {
     status === "FINALIST" ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-100" :
     status === "ELIMINATED" || status === "WITHDRAWN" ? "bg-zinc-200 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300" :
     "bg-sky-50 text-sky-800 dark:bg-sky-900/30 dark:text-sky-100";
-  return <span className={cn("inline-flex rounded-md px-2 py-0.5 text-[11px] font-semibold", tone)}>{status.toLowerCase()}</span>;
+  return <span className={cn("inline-flex rounded-md px-2 py-0.5 text-xs font-semibold", tone)}>{status.toLowerCase()}</span>;
 }
 
 export function Weight({ value, word = "weight" }: { value: number; word?: string }) {
@@ -100,7 +100,7 @@ export function SeasonStrip({ week, weeks = 6, phase }: { week: number; weeks?: 
           <div key={i} className={cn("h-2 flex-1 rounded-full transition-colors", i < week ? "bg-sky-500" : i === week ? "bg-sky-300 animate-pulse" : "bg-zinc-200 dark:bg-zinc-700")} title={`Week ${labels[i] ?? i}`} />
         ))}
       </div>
-      <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+      <div className="flex justify-between text-xs text-muted-foreground mt-1">
         <span>week 0 · theme announced</span>
         <span className="capitalize">{phase}</span>
         <span>week 6 · Victor named</span>

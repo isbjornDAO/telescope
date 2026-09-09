@@ -41,7 +41,7 @@ export function Navbar() {
           <ConnectButton />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <button className="md:hidden p-1.5 md:p-2 rounded-lg bg-white dark:bg-zinc-800 shadow hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors" aria-label="Menu">
+              <button className="md:hidden flex items-center justify-center w-11 h-11 rounded-lg bg-white dark:bg-zinc-800 shadow hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors" aria-label="Menu">
                 <Menu className="h-5 w-5 md:h-6 md:w-6" />
               </button>
             </SheetTrigger>
@@ -52,7 +52,7 @@ export function Navbar() {
                     key={href}
                     href={href}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center gap-3 text-base p-2 rounded-lg ${
+                    className={`flex min-h-11 items-center gap-3 text-base px-2 rounded-lg ${
                       match(pathname) ? "bg-zinc-100 dark:bg-zinc-800 font-semibold" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
                     }`}
                   >
@@ -66,7 +66,7 @@ export function Navbar() {
                     <Link
                       href={`/profile/${address}`}
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-3 text-base p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      className="flex min-h-11 items-center gap-3 text-base px-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
                     >
                       <User className="h-5 w-5" />
                       <span>Profile</span>

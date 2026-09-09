@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAccount } from "wagmi";
 import { PageNavigation } from "@/components/page-navigation";
+import { AudienceTag, WithheldPost } from "@/components/forum/audience-picker";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface Board {
@@ -26,9 +27,13 @@ interface Post {
   posterId: string;
   createdAt: string;
   isOp: boolean;
-  walletAddress: string;
+  // Null whenever the author posted anonymously. The API withholds it now
+  // rather than sending it and trusting the client to look away.
+  walletAddress: string | null;
   imageHash: string | null;
   anonymous: boolean;
+  audienceLabel?: string;
+  restricted?: boolean;
   user?: {
     createdAt: string;
     postCount?: number;
@@ -38,13 +43,28 @@ interface Post {
   };
 }
 
+/** What comes back in place of a post this reader may not open. */
+interface Withheld {
+  id: string;
+  withheld: true;
+  requirement: string;
+}
+
+function isWithheld(p: Post | Withheld): p is Withheld {
+  return "withheld" in p;
+}
+
 interface Thread {
   id: string;
   subject: string | null;
   createdAt: string;
   replyCount: number;
   board: Board;
-  posts: Post[];
+  posts: (Post | Withheld)[];
+  /** Counted server-side, so the page never needs everyone's wallet to count them. */
+  posterCount?: number;
+  audienceLabel?: string;
+  restricted?: boolean;
 }
 
 export default function ThreadPage() {
@@ -206,7 +226,7 @@ export default function ThreadPage() {
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             <span className="text-muted-foreground text-xs">
-              {thread.posts.length} / {thread.posts.filter(p => p.imageHash).length} / {new Set(thread.posts.map(x => x.walletAddress)).size}
+              {thread.posts.length} / {thread.posts.filter(p => !isWithheld(p) && p.imageHash).length} / {thread.posterCount ?? 0}
             </span>
             <button onClick={scrollToBottom} className="text-primary hover:underline">
               [Bottom]
@@ -220,12 +240,21 @@ export default function ThreadPage() {
           </div>
         </div>
 
-      {thread.subject && (
-        <h1 className="text-2xl md:text-3xl font-bold mb-4">{thread.subject}</h1>
+      {(thread.subject || thread.restricted) && (
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          {thread.subject && <h1 className="text-2xl md:text-3xl font-bold">{thread.subject}</h1>}
+          {thread.restricted && thread.audienceLabel && <AudienceTag label={thread.audienceLabel} />}
+        </div>
       )}
 
       <div className="space-y-4 mb-8">
-        {thread.posts.map((post, index) => (
+        {thread.posts.map((post, index) => isWithheld(post) ? (
+          // A gap in the conversation, labelled with what would open it and
+          // nothing about who is already inside.
+          <div key={post.id} className="border-b border-zinc-200 dark:border-zinc-800 pb-4">
+            <WithheldPost requirement={post.requirement} />
+          </div>
+        ) : (
           <div key={post.id} className="border-b border-zinc-200 dark:border-zinc-800 pb-4">
             <div className={`p-4 rounded ${post.isOp ? 'bg-white dark:bg-zinc-900' : 'bg-zinc-100 dark:bg-zinc-800'}`}>
               {/* User Info Bar */}
@@ -250,7 +279,7 @@ export default function ThreadPage() {
                   <span className="font-semibold text-green-700 dark:text-green-500">
                     {post.anonymous
                       ? 'Anonymous'
-                      : (post.user?.username || post.user?.discordId || (post.walletAddress.slice(0, 6) + '...' + post.walletAddress.slice(-4)))
+                      : (post.user?.username || post.user?.discordId || (post.walletAddress ? post.walletAddress.slice(0, 6) + '...' + post.walletAddress.slice(-4) : 'Anonymous'))
                     }
                   </span>
                   <span className="text-muted-foreground">{new Date(post.createdAt).toLocaleString()}</span>

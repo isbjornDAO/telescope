@@ -55,7 +55,7 @@ export function Bracket({ rounds, entries }: { rounds: BracketRound[]; entries: 
                 </div>
               </Link>
               <div className="space-y-1.5">
-                {list.length === 0 && <div className="text-[11px] text-muted-foreground px-2">{round.status === "PENDING" ? "waiting" : "no entries"}</div>}
+                {list.length === 0 && <div className="text-xs text-muted-foreground px-2">{round.status === "PENDING" ? "waiting" : "no entries"}</div>}
                 {list.map((e) => {
                   const w = round.tally?.[e.id] ?? 0;
                   const share = total > 0 ? w / total : 0;
@@ -65,7 +65,7 @@ export function Bracket({ rounds, entries }: { rounds: BracketRound[]; entries: 
                       {round.status === "CLOSED" && <div className="absolute inset-y-0 left-0 bg-sky-200/50 dark:bg-sky-700/30" style={{ width: `${Math.min(100, share * 100)}%` }} />}
                       <div className="relative">
                         <div className="font-semibold truncate">{e.isVictor ? "👑 " : ""}{e.title}</div>
-                        <div className="text-[10px] text-muted-foreground truncate">{e.crew?.name ?? ""}{round.status === "CLOSED" ? ` · ${Math.round(share * 100)}%` : ""}</div>
+                        <div className="text-xs text-muted-foreground truncate">{e.crew?.name ?? ""}{round.status === "CLOSED" ? ` · ${Math.round(share * 100)}%` : ""}</div>
                       </div>
                     </Link>
                   );

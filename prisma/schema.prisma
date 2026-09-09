@@ -755,6 +755,10 @@ model Board {
   createdAt           DateTime @default(now())
   totalThreadsCreated Int      @default(0) // All-time thread count for unlock tracking
   threads             Thread[]
+  // Who may read this board. Null is open, which is what every board is.
+  // Narrower policies AND with the thread and post below them. See
+  // lib/world/audience.ts.
+  audience            Json?
 }
 
 model Thread {
@@ -768,6 +772,11 @@ model Thread {
   posts      Post[]
   deleted    Boolean   @default(false)
   deletedAt  DateTime?
+  // Who may read this thread, set by whoever started it. Null is open.
+  audience   Json?
+  // The author, so they can always read and narrow their own thread. Never
+  // sent to a client that has not proven it owns it.
+  ownerAddress String?
 }
 
 model Post {
@@ -781,6 +790,9 @@ model Post {
   isOp          Boolean  @default(false)
   anonymous     Boolean  @default(true) // Whether to hide wallet/discord info
   createdAt     DateTime @default(now())
+  // Who may read this post, set by its author. Narrows the thread above it
+  // and can never widen it. Null is open.
+  audience      Json?
 }
 
 model Reward {

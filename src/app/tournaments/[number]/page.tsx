@@ -28,7 +28,7 @@ export default function SeasonPage() {
           <Frost>
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
               <div>
-                <div className="text-[11px] uppercase tracking-wider text-sky-600 dark:text-sky-300 font-semibold flex items-center gap-1"><Snowflake className="h-3.5 w-3.5" /> {data.name} · {data.phase} · week {Math.max(0, data.week)}</div>
+                <div className="text-xs uppercase tracking-wider text-sky-600 dark:text-sky-300 font-semibold flex items-center gap-1"><Snowflake className="h-3.5 w-3.5" /> {data.name} · {data.phase} · week {Math.max(0, data.week)}</div>
                 <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{data.theme}</h1>
                 <p className="text-sm text-muted-foreground mt-1"><b className="text-foreground">Research question:</b> {data.researchQuestion}</p>
                 <p className="text-xs text-muted-foreground mt-1">Submissions close {fmtDateTime(data.submissionsClose)} · finals {fmtDate(data.endsAt)} · retention check {fmtDate(data.retentionCheckAt)}{data.poolAmount ? ` · pool ${data.poolAmount} (sponsor funded, Isbjorn takes nothing)` : ""}</p>
@@ -40,7 +40,7 @@ export default function SeasonPage() {
 
           {data.victor && (
             <Frost className="border-amber-300/60">
-              <div className="flex items-center gap-3"><Crown className="h-6 w-6 text-amber-500" /><div><div className="text-[11px] uppercase tracking-wider text-amber-600">Victor · best dapp on Avalanche, {data.name}</div><Link href={`/entries/${data.victor.id}`} className="text-xl font-bold hover:underline">{data.victor.title}</Link> <span className="text-sm text-muted-foreground">by {data.victor.crew?.name}</span></div></div>
+              <div className="flex items-center gap-3"><Crown className="h-6 w-6 text-amber-500" /><div><div className="text-xs uppercase tracking-wider text-amber-600">Victor · best dapp on Avalanche, {data.name}</div><Link href={`/entries/${data.victor.id}`} className="text-xl font-bold hover:underline">{data.victor.title}</Link> <span className="text-sm text-muted-foreground">by {data.victor.crew?.name}</span></div></div>
             </Frost>
           )}
 

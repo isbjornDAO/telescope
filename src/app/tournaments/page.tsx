@@ -49,7 +49,7 @@ export default function TournamentsPage() {
               <Icon className="h-5 w-5 text-sky-500" />
               <div className="font-semibold">{name}</div>
               <p className="text-sm text-muted-foreground flex-1">{line}</p>
-              <span className="inline-flex self-start rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+              <span className="inline-flex self-start rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-xs font-semibold text-muted-foreground">
                 Coming soon
               </span>
             </Frost>

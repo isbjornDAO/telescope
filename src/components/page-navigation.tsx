@@ -31,7 +31,7 @@ export function PageNavigation() {
             href={href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "relative -mb-px pb-2.5 pt-1 text-[15px] sm:text-base transition-colors",
+              "relative -mb-px flex min-h-11 items-end pb-2.5 text-[15px] sm:text-base transition-colors sm:min-h-0 sm:pt-1",
               active
                 ? "font-semibold text-foreground"
                 : "font-medium text-muted-foreground hover:text-foreground"

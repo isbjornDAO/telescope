@@ -24,6 +24,7 @@ scoring or voting; you do not need it for anything else.
 - `src/app/calendar/`, `src/app/shop/` — unchanged legacy surfaces.
 - `src/lib/world/config.ts` — every tunable number for tournaments. Change numbers here only.
 - `src/lib/world/{trust,voting,retention,scout}.ts` — scoring engines, pure functions with tests.
+- `src/lib/world/{audience,forum-access}.ts` — who can read a post. Pure, tested.
 - `src/app/api/world/**` — API. Privacy rules are enforced here, never in the client.
 - `archive/` — pages and components no longer linked. Excluded from typecheck. Kept so nothing is lost, deleted freely when clearly dead.
 
@@ -36,6 +37,11 @@ scoring or voting; you do not need it for anything else.
   will run it at build time. One of them used to delete every forum board.
 - Never expose who vouched for whom, or an individual ballot. Aggregates and
   hash-committed tallies only.
+- Forum posts carry an audience policy set by their author, over provable
+  attributes and never over names. It is enforced in the API, evaluated as an
+  AND down board → thread → post, and has no admin bypass. Default is open and
+  posting must stay one tap. See `docs/forum-access.md` and
+  `src/lib/world/audience.ts`.
 - Research paper entries are blind to reviewers: strip author, crew, faction
   and region server-side.
 - Adding a fifth tab is a product decision, not a cleanup. Ask first.

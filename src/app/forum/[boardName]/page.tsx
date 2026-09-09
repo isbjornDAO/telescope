@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { AudiencePicker, AudienceTag } from "@/components/forum/audience-picker";
+import { EVERYONE, serializeAudience, type Audience } from "@/lib/world/audience";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAccount } from "wagmi";
@@ -19,6 +21,8 @@ interface Thread {
   createdAt: string;
   replyCount: number;
   posts: Post[];
+  audienceLabel?: string;
+  restricted?: boolean;
 }
 
 interface Post {
@@ -26,7 +30,8 @@ interface Post {
   comment: string;
   posterId: string;
   createdAt: string;
-  walletAddress: string;
+  // Null when the author posted anonymously — withheld by the API, not hidden here.
+  walletAddress: string | null;
   imageHash: string | null;
   anonymous: boolean;
 }
@@ -43,6 +48,8 @@ export default function BoardPage() {
   const [creating, setCreating] = useState(false);
   const [showNewThread, setShowNewThread] = useState(false);
   const [subject, setSubject] = useState("");
+  // Who may read the thread being written. Open unless the author narrows it.
+  const [audience, setAudience] = useState<Audience>(EVERYONE);
   const [comment, setComment] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
@@ -104,7 +111,8 @@ export default function BoardPage() {
           comment,
           walletAddress: address,
           imageHash: uploadData.url,
-          anonymous: stayAnonymous
+          anonymous: stayAnonymous,
+          audience: serializeAudience(audience)
         })
       });
 
@@ -216,6 +224,7 @@ export default function BoardPage() {
                 </div>
               )}
             </div>
+            <AudiencePicker value={audience} onChange={setAudience} />
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="anonymous"
@@ -264,8 +273,10 @@ export default function BoardPage() {
                   <p className="text-xs text-muted-foreground line-clamp-2">
                     {thread.posts[0]?.comment}
                   </p>
-                  <div className="flex items-center justify-between text-xs pt-1">
-                    <span className="truncate text-white">{thread.replyCount} replies</span>
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs pt-1">
+                    {/* text-white here was invisible on the white card it sits on. */}
+                    <span className="truncate text-muted-foreground">{thread.replyCount} replies</span>
+                    {thread.restricted && thread.audienceLabel && <AudienceTag label={thread.audienceLabel} />}
                   </div>
                 </div>
               </div>

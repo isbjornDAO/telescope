@@ -1,8 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createHash } from "crypto";
 import { awardPostXP } from "@/lib/xp-system";
 import { notifyNewThread } from "@/lib/discord/notify";
+import { viewerFromRequest } from "@/lib/world/viewer";
+import { audienceFromBody, readableThreads } from "@/lib/world/forum-access";
+import { serializeAudience } from "@/lib/world/audience";
 
 // Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
@@ -16,7 +19,7 @@ function generatePosterId(walletAddress: string, boardName: string): string {
 }
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { boardName: string } }
 ) {
   try {
@@ -50,7 +53,12 @@ export async function GET(
       take: 150 // Max 150 threads per board
     });
 
-    return NextResponse.json(threads);
+    // Threads this reader cannot open never reach the client. The filter
+    // runs here and nowhere else — see lib/world/forum-access.ts.
+    const viewer = await viewerFromRequest(request);
+    const visible = readableThreads(threads, board.audience, viewer);
+
+    return NextResponse.json(visible);
   } catch (error) {
     console.error("Error fetching threads:", error);
     return NextResponse.json(
@@ -61,12 +69,15 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { boardName: string } }
 ) {
   try {
     const { boardName } = params;
-    const { comment, imageHash, walletAddress, subject, anonymous } = await request.json();
+    const body = await request.json();
+    const { comment, imageHash, walletAddress, subject, anonymous } = body;
+    // The author's choice of audience, re-parsed from the untrusted body.
+    const audience = audienceFromBody(body);
 
     if (!comment || !walletAddress) {
       return NextResponse.json(
@@ -140,7 +151,9 @@ export async function POST(
           boardId: board.id,
           subject: subject || null,
           bumpedAt: new Date(),
-          replyCount: 0
+          replyCount: 0,
+          audience: serializeAudience(audience) as never,
+          ownerAddress: walletAddress
         }
       });
 

@@ -1,19 +1,26 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { viewerFromRequest } from "@/lib/world/viewer";
+import { canReadThread } from "@/lib/world/forum-access";
+import { describeAudience, isRestricted, parseAudience } from "@/lib/world/audience";
+
+const WANTED = 10;
 
 // Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Fetch trending threads with posts in one query - exclude deleted threads
+    // Over-fetch, because threads this reader may not open are dropped below
+    // and the list still needs to fill. Trending crosses every board, so each
+    // thread is judged against its own board's policy.
     const threads = await prisma.thread.findMany({
       where: {
         NOT: {
           deleted: true
         }
       },
-      take: 10,
+      take: WANTED * 5,
       orderBy: {
         bumpedAt: 'desc'
       },
@@ -31,21 +38,32 @@ export async function GET() {
         },
         board: {
           select: {
-            name: true
+            name: true,
+            audience: true
           }
         }
       }
     });
 
-    const formattedThreads = threads.map(thread => ({
-      id: thread.id,
-      subject: thread.subject,
-      bumpedAt: thread.bumpedAt.toISOString(),
-      createdAt: thread.createdAt.toISOString(),
-      replyCount: thread.replyCount,
-      boardName: thread.board.name,
-      posts: thread.posts
-    }));
+    const viewer = await viewerFromRequest(request);
+
+    const formattedThreads = threads
+      .filter((thread) => canReadThread(thread, thread.board.audience, viewer).allowed)
+      .slice(0, WANTED)
+      .map(thread => {
+        const audience = parseAudience(thread.audience);
+        return {
+          id: thread.id,
+          subject: thread.subject,
+          bumpedAt: thread.bumpedAt.toISOString(),
+          createdAt: thread.createdAt.toISOString(),
+          replyCount: thread.replyCount,
+          boardName: thread.board.name,
+          posts: thread.posts,
+          audienceLabel: describeAudience(audience),
+          restricted: isRestricted(audience)
+        };
+      });
 
     return NextResponse.json(formattedThreads);
   } catch (error) {
