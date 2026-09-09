@@ -10,7 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, LogOut, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAccount, useDisconnect } from "wagmi";
 import { useUserStats } from "@/hooks/use-user-stats";
 import { useUserDiscord } from "@/hooks/use-user-discord";
@@ -100,15 +101,29 @@ export const ConnectButton = () => {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="outline"
-                        className="snow-button w-full justify-between hover:text-white"
+                        className="snow-button w-full justify-between gap-2 hover:text-white"
                       >
-                        <div className="flex items-center gap-2">
-                          <span>
-                            {discordUser?.username || userStats?.username || userStats?.discordId || account.displayName}
-                          </span>
-                        </div>
+                        {/* Face and level ride on the button itself. They used
+                            to be one tap away inside the menu, which is an odd
+                            place to keep the two things that say who you are
+                            and how far you have got. */}
+                        <Avatar className="h-6 w-6 flex-shrink-0 ring-1 ring-white/40">
+                          <AvatarImage src={discordUser?.avatar_url} alt="" />
+                          <AvatarFallback className="bg-white/20 text-white">
+                            <User className="h-3.5 w-3.5" />
+                          </AvatarFallback>
+                        </Avatar>
+                        {/* The name is the first thing to go when the header
+                            runs out of room on a phone; the face still says who
+                            this is. */}
+                        <span className="hidden sm:inline max-w-[9rem] truncate">
+                          {discordUser?.username || userStats?.username || userStats?.discordId || account.displayName}
+                        </span>
+                        <span className="flex-shrink-0 rounded-md bg-white/20 px-1.5 py-0.5 text-xs font-semibold tabular-nums">
+                          Lv {account.level}
+                        </span>
                         <ChevronDown
-                          className={`ml-2 h-4 w-4 transition-transform ${
+                          className={`h-4 w-4 flex-shrink-0 transition-transform ${
                             isOpen ? "rotate-180" : ""
                           }`}
                         />
