@@ -2,6 +2,13 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 export const env = createEnv({
+  // An empty value in the Vercel dashboard counts as "not set".
+  emptyStringAsUndefined: true,
+  // Name the missing settings in plain words so the build log says what to add.
+  onValidationError: (error) => {
+    const list = error.issues.map((i) => `  - ${i.path.join(".") || "?"}: ${i.message}`).join("\n");
+    throw new Error(`Missing or invalid environment variables. Add these in Vercel → Settings → Environment Variables, then redeploy:\n${list}`);
+  },
   server: {
     DATABASE_URL: z.string().min(1).optional(),
     DISCORD_CLIENT_ID: z.string().min(1),
