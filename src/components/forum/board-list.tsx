@@ -3,49 +3,56 @@
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import { BOARD_GROUPS, UNLOCK_THRESHOLDS, type Board } from "@/components/forum/use-forum";
 
 function BoardRow({ board, locked }: { board: Board; locked: boolean }) {
   return (
-    <Link
-      href={`/forum/${board.name}`}
-      className="group flex items-center gap-5 py-4 transition-colors hover:bg-accent/40 -mx-3 px-3 rounded-lg"
-    >
-      <span className="w-[4.5rem] shrink-0 text-sm font-semibold ink-accent">/{board.name}/</span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-medium truncate group-hover:text-[var(--accent-ink)] transition-colors">{board.title}</span>
-        <span className="block text-xs text-muted-foreground truncate mt-0.5">{board.description}</span>
-      </span>
-      <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-        {locked || board._count.threads === 0 ? <Lock className="h-3.5 w-3.5" strokeWidth={1.75} /> : board._count.threads}
-      </span>
+    <Link href={`/forum/${board.name}`} className="block transition-colors hover:bg-accent/40">
+      <div className="flex items-center justify-between gap-4 px-5 py-4">
+        <div className="flex items-center gap-4 min-w-0 flex-1">
+          <span className="w-[4.5rem] shrink-0 text-sm font-bold ink-accent">/{board.name}/</span>
+          <span className="min-w-0 flex flex-col gap-0.5">
+            <span className="text-sm font-semibold truncate">{board.title}</span>
+            <span className="text-xs text-muted-foreground truncate">{board.description}</span>
+          </span>
+        </div>
+        <Badge variant="secondary" className="shrink-0 tabular-nums">
+          {locked ? <Lock className="h-3 w-3" strokeWidth={2} /> : board._count.threads}
+        </Badge>
+      </div>
     </Link>
   );
 }
 
-export function BoardList({ boards, unlockProgress, className }: { boards: Board[]; unlockProgress: number; className?: string }) {
+/** Boards live on white cards, one card per category, in the order the world opens them. */
+export function BoardList({ boards, className }: { boards: Board[]; className?: string }) {
   return (
-    <div className={cn("space-y-12", className)}>
+    <div className={cn("space-y-10", className)}>
       {BOARD_GROUPS.map((group) => {
         const threshold = UNLOCK_THRESHOLDS[group.label];
-        const locked = threshold !== undefined && unlockProgress < threshold;
-        const rows = group.names
-          .map((name) => boards.find((b) => b.name === name))
-          .filter((b): b is Board => !!b);
+        const locked = group.locked;
+        // Keep the order the group declares: it is the order rooms were meant to open in.
+        const rows = group.names.map((name) => boards.find((b) => b.name === name)).filter((b): b is Board => !!b);
         if (rows.length === 0) return null;
 
         return (
           <section key={group.label}>
-            <div className="flex items-baseline justify-between gap-4 mb-3 pb-3 border-b border-[var(--hairline)]">
-              <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{group.label}</h3>
+            <h3 className="text-[13px] font-bold uppercase tracking-[0.12em] text-muted-foreground mb-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+              {group.label}
               {locked && (
-                <span className="shrink-0 text-xs text-muted-foreground inline-flex items-center gap-1.5">
-                  <Lock className="h-3 w-3" strokeWidth={1.75} />
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium normal-case tracking-normal">
+                  <Lock className="h-3 w-3" strokeWidth={2} />
                   {threshold.toLocaleString()} threads to unlock
                 </span>
               )}
-            </div>
-            <div className={cn("divide-y divide-[var(--hairline)]", locked && "opacity-40 pointer-events-none select-none")}>
+            </h3>
+            <div
+              className={cn(
+                "panel overflow-hidden divide-y divide-[var(--hairline)]",
+                locked && "opacity-40 pointer-events-none select-none"
+              )}
+            >
               {rows.map((board) => (
                 <BoardRow key={board.id} board={board} locked={locked} />
               ))}

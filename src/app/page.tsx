@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Newspaper } from "lucide-react";
 import { PageNavigation } from "@/components/page-navigation";
 import { ProfileWindow } from "@/components/home/profile-window";
 import { WorldWindow } from "@/components/home/world-window";
 import { ThreadList } from "@/components/forum/thread-list";
 import { BoardList } from "@/components/forum/board-list";
 import { useForumData } from "@/components/forum/use-forum";
+import { NewsFeed } from "@/components/news-feed";
 import { MoreLink } from "@/components/world/primitives";
 import { useActivityTracker } from "@/hooks/use-activity-tracker";
 
@@ -37,17 +38,13 @@ export default function Home() {
             </header>
 
             {loading ? (
-              <div className="space-y-6">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <div key={i} className="space-y-2.5">
-                    <div className="h-4 w-2/3 rounded bg-muted animate-pulse" />
-                    <div className="h-3 w-full rounded bg-muted animate-pulse" />
-                    <div className="h-3 w-24 rounded bg-muted animate-pulse" />
-                  </div>
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="aspect-square rounded-xl bg-muted animate-pulse" />
                 ))}
               </div>
             ) : (
-              <ThreadList threads={threads.slice(0, 8)} />
+              <ThreadList threads={threads.slice(0, 6)} />
             )}
           </section>
 
@@ -63,11 +60,23 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <BoardList boards={boards} unlockProgress={unlockProgress} />
+              <BoardList boards={boards} />
             )}
             <p className="text-xs text-muted-foreground mt-10 tabular-nums">
               {stats.totalBoards} rooms · {stats.totalThreads} live threads · {unlockProgress} threads all time
             </p>
+          </section>
+
+          {/* What the rest of the ecosystem is writing, under what the world is saying. */}
+          <section>
+            <div className="flex items-baseline justify-between gap-4 mb-8">
+              <h2 className="text-2xl font-semibold tracking-tight flex items-center gap-2.5">
+                <Newspaper className="h-5 w-5 ink-accent" strokeWidth={1.75} />
+                News
+              </h2>
+              <MoreLink href="/news">all articles</MoreLink>
+            </div>
+            <NewsFeed limit={6} />
           </section>
         </div>
 

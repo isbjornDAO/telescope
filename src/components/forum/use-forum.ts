@@ -31,12 +31,16 @@ export const UNLOCK_THRESHOLDS: Record<string, number> = {
   "Governance & Institutional": 2000,
 };
 
-export const BOARD_GROUPS: { label: string; names: string[] }[] = [
-  { label: "General Discussion", names: ["gen", "drama"] },
-  { label: "Development & Technical", names: ["bridge", "tech", "sec", "dev"] },
-  { label: "DeFi & Trading", names: ["defi", "price", "meme"] },
-  { label: "Projects & Applications", names: ["nft", "avax_art", "game", "eco", "adopt"] },
-  { label: "Governance & Institutional", names: ["gov", "inst", "reg", "rwa"] },
+/**
+ * The order rooms open in. Only General Discussion is open today: set `locked`
+ * to false on a group to let the world in, and its threshold message goes away.
+ */
+export const BOARD_GROUPS: { label: string; names: string[]; locked: boolean }[] = [
+  { label: "General Discussion", names: ["gen", "drama"], locked: false },
+  { label: "Development & Technical", names: ["bridge", "tech", "sec", "dev"], locked: true },
+  { label: "DeFi & Trading", names: ["defi", "price", "meme"], locked: true },
+  { label: "Projects & Applications", names: ["nft", "avax_art", "game", "eco", "adopt"], locked: true },
+  { label: "Governance & Institutional", names: ["gov", "inst", "reg", "rwa"], locked: true },
 ];
 
 /** Newer threads and busy threads float; a thread nobody answers sinks. */

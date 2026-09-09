@@ -29,6 +29,8 @@ interface NewsFeedProps {
   author?: string;
   currentPage?: number;
   onPageChange?: (page: number) => void;
+  /** Show only the newest N articles and drop the pager. Used by the home page. */
+  limit?: number;
 }
 
 const ITEMS_PER_PAGE = 9;
@@ -39,6 +41,7 @@ export function NewsFeed({
   author,
   currentPage = 1,
   onPageChange,
+  limit,
 }: NewsFeedProps) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,10 +73,10 @@ export function NewsFeed({
     fetchPosts();
   }, [sources, slugs, author]);
 
-  const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentPosts = posts.slice(startIndex, endIndex);
+  const perPage = limit ?? ITEMS_PER_PAGE;
+  const totalPages = limit ? 1 : Math.ceil(posts.length / perPage);
+  const startIndex = limit ? 0 : (currentPage - 1) * perPage;
+  const currentPosts = posts.slice(startIndex, startIndex + perPage);
 
   const handlePageChange = (page: number) => {
     if (onPageChange) {
@@ -121,7 +124,7 @@ export function NewsFeed({
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-        {[...Array(9)].map((_, i) => (
+        {[...Array(limit ?? 9)].map((_, i) => (
           <div
             key={i}
             className={`animate-pulse rounded-lg overflow-hidden ${
@@ -150,10 +153,8 @@ export function NewsFeed({
     return <div className="text-muted-foreground">No news articles found.</div>;
   }
 
-  console.log(posts);
-
   return (
-    <div className="space-y-16">
+    <div className="space-y-10">
       <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-6 gap-4">
         {currentPosts.map((post) => (
           <article

@@ -12,7 +12,7 @@ import { useAccount } from "wagmi";
 export function ForumOverview() {
   useActivityTracker();
   const { isConnected } = useAccount();
-  const { boards, threads, loading, stats, unlockProgress } = useForumData();
+  const { boards, threads, loading, stats } = useForumData();
   const activeUsers = useActiveUsers();
   const { earnedToday, timeUntilReset } = useDailyXp();
 
@@ -44,12 +44,12 @@ export function ForumOverview() {
         >
           Moving now
         </SectionTitle>
-        <ThreadList threads={threads.slice(0, 10)} />
+        <ThreadList threads={threads.slice(0, 9)} />
       </section>
 
       <section>
         <SectionTitle icon={<MessageSquare className="h-4 w-4 ink-accent" strokeWidth={1.75} />}>Rooms</SectionTitle>
-        <BoardList boards={boards} unlockProgress={unlockProgress} />
+        <BoardList boards={boards} />
       </section>
 
       <section className="grid grid-cols-3 gap-8 py-10 border-t border-[var(--hairline)]">

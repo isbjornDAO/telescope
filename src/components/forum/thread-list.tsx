@@ -6,38 +6,36 @@ import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Thread } from "@/components/forum/use-forum";
 
-/** One line of conversation. Flat row, hairline between, room to breathe. */
-export function ThreadRow({ thread }: { thread: Thread }) {
+/** One thread as a square card. Image on top when there is one, meta pinned to the floor. */
+export function ThreadCard({ thread }: { thread: Thread }) {
   const preview = thread.posts[0]?.comment?.trim() || "No content";
   const image = thread.posts[0]?.imageHash;
 
   return (
     <Link
       href={`/forum/thread/${thread.id}`}
-      className="group flex gap-5 py-5 first:pt-0 transition-colors"
+      className="group panel aspect-square flex flex-col overflow-hidden transition-colors hover:border-[var(--accent-ink)]/40"
     >
       {image && (
-        <div className="hidden sm:block w-16 h-16 shrink-0 overflow-hidden rounded-lg bg-muted">
+        <div className="h-2/5 shrink-0 overflow-hidden bg-muted">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={image} alt="" className="w-full h-full object-cover" loading="lazy" />
         </div>
       )}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline gap-3">
-          <h3 className="font-semibold text-[15px] leading-snug truncate group-hover:text-[var(--accent-ink)] transition-colors">
-            {thread.subject || preview.slice(0, 70)}
-          </h3>
-        </div>
-        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 mt-1.5">{preview}</p>
-        <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
-          <span className="font-medium ink-accent">/{thread.boardName}/</span>
-          <span aria-hidden>·</span>
-          <span className="inline-flex items-center gap-1 tabular-nums">
-            <MessageSquare className="h-3.5 w-3.5" strokeWidth={1.75} />
+      <div className="flex flex-1 flex-col min-h-0 p-4">
+        <h3 className="font-semibold text-sm leading-snug line-clamp-2 group-hover:text-[var(--accent-ink)] transition-colors">
+          {thread.subject || preview.slice(0, 70)}
+        </h3>
+        <p className={cn("text-xs text-muted-foreground leading-relaxed mt-2 flex-1 min-h-0", image ? "line-clamp-3" : "line-clamp-5")}>
+          {preview}
+        </p>
+        <div className="flex items-center gap-2 pt-3 mt-auto text-[11px] text-muted-foreground border-t border-[var(--hairline)]">
+          <span className="font-semibold ink-accent truncate">/{thread.boardName}/</span>
+          <span className="inline-flex items-center gap-1 tabular-nums shrink-0">
+            <MessageSquare className="h-3 w-3" strokeWidth={1.75} />
             {thread.replyCount}
           </span>
-          <span aria-hidden>·</span>
-          <span>{formatDistanceToNow(new Date(thread.bumpedAt), { addSuffix: true })}</span>
+          <span className="ml-auto shrink-0 truncate">{formatDistanceToNow(new Date(thread.bumpedAt), { addSuffix: true })}</span>
         </div>
       </div>
     </Link>
@@ -53,9 +51,9 @@ export function ThreadList({ threads, className }: { threads: Thread[]; classNam
     );
   }
   return (
-    <div className={cn("divide-y divide-[var(--hairline)]", className)}>
+    <div className={cn("grid grid-cols-2 xl:grid-cols-3 gap-4", className)}>
       {threads.map((t) => (
-        <ThreadRow key={t.id} thread={t} />
+        <ThreadCard key={t.id} thread={t} />
       ))}
     </div>
   );
