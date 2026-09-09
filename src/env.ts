@@ -40,20 +40,36 @@ export const env = createEnv({
   },
 });
 
-/** Features that are switched off because their key is absent. */
-export const featureFlags = {
-  discordLogin: !!env.DISCORD_CLIENT_ID && !!env.DISCORD_CLIENT_SECRET,
-  discordBot: !!env.DISCORD_BOT_TOKEN,
+/**
+ * Which features are switched off because their key is absent.
+ *
+ * This is a function, not an object, and it is SERVER ONLY. Reading a
+ * server-side variable while a module is being evaluated in the browser
+ * throws, and because `@/env` reaches the client bundle through siteConfig,
+ * an object here would take the whole page down on load. Call it inside a
+ * server component, route handler or server action.
+ */
+export function serverFeatures() {
+  return {
+    discordLogin: !!env.DISCORD_CLIENT_ID && !!env.DISCORD_CLIENT_SECRET,
+    discordBot: !!env.DISCORD_BOT_TOKEN,
+    database: !!env.DATABASE_URL,
+  } as const;
+}
+
+/** Safe to read anywhere: these are NEXT_PUBLIC, so they exist in the browser. */
+export const clientFeatures = {
   walletConnect: !!env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
-  database: !!env.DATABASE_URL,
 } as const;
 
+/** Server only, for the same reason as serverFeatures. */
 export function missingEnvSummary(): string[] {
+  const f = serverFeatures();
   const missing: string[] = [];
-  if (!env.DATABASE_URL) missing.push("DATABASE_URL — nothing can be stored or read");
+  if (!f.database) missing.push("DATABASE_URL — nothing can be stored or read");
   if (!env.NEXTAUTH_SECRET) missing.push("NEXTAUTH_SECRET — sessions and world encryption");
-  if (!featureFlags.discordLogin) missing.push("DISCORD_CLIENT_ID / DISCORD_CLIENT_SECRET — Discord sign-in");
-  if (!featureFlags.discordBot) missing.push("DISCORD_BOT_TOKEN — Discord events and notifications");
-  if (!featureFlags.walletConnect) missing.push("NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID — WalletConnect wallets");
+  if (!f.discordLogin) missing.push("DISCORD_CLIENT_ID / DISCORD_CLIENT_SECRET — Discord sign-in");
+  if (!f.discordBot) missing.push("DISCORD_BOT_TOKEN — Discord events and notifications");
+  if (!clientFeatures.walletConnect) missing.push("NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID — WalletConnect wallets");
   return missing;
 }

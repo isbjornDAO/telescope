@@ -1,4 +1,4 @@
-import { env, featureFlags } from "@/env";
+import { env, serverFeatures } from "@/env";
 import { DefaultSession, NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
@@ -33,7 +33,7 @@ export function isAdmin(discordId: string | undefined): boolean {
 
 export const authOptions: NextAuthOptions = {
   // No Discord keys: the provider is simply absent and the rest of the site works.
-  providers: !featureFlags.discordLogin
+  providers: !serverFeatures().discordLogin
     ? []
     : [
     DiscordProvider({

@@ -28,10 +28,12 @@ export function Navbar() {
           <Image
             src="/logo.png"
             alt="Telescope"
-            className="flex items-end absolute md:relative left-4 md:left-0 -bottom-3 md:-bottom-4 w-52 md:w-72"
-            width={288}
-            height={72}
-            style={{ width: "auto", height: "auto" }}
+            // The inline width:auto used to beat these classes, so the mark
+            // rendered at its full 384px and ran off the side of a phone.
+            className="flex items-end absolute md:relative left-4 md:left-0 -bottom-3 md:-bottom-4 w-36 sm:w-44 md:w-56 h-auto"
+            width={384}
+            height={346}
+            priority
           />
         </Link>
         <div className="flex items-center relative z-10 justify-center gap-1.5 md:gap-2 md:self-auto">

@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 /** Standard page container under the polar-bear header. */
 export function WorldPage({ title, subtitle, actions, children, wide }: { title?: ReactNode; subtitle?: ReactNode; actions?: ReactNode; children: ReactNode; wide?: boolean }) {
   return (
-    <div className={cn("w-full mx-auto -mt-6 px-4 md:px-8 relative z-10 mb-16", wide ? "max-w-screen-xl" : "max-w-screen-lg")}>
+    <div className={cn("w-full mx-auto pt-5 px-4 md:px-8 relative z-10 mb-16", wide ? "max-w-screen-xl" : "max-w-screen-lg")}>
       <PageNavigation />
       {(title || actions) && (
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
