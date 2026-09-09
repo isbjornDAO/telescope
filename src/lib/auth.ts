@@ -1,4 +1,4 @@
-import { env } from "@/env";
+import { env, featureFlags } from "@/env";
 import { DefaultSession, NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
@@ -32,10 +32,13 @@ export function isAdmin(discordId: string | undefined): boolean {
 }
 
 export const authOptions: NextAuthOptions = {
-  providers: [
+  // No Discord keys: the provider is simply absent and the rest of the site works.
+  providers: !featureFlags.discordLogin
+    ? []
+    : [
     DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
+      clientId: env.DISCORD_CLIENT_ID as string,
+      clientSecret: env.DISCORD_CLIENT_SECRET as string,
       authorization: {
         params: {
           scope: "identify guilds email connections guilds.members.read",

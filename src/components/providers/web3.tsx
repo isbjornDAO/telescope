@@ -67,7 +67,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const config = getDefaultConfig({
       appName: siteConfig.name,
-      projectId: env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
+      projectId: env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? "",
       wallets: [
         {
           groupName: "Most used",
