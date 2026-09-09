@@ -186,6 +186,15 @@ body {
   border-color: var(--hairline);
 }
 
+/* A thin band of weather behind a profile crystal. */
+.profile-banner {
+  background: linear-gradient(120deg, hsl(199 70% 92%), hsl(214 60% 95%) 55%, hsl(190 55% 93%));
+}
+
+.dark .profile-banner {
+  background: linear-gradient(120deg, hsl(202 34% 17%), hsl(214 30% 15%) 55%, hsl(190 30% 16%));
+}
+
 .ink-accent {
   color: var(--accent-ink);
 }

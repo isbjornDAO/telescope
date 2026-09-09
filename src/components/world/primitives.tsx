@@ -48,7 +48,7 @@ export function Section({ className, children, ...rest }: React.HTMLAttributes<H
 
 export function SectionTitle({ icon, children, right, description }: { icon?: ReactNode; children: ReactNode; right?: ReactNode; description?: ReactNode }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 mb-5">
+    <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 sm:gap-4 mb-5">
       <div className="min-w-0">
         <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-2">
           {icon}
@@ -56,7 +56,7 @@ export function SectionTitle({ icon, children, right, description }: { icon?: Re
         </h2>
         {description && <p className="text-sm text-muted-foreground mt-2">{description}</p>}
       </div>
-      {right && <div className="shrink-0 text-sm">{right}</div>}
+      {right && <div className="shrink-0 text-sm order-first sm:order-none self-start sm:self-auto">{right}</div>}
     </div>
   );
 }

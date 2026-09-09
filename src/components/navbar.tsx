@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, Globe2, Snowflake, Radar, Link2, Users, Flag, MapPin, MessageSquare, User, Crown, BookOpen, Sparkles, Settings } from "lucide-react";
+import { Menu, Globe2, Snowflake, Radar, Link2, Users, Flag, MapPin, MessageSquare, User, Crown, BookOpen, Sparkles, Settings, Home } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { FAQ } from "@/components/faq";
@@ -12,6 +12,7 @@ import { DonateModal } from "@/components/donate-modal";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useWorldSession } from "@/hooks/use-world";
+import { CrystalAvatar } from "@/components/world/snow-crystal";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
@@ -57,10 +58,29 @@ export function Navbar() {
 
         <div className="flex items-center gap-2 ml-auto shrink-0">
           {isSignedIn && me && (
-            <Link href="/trust" title="Your weight: season-earned trust" className="hidden sm:flex items-center gap-1.5 h-9 px-3 rounded-lg border border-[var(--surface-border)] hover:bg-accent/60 transition-colors">
-              <Sparkles className="h-3.5 w-3.5 ink-accent" strokeWidth={1.75} />
-              <span className="text-sm font-semibold tabular-nums">{(me.standing ?? 0).toFixed(2)}</span>
-            </Link>
+            <>
+              {/* Your crystal, grown from your address. Nothing to upload. */}
+              <Link
+                href={`/profile/${me.handle ?? me.address}`}
+                title={`${me.name ?? "Your profile"} — your profile`}
+                className="flex items-center rounded-full transition-opacity hover:opacity-80"
+              >
+                <CrystalAvatar seed={me.handle ?? me.address ?? ""} size="sm" nodeType={me.nodeType} title={me.name ?? "Your profile"} />
+                <span className="sr-only">Your profile</span>
+              </Link>
+              <Link
+                href="/den"
+                title="Your snow den — badges and everything you have earned"
+                className="h-9 w-9 flex items-center justify-center rounded-lg border border-[var(--surface-border)] hover:bg-accent/60 transition-colors"
+              >
+                <Home className="h-[1.125rem] w-[1.125rem]" strokeWidth={1.75} />
+                <span className="sr-only">Your snow den</span>
+              </Link>
+              <Link href="/trust" title="Your weight: season-earned trust" className="hidden sm:flex items-center gap-1.5 h-9 px-3 rounded-lg border border-[var(--surface-border)] hover:bg-accent/60 transition-colors">
+                <Sparkles className="h-3.5 w-3.5 ink-accent" strokeWidth={1.75} />
+                <span className="text-sm font-semibold tabular-nums">{(me.standing ?? 0).toFixed(2)}</span>
+              </Link>
+            </>
           )}
           <div className="hidden md:flex items-center gap-2 [&_.mobile-menu-text]:hidden">
             <DonateModal />
@@ -79,6 +99,7 @@ export function Navbar() {
                 {isSignedIn && me && (
                   <>
                     {item(`/profile/${me.handle ?? me.address}`, me.name ?? "Profile", User)}
+                    {item("/den", "Your snow den", Home)}
                     {(me.isElder || me.nodeType === "ANCHOR") && item("/elders", "Elders", Crown)}
                     {me.isAdmin && item("/world-admin", "World admin", Settings)}
                     <div className="h-px bg-[var(--surface-border)] my-3" />

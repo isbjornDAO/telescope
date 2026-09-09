@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, Radar, Link2, KeyRound, Wallet, CheckCircle2, Clock, ArrowRight, Users } from "lucide-react";
+import { Sparkles, Radar, Link2, KeyRound, Wallet, CheckCircle2, Clock, ArrowRight, Users, Home, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NodeBadge } from "@/components/world/primitives";
+import { CrystalAvatar } from "@/components/world/snow-crystal";
+import { useDen } from "@/hooks/use-den";
 import { useWorldSession } from "@/hooks/use-world";
 import { useDailyXp, useActiveUsers } from "@/components/forum/use-forum";
 
@@ -35,6 +37,7 @@ export function ProfileWindow() {
   const { me, isSignedIn, isConnected, isLoading, mismatch, signIn } = useWorldSession();
   const { earnedToday, timeUntilReset } = useDailyXp();
   const activeUsers = useActiveUsers();
+  const den = useDen(isSignedIn ? me?.address : undefined, { nodeType: me?.nodeType });
 
   if (isLoading) {
     return (
@@ -81,17 +84,30 @@ export function ProfileWindow() {
   }
 
   const profileHref = `/profile/${me?.handle ?? me?.address}`;
+  const levelRatio = den.progress.totalNeeded ? den.progress.currentProgress / den.progress.totalNeeded : 0;
 
   return (
     <Shell>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+      <div className="flex items-start gap-4">
+        <Link href={profileHref} className="shrink-0" title="Your profile">
+          <CrystalAvatar
+            seed={me?.handle ?? me?.address ?? ""}
+            size="lg"
+            nodeType={me?.nodeType}
+            ring={levelRatio}
+            title={me?.name ?? "Your snow crystal"}
+          />
+        </Link>
+        <div className="min-w-0 flex-1">
           <Link href={profileHref} className="block text-lg font-semibold truncate hover:text-[var(--accent-ink)] transition-colors">
             {me?.name ?? "Unnamed node"}
           </Link>
           {me?.handle && <p className="text-xs text-muted-foreground mt-0.5 truncate">/{me.handle}</p>}
+          <div className="mt-2 flex items-center gap-2 flex-wrap">
+            <NodeBadge nodeType={me?.nodeType} />
+            <span className="text-[11px] text-muted-foreground tabular-nums">Level {den.level}</span>
+          </div>
         </div>
-        <NodeBadge nodeType={me?.nodeType} />
       </div>
 
       <div className="mt-6 flex items-end gap-2.5">
@@ -123,14 +139,26 @@ export function ProfileWindow() {
           label={earnedToday ? "XP earned today" : "1 XP available"}
           value={<span className="text-xs text-muted-foreground">resets in {timeUntilReset}</span>}
         />
+        <Row icon={<Award className="h-4 w-4" strokeWidth={1.75} />} label="Badges earned" value={den.earned.length} href="/den" />
         <Row icon={<Radar className="h-4 w-4" strokeWidth={1.75} />} label="Scout offers" value={me?.pendingOffers ?? 0} href="/scout" />
         <Row icon={<Link2 className="h-4 w-4" strokeWidth={1.75} />} label="Vouches left" value={me?.scoutBudget?.remaining ?? "—"} href="/trust" />
         <Row icon={<Users className="h-4 w-4" strokeWidth={1.75} />} label="In the world now" value={activeUsers} />
       </div>
 
-      <Link href={profileHref} className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium ink-accent hover:underline underline-offset-4">
-        Your profile <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} />
-      </Link>
+      <div className="mt-5 flex items-center gap-2">
+        <Link
+          href="/den"
+          className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 rounded-lg border border-[var(--surface-border)] text-sm font-medium hover:bg-accent/60 transition-colors"
+        >
+          <Home className="h-3.5 w-3.5" strokeWidth={1.75} /> Your snow den
+        </Link>
+        <Link
+          href={profileHref}
+          className="inline-flex items-center gap-1.5 px-3 h-9 text-sm font-medium ink-accent hover:underline underline-offset-4"
+        >
+          Profile <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} />
+        </Link>
+      </div>
     </Shell>
   );
 }
