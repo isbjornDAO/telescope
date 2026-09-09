@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();

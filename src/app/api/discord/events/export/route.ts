@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const eventId = searchParams.get("eventId");

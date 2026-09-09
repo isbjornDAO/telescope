@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { awardCollectableByAddress, hasCollectable } from "@/lib/collectables";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {

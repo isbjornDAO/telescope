@@ -1,6 +1,9 @@
 import { env } from "@/env";
 import { NextRequest, NextResponse } from "next/server";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 interface DiscordUser {
   id: string;
   username: string;

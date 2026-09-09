@@ -4,6 +4,9 @@ import { createHash } from "crypto";
 import { awardPostXP } from "@/lib/xp-system";
 import { notifyNewReply } from "@/lib/discord/notify";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 // Generate unique poster ID (same wallet = same ID per board)
 function generatePosterId(walletAddress: string, boardName: string): string {
   const hash = createHash("md5")

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 const addressSchema = z.string().regex(/^0x[a-fA-F0-9]{40}$/);
 
 export async function GET(

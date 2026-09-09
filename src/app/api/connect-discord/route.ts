@@ -4,6 +4,9 @@ import { verifyMessage } from "viem";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 export async function POST(req: Request) {
   console.log("\n=== DISCORD CONNECT API ROUTE ===");
   console.log("📍 Route: /api/connect-discord [POST]");

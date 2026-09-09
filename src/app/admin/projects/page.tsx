@@ -7,6 +7,9 @@ import { AdminWrapper } from "@/components/admin/AdminWrapper";
 import { DeleteProjectButton } from "./DeleteProjectButton";
 import { getTextColorClass } from "@/lib/utils";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 interface Project {
   id: string;
   name: string;

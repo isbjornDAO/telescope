@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     // Delete all boards (this will cascade delete threads and posts)

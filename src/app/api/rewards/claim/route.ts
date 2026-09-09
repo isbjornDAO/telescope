@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 // POST /api/rewards/claim - Claim a reward
 export async function POST(request: NextRequest) {
   try {

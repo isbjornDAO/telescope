@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { env } from "@/env";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 const DISCORD_API_URL = "https://discord.com/api/v10";
 
 export async function GET() {

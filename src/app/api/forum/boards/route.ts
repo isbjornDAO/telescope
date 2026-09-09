@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 const INITIAL_BOARDS = [
   { name: "gen", title: "General", description: "General community discussion & Avalanche topics" },
   { name: "tech", title: "Tech & Development", description: "Tech is good" },

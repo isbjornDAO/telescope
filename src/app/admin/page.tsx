@@ -9,6 +9,9 @@ import Link from "next/link";
 import { AdminWrapper } from "@/components/admin/AdminWrapper";
 import { VoteLockSwitch } from "@/components/admin/vote-lock-switch";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 interface VoteTimeDistribution {
   hour: number;
   count: number;

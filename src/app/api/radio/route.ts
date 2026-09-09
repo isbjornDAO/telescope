@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 export interface RadioEpisode {
   id: number;
   title: string;

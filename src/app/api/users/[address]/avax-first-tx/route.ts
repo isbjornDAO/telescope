@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Never executed at build time: this route touches the database.
+export const dynamic = "force-dynamic";
+
 const SNOWTRACE_API_KEY = process.env.SNOWTRACE_API_KEY || "YourApiKeyToken";
 
 export async function GET(
