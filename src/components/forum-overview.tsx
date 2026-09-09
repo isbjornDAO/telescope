@@ -271,7 +271,7 @@ export function ForumOverview() {
                       <div className="flex flex-col gap-2">
                         <div className="flex justify-between items-start gap-2">
                           {thread.subject && (
-                            <h3 className="font-semibold text-sm truncate flex-1">
+                            <h3 className="font-semibold text-[15px] leading-snug truncate flex-1">
                               {thread.subject}
                             </h3>
                           )}
@@ -283,10 +283,10 @@ export function ForumOverview() {
                           {thread.posts[0]?.comment || "No content"}
                         </p>
                         <div className="flex gap-2 items-center">
-                          <Badge variant="outline" className="text-xs border-zinc-300 dark:border-zinc-700" style={{ color: '#3c688f' }}>
+                          <Badge variant="outline" className="text-xs border-zinc-300 dark:border-zinc-700" style={{ color: "var(--telescope-blue)" }}>
                             /{thread.boardName}/
                           </Badge>
-                          <span className="text-xs text-white dark:text-zinc-400">
+                          <span className="text-xs text-muted-foreground">
                             {thread.replyCount} replies
                           </span>
                         </div>
@@ -326,11 +326,11 @@ export function ForumOverview() {
                     <div className="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <h3 className="font-bold text-sm whitespace-nowrap w-[5rem] pl-2" style={{ color: '#3c688f' }}>
+                          <h3 className="font-bold text-sm whitespace-nowrap w-[5rem] pl-2" style={{ color: "var(--telescope-blue)" }}>
                             /{board.name}/
                           </h3>
                           <div className="flex flex-col gap-1 flex-1 min-w-0">
-                            <span className="font-semibold text-sm truncate">
+                            <span className="font-semibold text-[15px] leading-snug truncate">
                               {board.title}
                             </span>
                             <span className="text-xs text-muted-foreground truncate">
@@ -369,11 +369,11 @@ export function ForumOverview() {
                     <div className="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <h3 className="font-bold text-sm whitespace-nowrap w-[5rem] pl-2" style={{ color: '#3c688f' }}>
+                          <h3 className="font-bold text-sm whitespace-nowrap w-[5rem] pl-2" style={{ color: "var(--telescope-blue)" }}>
                             /{board.name}/
                           </h3>
                           <div className="flex flex-col gap-1 flex-1 min-w-0">
-                            <span className="font-semibold text-sm truncate">
+                            <span className="font-semibold text-[15px] leading-snug truncate">
                               {board.title}
                             </span>
                             <span className="text-xs text-muted-foreground truncate">
@@ -412,11 +412,11 @@ export function ForumOverview() {
                     <div className="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <h3 className="font-bold text-sm whitespace-nowrap w-[5rem] pl-2" style={{ color: '#3c688f' }}>
+                          <h3 className="font-bold text-sm whitespace-nowrap w-[5rem] pl-2" style={{ color: "var(--telescope-blue)" }}>
                             /{board.name}/
                           </h3>
                           <div className="flex flex-col gap-1 flex-1 min-w-0">
-                            <span className="font-semibold text-sm truncate">
+                            <span className="font-semibold text-[15px] leading-snug truncate">
                               {board.title}
                             </span>
                             <span className="text-xs text-muted-foreground truncate">
@@ -455,11 +455,11 @@ export function ForumOverview() {
                     <div className="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <h3 className="font-bold text-sm whitespace-nowrap w-[5rem] pl-2" style={{ color: '#3c688f' }}>
+                          <h3 className="font-bold text-sm whitespace-nowrap w-[5rem] pl-2" style={{ color: "var(--telescope-blue)" }}>
                             /{board.name}/
                           </h3>
                           <div className="flex flex-col gap-1 flex-1 min-w-0">
-                            <span className="font-semibold text-sm truncate">
+                            <span className="font-semibold text-[15px] leading-snug truncate">
                               {board.title}
                             </span>
                             <span className="text-xs text-muted-foreground truncate">
@@ -498,11 +498,11 @@ export function ForumOverview() {
                     <div className="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <h3 className="font-bold text-sm whitespace-nowrap w-[5rem] pl-2" style={{ color: '#3c688f' }}>
+                          <h3 className="font-bold text-sm whitespace-nowrap w-[5rem] pl-2" style={{ color: "var(--telescope-blue)" }}>
                             /{board.name}/
                           </h3>
                           <div className="flex flex-col gap-1 flex-1 min-w-0">
-                            <span className="font-semibold text-sm truncate">
+                            <span className="font-semibold text-[15px] leading-snug truncate">
                               {board.title}
                             </span>
                             <span className="text-xs text-muted-foreground truncate">

@@ -154,7 +154,7 @@ export default function BoardPage() {
         </div>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8">
           <div>
-            <h1 className="text-2xl md:text-4xl font-bold" style={{ color: '#3c688f' }}>/{boardName}/</h1>
+            <h1 className="text-2xl md:text-4xl font-bold" style={{ color: "var(--telescope-blue)" }}>/{boardName}/</h1>
           </div>
         {isConnected && (
           <Button onClick={() => setShowNewThread(!showNewThread)} className="w-full sm:w-auto">

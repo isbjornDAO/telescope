@@ -65,9 +65,25 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   const [config, setConfig] = useState<Config | null>(null);
 
   useEffect(() => {
+    const projectId = env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
+    // No WalletConnect key: offer the injected wallets only, rather than
+    // letting the connector throw and take the whole page down with it.
+    if (!projectId) {
+      setConfig(
+        createConfig({
+          chains: [avalanche, avalancheFuji],
+          transports: {
+            [avalanche.id]: http("https://avalanche-c-chain-rpc.publicnode.com"),
+            [avalancheFuji.id]: http("https://avalanche-fuji-c-chain-rpc.publicnode.com"),
+          },
+          storage,
+        })
+      );
+      return;
+    }
     const config = getDefaultConfig({
       appName: siteConfig.name,
-      projectId: env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? "",
+      projectId,
       wallets: [
         {
           groupName: "Most used",

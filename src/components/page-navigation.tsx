@@ -5,7 +5,13 @@ import { usePathname } from "next/navigation";
 import { MessageSquare, Trophy, Calendar, Gift } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/** The whole site: four tabs. */
+/**
+ * The whole site: four tabs.
+ *
+ * Set as words, not icons. An icon asks the reader to guess; a word answers.
+ * The icons stay in the object because the mobile drawer uses them, where a
+ * glyph beside a label helps the eye scan a vertical list.
+ */
 export const TABS = [
   { href: "/", label: "Forum", icon: MessageSquare, match: (p: string) => p === "/" || p.startsWith("/forum") },
   { href: "/tournaments", label: "Tournaments", icon: Trophy, match: (p: string) => p.startsWith("/tournaments") || p.startsWith("/entries") || p.startsWith("/rounds") },
@@ -16,24 +22,30 @@ export const TABS = [
 export function PageNavigation() {
   const pathname = usePathname() ?? "/";
   return (
-    <div className="flex gap-1 sm:gap-3 mb-8 relative z-30">
-      {TABS.map(({ href, label, icon: Icon, match }) => {
+    <nav className="flex items-center gap-5 sm:gap-7 mb-6 relative z-30 border-b border-zinc-300/70 dark:border-zinc-700">
+      {TABS.map(({ href, label, match }) => {
         const active = match(pathname);
         return (
-          <Link key={href} href={href}>
-            <button
-              className={cn(
-                "px-3 sm:px-4 py-2.5 sm:py-3 border-2 rounded-xl transition-colors flex items-center gap-1.5 sm:gap-2",
-                "bg-white dark:bg-zinc-800 border-white dark:border-zinc-700",
-                active ? "shadow text-foreground" : "hover:bg-zinc-50 dark:hover:bg-zinc-700 text-muted-foreground"
-              )}
-            >
-              <Icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-              <span className="text-sm sm:text-base font-semibold">{label}</span>
-            </button>
+          <Link
+            key={href}
+            href={href}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "relative -mb-px pb-2.5 pt-1 text-[15px] sm:text-base transition-colors",
+              active
+                ? "font-semibold text-foreground"
+                : "font-medium text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {label}
+            {/* The current tab is marked by a rule under the word itself, so the
+                label carries the state instead of a box drawn around it. */}
+            {active && (
+              <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-[var(--telescope-blue)]" />
+            )}
           </Link>
         );
       })}
-    </div>
+    </nav>
   );
 }
