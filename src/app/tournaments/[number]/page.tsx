@@ -33,7 +33,7 @@ export default function SeasonPage() {
                 <p className="text-sm text-muted-foreground mt-1"><b className="text-foreground">Research question:</b> {data.researchQuestion}</p>
                 <p className="text-xs text-muted-foreground mt-1">Submissions close {fmtDateTime(data.submissionsClose)} · finals {fmtDate(data.endsAt)} · retention check {fmtDate(data.retentionCheckAt)}{data.poolAmount ? ` · pool ${data.poolAmount} (sponsor funded, Isbjorn takes nothing)` : ""}</p>
               </div>
-              {data.phase === "building" && <Link href={`/seasons/${data.number}/enter`}><Button className="snow-button">Enter a tournament</Button></Link>}
+              {data.phase === "building" && <Link href={`/tournaments/${data.number}/enter`}><Button className="snow-button">Enter a tournament</Button></Link>}
             </div>
             <div className="mt-4"><SeasonStrip week={data.week} weeks={data.weeks} phase={data.phase} /></div>
           </Frost>
@@ -55,7 +55,7 @@ export default function SeasonPage() {
             <TabsContent value="gtm" className="space-y-4 mt-4">
               <Frost>
                 <SectionTitle>The bracket</SectionTitle>
-                <p className="text-xs text-muted-foreground mb-3">Threshold, not rank. A round advances everyone above the line or, if fewer than two clear it, the top two. Elders and Anchors carry more weight, capped at 40% of any round. Faction self-votes count half. Ballots are encrypted; tallies are public with a hash commitment.</p>
+                <p className="text-xs text-muted-foreground mb-3">Everyone above the line advances. Votes are private, the tally is public.</p>
                 <Bracket rounds={data.rounds} entries={data.entries.filter((e) => e.tournament === "GTM")} />
               </Frost>
               <EntryList entries={data.entries.filter((e) => e.tournament === "GTM")} empty="No products entered yet. Crews are the unit that enters GTM." />
@@ -64,7 +64,7 @@ export default function SeasonPage() {
             <TabsContent value="ls" className="space-y-4 mt-4">
               <Frost>
                 <SectionTitle>The panel</SectionTitle>
-                <p className="text-xs text-muted-foreground mb-2">Published before submissions open. Panelists recuse from their own region and faction. Advance on ≥60% approval; the final is ranked by score.</p>
+                <p className="text-xs text-muted-foreground mb-2">Judged by a published panel. Advance on 60% approval.</p>
                 {data.panel.length === 0 ? <Empty>Panel not yet published.</Empty> : <div className="flex flex-wrap gap-2">{data.panel.map((p) => <span key={p.name} className="text-xs rounded-full border px-2 py-0.5">{p.handle ? <Link href={`/profile/${p.handle}`} className="hover:underline">{p.name}</Link> : p.name}{p.region ? <span className="text-muted-foreground"> · {p.region.name}</span> : null}</span>)}</div>}
                 <RoundList rounds={data.rounds.filter((r) => r.tournament === "LOCAL_SYSTEMS")} />
               </Frost>
@@ -74,7 +74,7 @@ export default function SeasonPage() {
             <TabsContent value="rp" className="space-y-4 mt-4">
               <Frost>
                 <SectionTitle>Blind review</SectionTitle>
-                <p className="text-xs text-muted-foreground mb-2">Submissions are private. Reviewers see the paper, not the author. Three reviewers score advances / rigour / buildable 1–10; advance on mean ≥7. Finalists get five. Pool size: {data.reviewerPoolSize}.</p>
+                <p className="text-xs text-muted-foreground mb-2">Private until the end. Reviewers see the paper, not the author.</p>
                 <RoundList rounds={data.rounds.filter((r) => r.tournament === "RESEARCH_PAPERS")} />
               </Frost>
               <EntryList entries={data.entries.filter((e) => e.tournament === "RESEARCH_PAPERS")} empty="No papers yet. Winning papers become next season's Local Systems briefs." />
@@ -83,9 +83,9 @@ export default function SeasonPage() {
             <TabsContent value="alliances" className="mt-4">
               <Frost>
                 <SectionTitle>Registered alliances</SectionTitle>
-                <p className="text-xs text-muted-foreground mb-2">Factions that can only compete turn tribal. Alliances pool Local Systems and Research Papers entries and share standing by terms set in advance. Not for GTM. Allied factions are treated as one for self-vote weighting.</p>
+                <p className="text-xs text-muted-foreground mb-2">Teams can enter together and share what they win.</p>
                 {data.alliances.length === 0 && <Empty>None this season.</Empty>}
-                <ul className="text-sm space-y-1">{data.alliances.map((a) => <li key={a.id}><b>{a.name}</b>: {a.factions.map((f, i) => <span key={f.slug}>{i > 0 ? " + " : ""}<Link href={`/factions/${f.slug}`} className="hover:underline">{f.name}</Link></span>)}</li>)}</ul>
+                <ul className="text-sm space-y-1">{data.alliances.map((a) => <li key={a.id}><b>{a.name}</b>: {a.factions.map((f, i) => <span key={f.slug}>{i > 0 ? " + " : ""}{f.name}</span>)}</li>)}</ul>
               </Frost>
             </TabsContent>
           </Tabs>

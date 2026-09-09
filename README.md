@@ -1,69 +1,26 @@
-# Telescope Platform Documentation
+# Telescope
 
-Telescope is a world, not a social network. Start with [`docs/README.md`](docs/README.md) (World Rules v0.1) and [`docs/build-decisions.md`](docs/build-decisions.md). `CLAUDE.md` maps the world code.
+Four tabs: **Forum**, **Tournaments**, **Calendar**, **Shop**. You land on the
+forum and start talking.
 
-## The world in one paragraph
+Tournament rules and the reasoning behind them live in [`docs/`](docs/README.md).
+`CLAUDE.md` maps the code.
 
-Every person has a profile and a scout. People form crews; crews form factions. Trust is a graph of vouches anchored in rooms, and every vouch is a stake. Twice a year a season runs three tournaments: Local Systems (panel of Elders), Research Papers (blind review), GTM (community vote weighted by trust). What you win is standing.
-
-## World quickstart
+## Quickstart
 
 ```bash
 npm install
-npx prisma db push            # new world models
-npm run seed:world            # Team1 regions on the Arctic map
-SEED_SEASON=1 SEASON_START=2026-10-05 npm run seed:world   # optional: Winter I
+npx prisma db push     # first run, or after a schema change
+npm run seed:world     # optional: seeds tournament regions
 npm run dev
 ```
 
-- Set `WORLD_ADMIN_ADDRESSES` in `.env` to reach `/world-admin` (seed Elders and Anchors, create regions and seasons).
-- The nightly heartbeat is `GET /api/world/jobs/tick` (Vercel cron in `vercel.json`, protected by `CRON_SECRET`).
-- Tests: `npm test` (trust score, voting, retention, scout).
+The site builds with no environment variables at all; a missing key just
+switches that feature off. For a working deployment set `DATABASE_URL`,
+`NEXTAUTH_SECRET` and `WORLD_ENCRYPTION_KEY`. See `.env.example`.
 
-## Development Setup
-
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-2. **Set up environment variables:**
-   Create `.env` file in the root directory with:
-   ```plaintext
-   DATABASE_URL="mongodb+srv://<username>:<password>@cluster.xxxxx.mongodb.net/database_name?retryWrites=true&w=majority"
-   DISCORD_CLIENT_ID=your_discord_client_id
-   DISCORD_CLIENT_SECRET=your_discord_client_secret
-   DISCORD_BOT_TOKEN=your_discord_bot_token
-   NEXTAUTH_SECRET=your_nextauth_secret
-   NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_wc_project_id
-   ```
-
-3. **Database setup:**
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   ```
-
-### Environment Variables Generation
-
-1. **Generate NextAuth secret:**
-   ```bash
-   openssl rand -base64 32
-   ```
-
-2. **Get Discord credentials:**
-   - Create application at [Discord Developer Portal](https://discord.com/developers/applications)
-   - Add redirect URI: `http://localhost:3000/api/auth/callback/discord`
-
-3. **WalletConnect Project ID:**
-   - Create project at [WalletConnect Cloud](https://cloud.walletconnect.com)
-   - Use the project ID in your `.env`
-
-4. **MongoDB connection:**
-   - Create free cluster at [MongoDB Atlas](https://www.mongodb.com/atlas)
-   - Whitelist IP `0.0.0.0/0` (temporarily for development)
-   - Get connection string from "Connect" button
-   - PD: Ask for access for production connection string
+Tests: `npm test`. Nightly job: `GET /api/world/jobs/tick`, protected by
+`CRON_SECRET`, scheduled in `vercel.json`.
 
 ## Data Import Formats
 

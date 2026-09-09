@@ -54,17 +54,13 @@ export const POST = handle(async (req: NextRequest) => {
     factionId = crew.factionId ?? factionId;
   }
 
+  // Entering is deliberately easy: a name, a line about it, and a link for
+  // built things. Everything else can be filled in while the season runs.
   if (tournament === "GTM") {
-    if (!crewId) throw new WorldError("Crews are the unit that enters GTM. Form or join one.", 422);
-    if (!body.url || !body.deployedOn) throw new WorldError("GTM entries are working products: give the live URL and where it is deployed.", 422);
-    if (!body.meaningfulTxDefinition) throw new WorldError("Define what counts as a meaningful transaction for your product. Retention is measured on it.", 422);
-    if (!body.roadmap || body.roadmap.length === 0) throw new WorldError("Publish a roadmap. Judging is six weeks of visible building.", 422);
-    if (body.allianceId && PROPOSALS.alliancesCannotPoolGtm) throw new WorldError("Alliances cannot pool for GTM. A clear single Victor matters.", 422);
+    if (!body.url) throw new WorldError("Add a link to what you built.", 422);
+    if (body.allianceId && PROPOSALS.alliancesCannotPoolGtm) throw new WorldError("Teams enter this one separately.", 422);
   }
-  if (tournament === "LOCAL_SYSTEMS" && !body.ethicsStatement) {
-    throw new WorldError("Local Systems entries answer the ethics questions directly: who it serves, who it could harm, what happens when it fails, who holds power.", 422);
-  }
-  if (tournament === "RESEARCH_PAPERS" && !body.body) throw new WorldError("A research paper needs its text.", 422);
+  if (tournament === "RESEARCH_PAPERS" && !body.body) throw new WorldError("Paste the text of your paper.", 422);
 
   let regionId: string | undefined;
   if (body.regionSlug) {

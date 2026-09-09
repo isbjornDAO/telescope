@@ -26,7 +26,7 @@ export default function RoundPage() {
       {data && (
         <div className="space-y-6">
           <Frost>
-            <div className="text-[11px] uppercase tracking-wider text-sky-600 dark:text-sky-300 font-semibold"><Link href={`/seasons/${data.season.number}`} className="hover:underline">{data.season.name}</Link> · {data.tournament} · round {data.index}</div>
+            <div className="text-[11px] uppercase tracking-wider text-sky-600 dark:text-sky-300 font-semibold"><Link href={`/tournaments/${data.season.number}`} className="hover:underline">{data.season.name}</Link> · {data.tournament} · round {data.index}</div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{data.name}</h1>
             <p className="text-sm text-muted-foreground mt-1">Advance if ≥ {Math.round(data.threshold * 100)}% of weighted votes cast{data.threshold >= 0.5 ? " (majority)" : ""} · {fmtDateTime(data.opensAt)} → {fmtDateTime(data.closesAt)} · <span className="capitalize">{data.status.toLowerCase()}</span> · {data.ballotCount} ballots</p>
             {data.status === "CLOSED" && (

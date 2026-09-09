@@ -30,7 +30,7 @@ export default function EntryPage() {
       {data && (
         <div className="space-y-6">
           <Frost>
-            <div className="flex items-center gap-2 flex-wrap mb-2"><TournamentBadge tournament={data.tournament} /><StatusBadge status={data.status} /><Link href={`/seasons/${data.season.number}`} className="text-xs text-muted-foreground hover:underline">{data.season.name}</Link></div>
+            <div className="flex items-center gap-2 flex-wrap mb-2"><TournamentBadge tournament={data.tournament} /><StatusBadge status={data.status} /><Link href={`/tournaments/${data.season.number}`} className="text-xs text-muted-foreground hover:underline">{data.season.name}</Link></div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{data.isVictor ? "👑 " : ""}{data.title}</h1>
             {data.blind ? (
               <p className="text-sm text-muted-foreground mt-2">Research papers are private. Authorship is revealed when the season closes, unless the author chose to stay pseudonymous.</p>
@@ -38,9 +38,9 @@ export default function EntryPage() {
               <>
                 <p className="text-sm mt-2">{data.summary}</p>
                 <div className="text-xs text-muted-foreground mt-2 flex flex-wrap gap-x-3">
-                  {data.crew && <span>crew <Link href={`/crews/${data.crew.slug}`} className="hover:underline font-medium">{data.crew.name}</Link>{data.crew.region ? ` (${data.crew.region.name})` : ""}</span>}
-                  {data.faction && <span>faction <Link href={`/factions/${data.faction.slug}`} className="hover:underline font-medium">{data.faction.name}</Link></span>}
-                  {data.region && <span>serves <Link href={`/regions/${data.region.slug}`} className="hover:underline font-medium">{data.region.name}</Link></span>}
+                  {data.crew && <span>crew <b>{data.crew.name}</b>{data.crew.region ? ` (${data.crew.region.name})` : ""}</span>}
+                  {data.faction && <span>team <b>{data.faction.name}</b></span>}
+                  {data.region && <span>serves <b>{data.region.name}</b></span>}
                   {data.author && <span>by {data.author}</span>}
                   {data.deployedOn && <span>on {data.deployedOn}</span>}
                   {typeof data.finalScore === "number" && <span>final {Math.round(data.finalScore * 100) / 100}</span>}

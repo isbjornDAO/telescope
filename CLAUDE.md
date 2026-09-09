@@ -1,6 +1,13 @@
 # Telescope
 
-Telescope is a world, not a social network. Read `docs/README.md` first, then `docs/build-decisions.md`. Every feature is subordinate to safety, security, privacy and pseudonymity (`docs/principles.md`).
+Four tabs, nothing else: **Forum**, **Tournaments**, **Calendar**, **Shop**.
+
+You land on the forum and start talking. No onboarding, no preamble. Keep it
+that way: if a change adds a step before someone can post or enter, it is the
+wrong change.
+
+Background on the tournament rules lives in `docs/`. Read it when you touch
+scoring or voting; you do not need it for anything else.
 
 ## Stack
 
@@ -9,27 +16,32 @@ Telescope is a world, not a social network. Read `docs/README.md` first, then `d
 - wagmi + RainbowKit for wallets (Avalanche C-Chain). next-auth for Discord.
 - Tests: Jest (`npm test`), files under `src/__tests__/*.test.ts`.
 
-## World code map
+## Where things are
 
-- `src/lib/world/config.ts` — every tunable number from build decisions §6. Change numbers here only.
-- `src/lib/world/trust.ts` — trust score formula, vouch budgets, slashing. Pure functions + `recomputeTrustScores()`.
-- `src/lib/world/voting.ts` — voter weight, E+A cap, self-vote, thresholds, bracket advancement.
-- `src/lib/world/retention.ts` — 90-day retention and vesting bands.
-- `src/lib/world/scout.ts` — scout protocol (INTENT → DISCLOSE), budgets, rate limits.
-- `src/lib/world/session.ts` — signed wallet session for world actions (sign once, cookie).
-- `src/lib/world/crypto.ts` — AES-GCM at rest for ballots and disclosures; commitments.
-- `src/app/api/world/**` — all world API routes. Privacy rules are enforced here, never in the client.
-- `src/app/(pages)` — `/`, `/seasons`, `/scout`, `/crews`, `/factions`, `/regions`, `/trust`, `/elders`, `/admin/world`.
+- `src/components/page-navigation.tsx` — `TABS` is the single source of truth for navigation. The navbar reads it too.
+- `src/app/page.tsx` — the forum. The landing page and `/forum` render the same thing.
+- `src/app/tournaments/` — seasons, brackets, entries.
+- `src/app/calendar/`, `src/app/shop/` — unchanged legacy surfaces.
+- `src/lib/world/config.ts` — every tunable number for tournaments. Change numbers here only.
+- `src/lib/world/{trust,voting,retention,scout}.ts` — scoring engines, pure functions with tests.
+- `src/app/api/world/**` — API. Privacy rules are enforced here, never in the client.
+- `archive/` — pages and components no longer linked. Excluded from typecheck. Kept so nothing is lost, deleted freely when clearly dead.
 
 ## Rules for changes
 
-- Never expose who vouched for whom unless both parties set visibility. Return aggregates and proofs.
-- Never expose an individual ballot. Tallies only, with a hash commitment.
-- Research Papers entries are blind to reviewers: strip author, crew, faction, region server-side.
-- A scout never discloses identifying data before mutual ACCEPT.
-- Anything marked **(proposal)** in the docs ships behind a flag in `config.ts`.
-- Parked legacy surfaces (radio, shop, artists, collectables) stay in the tree but are unlinked from navigation.
+- Nothing is required to *build* the site. A missing key switches its feature
+  off (`featureFlags` in `src/env.ts`); it never fails a deploy. The exception
+  is encryption: `src/lib/world/crypto.ts` refuses a fallback key in production.
+- Any route touching the database declares `dynamic = "force-dynamic"`, or Next
+  will run it at build time. One of them used to delete every forum board.
+- Never expose who vouched for whom, or an individual ballot. Aggregates and
+  hash-committed tallies only.
+- Research paper entries are blind to reviewers: strip author, crew, faction
+  and region server-side.
+- Adding a fifth tab is a product decision, not a cleanup. Ask first.
 
 ## Env
 
-See `.env.example`. World-specific: `WORLD_ENCRYPTION_KEY`, `CRON_SECRET`, `SCOUT_TREASURY_ADDRESS`, `BUILDERS_HUB_API_URL`, `BUILDERS_HUB_API_KEY`.
+See `.env.example`. All optional for building. For a working deployment:
+`DATABASE_URL`, `NEXTAUTH_SECRET`, `WORLD_ENCRYPTION_KEY`, `CRON_SECRET`,
+`WORLD_ADMIN_ADDRESSES`, and the Discord keys if you want Discord sign-in.
