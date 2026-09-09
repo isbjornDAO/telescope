@@ -83,10 +83,8 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Web3Provider>
             <div className="flex flex-col min-h-screen">
-              <div className="bg">
-                <Toaster />
-                <Navbar />
-              </div>
+              <Toaster />
+              <Navbar />
               <main className="flex-1">{children}</main>
               <Footer />
             </div>

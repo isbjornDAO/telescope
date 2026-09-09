@@ -7,51 +7,75 @@ import { cn } from "@/lib/utils";
 import { PageNavigation } from "@/components/page-navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/** Standard page container under the polar-bear header. */
-export function WorldPage({ title, subtitle, actions, children, wide }: { title?: ReactNode; subtitle?: ReactNode; actions?: ReactNode; children: ReactNode; wide?: boolean }) {
+/** Standard page container under the header. Wide gutters, quiet air. */
+export function WorldPage({ title, subtitle, actions, children, wide, nav = true }: { title?: ReactNode; subtitle?: ReactNode; actions?: ReactNode; children: ReactNode; wide?: boolean; nav?: boolean }) {
   return (
-    <div className={cn("w-full mx-auto -mt-6 px-4 md:px-8 relative z-10 mb-16", wide ? "max-w-screen-xl" : "max-w-screen-lg")}>
-      <PageNavigation />
+    <div className={cn("w-full mx-auto px-5 sm:px-8 lg:px-10 relative z-10 pt-2 pb-24", wide ? "max-w-[1400px]" : "max-w-5xl")}>
+      {nav && <PageNavigation />}
       {(title || actions) && (
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
-          <div>
-            {title && <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{title}</h1>}
-            {subtitle && <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{subtitle}</p>}
+        <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+          <div className="max-w-2xl">
+            {title && <h1 className="text-3xl md:text-[2.5rem] font-semibold tracking-tight">{title}</h1>}
+            {subtitle && <p className="text-[15px] leading-relaxed text-muted-foreground mt-3 text-pretty">{subtitle}</p>}
           </div>
           {actions && <div className="flex items-center gap-2 flex-wrap">{actions}</div>}
-        </div>
+        </header>
       )}
       {children}
     </div>
   );
 }
 
+/** Flat panel. Kept under the old name so every page keeps working. */
 export function Frost({ className, children, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("frost rounded-xl p-4 md:p-6", className)} {...rest}>
+    <div className={cn("panel p-6 md:p-8", className)} {...rest}>
       {children}
     </div>
   );
 }
 
-export function SectionTitle({ icon, children, right }: { icon?: ReactNode; children: ReactNode; right?: ReactNode }) {
+export const Panel = Frost;
+
+/** A section with no box around it: air does the separating. */
+export function Section({ className, children, ...rest }: React.HTMLAttributes<HTMLElement>) {
   return (
-    <div className="flex items-center justify-between mb-3">
-      <h2 className="text-lg font-semibold flex items-center gap-2">
-        {icon}
-        {children}
-      </h2>
-      {right}
+    <section className={cn("space-y-5", className)} {...rest}>
+      {children}
+    </section>
+  );
+}
+
+export function SectionTitle({ icon, children, right, description }: { icon?: ReactNode; children: ReactNode; right?: ReactNode; description?: ReactNode }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 mb-5">
+      <div className="min-w-0">
+        <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-2">
+          {icon}
+          {children}
+        </h2>
+        {description && <p className="text-sm text-muted-foreground mt-2">{description}</p>}
+      </div>
+      {right && <div className="shrink-0 text-sm">{right}</div>}
     </div>
+  );
+}
+
+/** Quiet inline link, used for the "all X" affordance beside a section title. */
+export function MoreLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link href={href} className="text-[13px] font-medium ink-accent hover:underline underline-offset-4">
+      {children}
+    </Link>
   );
 }
 
 export function Stat({ label, value, hint, className }: { label: string; value: ReactNode; hint?: ReactNode; className?: string }) {
   return (
-    <div className={cn("frost rounded-xl px-4 py-3", className)}>
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="text-2xl font-bold leading-tight mt-0.5 tabular-nums">{value}</div>
-      {hint && <div className="text-xs text-muted-foreground mt-0.5">{hint}</div>}
+    <div className={cn("py-1", className)}>
+      <div className="text-3xl font-semibold leading-none tabular-nums tracking-tight">{value}</div>
+      <div className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground mt-2">{label}</div>
+      {hint && <div className="text-xs text-muted-foreground mt-1">{hint}</div>}
     </div>
   );
 }
@@ -95,12 +119,12 @@ export function SeasonStrip({ week, weeks = 6, phase }: { week: number; weeks?: 
   const labels = ["0 · announce", "1", "2", "3", "4", "5 · voting", "6 · finals"];
   return (
     <div>
-      <div className="flex gap-1">
+      <div className="flex gap-1.5">
         {Array.from({ length: weeks + 1 }).map((_, i) => (
-          <div key={i} className={cn("h-2 flex-1 rounded-full transition-colors", i < week ? "bg-sky-500" : i === week ? "bg-sky-300 animate-pulse" : "bg-zinc-200 dark:bg-zinc-700")} title={`Week ${labels[i] ?? i}`} />
+          <div key={i} className={cn("h-1 flex-1 rounded-full transition-colors", i < week ? "bg-sky-500" : i === week ? "bg-sky-400" : "bg-[var(--surface-border)]")} title={`Week ${labels[i] ?? i}`} />
         ))}
       </div>
-      <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+      <div className="flex justify-between text-[10px] text-muted-foreground mt-2.5">
         <span>week 0 · theme announced</span>
         <span className="capitalize">{phase}</span>
         <span>week 6 · Victor named</span>
@@ -111,18 +135,18 @@ export function SeasonStrip({ week, weeks = 6, phase }: { week: number; weeks?: 
 
 export function Empty({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
-    <div className="rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 p-8 text-center text-sm text-muted-foreground">
-      <p>{children}</p>
-      {action && <div className="mt-3">{action}</div>}
+    <div className="rounded-xl border border-dashed border-[var(--surface-border)] px-6 py-10 text-center text-sm leading-relaxed text-muted-foreground text-pretty">
+      <p className="max-w-md mx-auto">{children}</p>
+      {action && <div className="mt-5">{action}</div>}
     </div>
   );
 }
 
 export function LoadingBlock({ lines = 3 }: { lines?: number }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {Array.from({ length: lines }).map((_, i) => (
-        <Skeleton key={i} className="h-6 w-full" />
+        <Skeleton key={i} className="h-7 w-full rounded-lg" />
       ))}
     </div>
   );
@@ -130,7 +154,7 @@ export function LoadingBlock({ lines = 3 }: { lines?: number }) {
 
 export function ErrorBlock({ error }: { error: unknown }) {
   const message = error instanceof Error ? error.message : "Something broke in the world.";
-  return <div className="rounded-xl border border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-900 p-4 text-sm text-red-800 dark:text-red-200">{message}</div>;
+  return <div className="rounded-xl border border-red-200/70 bg-red-50 dark:bg-red-950/25 dark:border-red-900/60 px-5 py-4 text-sm text-red-800 dark:text-red-200">{message}</div>;
 }
 
 export function NameLink({ handle, name, className }: { handle?: string | null; name: string; className?: string }) {
