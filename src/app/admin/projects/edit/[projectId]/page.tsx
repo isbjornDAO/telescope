@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useParams } from "next/navigation";
 import { ProjectForm } from "@/components/admin/ProjectForm";
-import { isAdmin } from "@/lib/auth";
+import { AdminWrapper } from "@/components/admin/AdminWrapper";
 
 interface Project {
   id: string;
@@ -24,19 +23,9 @@ interface Project {
 
 export default function EditProjectPage() {
   const params = useParams();
-  const router = useRouter();
-  const { data: session, status } = useSession();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (status === "loading") return;
-
-    if (!session?.discordUser || !isAdmin(session.discordUser.id)) {
-      router.push("/");
-    }
-  }, [session, status, router]);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -47,8 +36,8 @@ export default function EditProjectPage() {
         }
         const data = await response.json();
         setProject(data);
-      } catch (error) {
-        console.error("Error fetching project:", error);
+      } catch (err) {
+        console.error("Error fetching project:", err);
         setError("Failed to load project data");
       } finally {
         setLoading(false);
@@ -58,31 +47,25 @@ export default function EditProjectPage() {
     fetchProject();
   }, [params.projectId]);
 
-  // Show loading state while checking session
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  // Redirect if not admin
-  if (!session?.discordUser || !isAdmin(session.discordUser.id)) {
-    return null;
-  }
-
-  if (loading) {
-    return <div>Loading project data...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-600">{error}</div>;
-  }
-
-  if (!project) {
-    return <div>Project not found</div>;
-  }
-
   return (
-    <div className="container mx-auto py-8">
-      <ProjectForm initialData={project} mode="edit" />
-    </div>
+    <AdminWrapper>
+      <div className="w-full space-y-4 pb-12">
+        {loading ? (
+          <div className="py-12 text-center text-xs text-muted-foreground">
+            Loading project data...
+          </div>
+        ) : error ? (
+          <div className="py-12 text-center text-xs text-red-500">
+            {error}
+          </div>
+        ) : !project ? (
+          <div className="py-12 text-center text-xs text-muted-foreground">
+            Project not found.
+          </div>
+        ) : (
+          <ProjectForm initialData={project} mode="edit" />
+        )}
+      </div>
+    </AdminWrapper>
   );
 }

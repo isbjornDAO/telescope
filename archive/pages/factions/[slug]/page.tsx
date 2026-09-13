@@ -49,7 +49,7 @@ export default function FactionPage() {
                 <div className="text-lg"><Weight value={data.standing} /></div>
                 <div className="text-xs text-muted-foreground">{data.standingBand} ice · treasury {data.treasury}</div>
                 <WorldGate compact>
-                  <div className="mt-2">{data.viewer.isMember ? <Button size="sm" variant="ghost" onClick={() => leave.mutate(undefined)}>Leave</Button> : <Button size="sm" className="snow-button" onClick={() => join.mutate(undefined)} disabled={join.isPending}>Join</Button>}</div>
+                  <div className="mt-2">{data.viewer.isMember ? <Button size="sm" variant="ghost" onClick={() => leave.mutate(undefined)}>Leave</Button> : <Button size="sm" className="retro-btn-blue" onClick={() => join.mutate(undefined)} disabled={join.isPending}>Join</Button>}</div>
                   {(join.error || leave.error) && <p className="text-xs text-red-600 mt-1">{((join.error ?? leave.error) as Error).message}</p>}
                 </WorldGate>
               </div>

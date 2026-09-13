@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PageNavigation } from "@/components/page-navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, CheckCircle, XCircle, AlertCircle } from "lucide-react";
@@ -30,10 +29,7 @@ export default function DebugPage() {
   if (loading) {
     return (
       <div className="w-full">
-        <div className="w-full max-w-screen-lg mx-auto pt-5 px-4 md:px-8 relative z-10 mb-4">
-          <PageNavigation />
-        </div>
-        <div className="w-full max-w-screen-lg mx-auto px-4 md:px-8 pb-16">
+        <div className="w-full max-w-screen-lg mx-auto px-4 md:px-8 pb-16 pt-4">
           <div className="text-center py-16">
             <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4" />
             <p>Loading debug information...</p>
@@ -45,10 +41,7 @@ export default function DebugPage() {
 
   return (
     <div className="w-full">
-      <div className="w-full max-w-screen-lg mx-auto pt-5 px-4 md:px-8 relative z-10 mb-4">
-        <PageNavigation />
-      </div>
-      <div className="w-full max-w-screen-lg mx-auto px-4 md:px-8 pb-16">
+      <div className="w-full max-w-screen-lg mx-auto px-4 md:px-8 pb-16 pt-4">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl md:text-4xl font-bold">
             Discord Bot Debug Info

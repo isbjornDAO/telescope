@@ -6,12 +6,18 @@ import { getWorldSession } from "@/lib/world/session";
 import { voterKey } from "@/lib/world/crypto";
 import { voterBaseWeight } from "@/lib/world/voting";
 import { displayName } from "@/lib/world/privacy";
+import { MOCK_ROUNDS_BY_ID } from "@/lib/world/mock-tournaments";
 
 export const dynamic = "force-dynamic";
 
 export const GET = handle(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const round = await prisma.round.findUnique({ where: { id: params.id }, include: { season: { select: { number: true, name: true } } } });
-  if (!round) throw new WorldError("No such round.", 404);
+  if (!round) {
+    if (MOCK_ROUNDS_BY_ID[params.id]) {
+      return ok(MOCK_ROUNDS_BY_ID[params.id], noStore);
+    }
+    throw new WorldError("No such round.", 404);
+  }
   const entries = await prisma.entry.findMany({
     where: { seasonId: round.seasonId, tournament: round.tournament, status: { in: ["ACTIVE", "FINALIST", "WINNER", "ELIMINATED"] } },
     include: { crew: { select: { name: true, slug: true } }, faction: { select: { name: true, slug: true } }, author: { select: { handle: true, address: true } } },

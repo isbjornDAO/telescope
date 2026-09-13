@@ -11,7 +11,6 @@ import { EVERYONE, serializeAudience, type Audience } from "@/lib/world/audience
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAccount } from "wagmi";
-import { PageNavigation } from "@/components/page-navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface Thread {
@@ -149,35 +148,42 @@ export default function BoardPage() {
 
   return (
     <div className="w-full">
-      <div className="w-full max-w-screen-lg mx-auto pt-5 px-4 md:px-8 relative z-10 mb-4">
-        <PageNavigation />
-      </div>
-      <div className="w-full max-w-screen-lg mx-auto px-4 md:px-8 pb-16">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-          <Link href="/" className="hover:text-primary">Home</Link>
-          <span>›</span>
-          <Link href="/forum" className="hover:text-primary">Forum</Link>
-          <span>›</span>
-          <span className="text-foreground font-medium">/{boardName}/</span>
-        </div>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8">
-          <div>
-            <h1 className="text-2xl md:text-4xl font-bold" style={{ color: "var(--telescope-blue)" }}>/{boardName}/</h1>
+      <div className="w-full pb-16">
+        {/* Retro Board Header Bar */}
+        <div className="retro-topic-header mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="retro-btn retro-btn-gray px-2.5 py-1 text-xs font-semibold inline-flex items-center gap-1"
+            >
+              Home
+            </Link>
+            <span className="text-zinc-400 dark:text-zinc-600">/</span>
+            <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
+              /{boardName}/
+            </span>
           </div>
-        {isConnected && (
-          <Button onClick={() => setShowNewThread(!showNewThread)} className="w-full sm:w-auto">
-            {showNewThread ? "Cancel" : "New Thread"}
-          </Button>
-        )}
-        {!isConnected && (
-          <p className="text-sm text-muted-foreground">
-            Connect wallet to post
-          </p>
-        )}
-      </div>
+
+          <div className="flex items-center gap-2">
+            {isConnected ? (
+              <button
+                onClick={() => setShowNewThread(!showNewThread)}
+                className={`retro-btn px-4 py-1.5 text-xs font-bold uppercase tracking-wider ${
+                  showNewThread ? "retro-btn-gray" : "retro-btn-green"
+                }`}
+              >
+                {showNewThread ? "Cancel" : "New Thread"}
+              </button>
+            ) : (
+              <span className="text-xs text-muted-foreground font-medium">
+                Connect wallet to post
+              </span>
+            )}
+          </div>
+        </div>
 
       {showNewThread && (
-        <Card className="p-4 md:p-6 mb-8">
+        <Card className="p-4 md:p-6 mb-8 retro-box">
           <h2 className="text-lg md:text-xl font-bold mb-4">Create New Thread</h2>
           <div className="space-y-4">
             <Input
@@ -238,13 +244,13 @@ export default function BoardPage() {
                 Stay Anonymous
               </label>
             </div>
-            <Button
+            <button
               onClick={createThread}
               disabled={creating || !comment.trim() || !imageFile}
-              className="w-full"
+              className="retro-btn retro-btn-green w-full py-2.5 text-xs font-bold uppercase tracking-wider disabled:opacity-50 shadow-sm"
             >
               {creating ? "Creating..." : "Create Thread"}
-            </Button>
+            </button>
           </div>
         </Card>
       )}
@@ -252,32 +258,33 @@ export default function BoardPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {threads.map((thread) => (
           <Link key={thread.id} href={`/forum/thread/${thread.id}`}>
-            <div className="hover:opacity-80 transition-opacity cursor-pointer h-full">
-              <div className="p-3 bg-white dark:bg-zinc-900 rounded h-full flex flex-col">
-                {/* Thread Image */}
-                {thread.posts[0]?.imageHash && (
-                  <div className="w-full aspect-square overflow-hidden rounded bg-zinc-100 mb-2">
-                    <img
-                      src={thread.posts[0].imageHash}
-                      alt={thread.subject || 'Thread image'}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
+            <div className="retro-box p-3 hover:shadow-md transition h-full flex flex-col">
+              {/* Thread Image */}
+              {thread.posts[0]?.imageHash && (
+                <div className="w-full aspect-square overflow-hidden rounded bg-zinc-100 mb-2 border border-zinc-200 dark:border-zinc-700">
+                  <img
+                    src={thread.posts[0].imageHash}
+                    alt={thread.subject || 'Thread image'}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
 
-                {/* Thread Info */}
-                <div className="space-y-1">
-                  <h3 className="font-semibold text-xs line-clamp-2 min-h-[2rem]">
+              {/* Thread Info */}
+              <div className="space-y-1 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-bold text-xs line-clamp-2 min-h-[2rem] text-zinc-800 dark:text-zinc-100">
                     {thread.subject || 'No Subject'}
                   </h3>
                   <p className="text-xs text-muted-foreground line-clamp-2">
                     {thread.posts[0]?.comment}
                   </p>
-                  <div className="flex flex-wrap items-center gap-1.5 text-xs pt-1">
-                    {/* text-white here was invisible on the white card it sits on. */}
-                    <span className="truncate text-muted-foreground">{thread.replyCount} replies</span>
-                    {thread.restricted && thread.audienceLabel && <AudienceTag label={thread.audienceLabel} />}
-                  </div>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs pt-2">
+                  <span className="retro-comments-badge text-zinc-700 dark:text-zinc-200">
+                    {thread.replyCount} {thread.replyCount === 1 ? "reply" : "replies"}
+                  </span>
+                  {thread.restricted && thread.audienceLabel && <AudienceTag label={thread.audienceLabel} />}
                 </div>
               </div>
             </div>

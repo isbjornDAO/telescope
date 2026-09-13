@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { PageNavigation } from "@/components/page-navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarIcon, Users, Clock, ExternalLink, Download, Server, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, Plus } from "lucide-react";
@@ -178,10 +177,7 @@ export default function CalendarPage() {
   if (loading) {
     return (
       <div className="w-full">
-        <div className="w-full max-w-screen-lg mx-auto pt-5 px-4 md:px-8 relative z-10 mb-4">
-          <PageNavigation />
-        </div>
-        <div className="w-full max-w-screen-lg mx-auto px-8 pb-8">
+        <div className="w-full max-w-screen-lg mx-auto px-8 pb-8 pt-4">
           <div className="h-12 w-64 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded mb-8" />
           <div className="h-96 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded" />
         </div>
@@ -191,17 +187,15 @@ export default function CalendarPage() {
 
   return (
     <div className="w-full">
-        <div className="w-full max-w-screen-lg mx-auto pt-5 px-4 md:px-8 relative z-10 mb-4">
-          <PageNavigation />
+      <div className="w-full relative z-10 mb-4">
+        {isConnected && !isUserStatsLoading && !userStats?.discordId && (
+          <div className="mb-6">
+            <ConnectDiscordAlert />
+          </div>
+        )}
+      </div>
 
-          {isConnected && !isUserStatsLoading && !userStats?.discordId && (
-            <div className="mb-6">
-              <ConnectDiscordAlert />
-            </div>
-          )}
-        </div>
-
-      <div className="w-full max-w-screen-lg mx-auto px-8 pb-8">
+      <div className="w-full pb-8">
         {/* Today's Events Section */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">

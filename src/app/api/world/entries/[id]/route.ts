@@ -7,6 +7,7 @@ import { getWorldSession, requireWorldUser } from "@/lib/world/session";
 import { isCrewMember } from "@/lib/world/queries";
 import { displayName, publicEntry } from "@/lib/world/privacy";
 import { tallyBlind, tallyPanel } from "@/lib/world/voting";
+import { MOCK_ENTRIES_BY_ID } from "@/lib/world/mock-tournaments";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,12 @@ export const GET = handle(async (req: NextRequest, { params }: { params: { id: s
       retentionReports: { orderBy: { reportedAt: "desc" }, take: 12, select: { activeCount: true, walletCount: true, reportedAt: true } },
     },
   });
-  if (!entry || entry.status === "DRAFT") throw new WorldError("No such entry.", 404);
+  if (!entry || entry.status === "DRAFT") {
+    if (MOCK_ENTRIES_BY_ID[params.id]) {
+      return ok(MOCK_ENTRIES_BY_ID[params.id], noStore);
+    }
+    throw new WorldError("No such entry.", 404);
+  }
   const closed = entry.season.status === "CLOSED" || entry.season.status === "VESTED";
   const session = getWorldSession(req);
   const me = session ? await prisma.user.findFirst({ where: { address: { equals: session.address, mode: "insensitive" } }, select: { id: true } }) : null;

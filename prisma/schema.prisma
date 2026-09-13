@@ -777,6 +777,9 @@ model Thread {
   // The author, so they can always read and narrow their own thread. Never
   // sent to a client that has not proven it owns it.
   ownerAddress String?
+
+  @@index([deleted, bumpedAt])
+  @@index([boardId, deleted, bumpedAt])
 }
 
 model Post {
@@ -793,6 +796,8 @@ model Post {
   // Who may read this post, set by its author. Narrows the thread above it
   // and can never widen it. Null is open.
   audience      Json?
+
+  @@index([threadId, createdAt])
 }
 
 model Reward {

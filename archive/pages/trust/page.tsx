@@ -161,7 +161,7 @@ function GiveVouch({ costs, remaining }: { costs: Record<string, number>; remain
       <div className="text-xs text-muted-foreground">Costs {cost} of your {remaining} remaining budget. If they rug, you lose 20% of what you staked.</div>
       {give.error && <p className="text-xs text-red-600">{(give.error as Error).message}</p>}
       {give.isSuccess && <p className="text-xs text-emerald-600">Staked.</p>}
-      <Button className="snow-button" onClick={() => give.mutate(undefined)} disabled={give.isPending || !to || cost > remaining}>Stake the vouch</Button>
+      <Button className="retro-btn-blue" onClick={() => give.mutate(undefined)} disabled={give.isPending || !to || cost > remaining}>Stake the vouch</Button>
     </div>
   );
 }

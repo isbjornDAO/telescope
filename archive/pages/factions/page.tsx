@@ -44,7 +44,7 @@ function NewFaction() {
   const create = useWorldMutation(async () => { await worldFetch("/api/world/factions", { method: "POST", body: { name, vision, crewSlug } }); setOpen(false); });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button className="snow-button"><Plus className="h-4 w-4 mr-1" /> Found a faction</Button></DialogTrigger>
+      <DialogTrigger asChild><Button className="retro-btn-blue"><Plus className="h-4 w-4 mr-1" /> Found a faction</Button></DialogTrigger>
       <DialogContent>
         <DialogHeader><DialogTitle>Found a faction</DialogTitle></DialogHeader>
         <WorldGate message="Sign in to found a faction.">
@@ -57,7 +57,7 @@ function NewFaction() {
             </div>
             <p className="text-xs text-muted-foreground">One faction per person. Moving between factions happens between seasons, not during.</p>
             {create.error && <p className="text-sm text-red-600">{(create.error as Error).message}</p>}
-            <Button className="snow-button" onClick={() => create.mutate(undefined)} disabled={create.isPending || name.length < 2 || vision.length < 10 || !crewSlug}>Found</Button>
+            <Button className="retro-btn-blue" onClick={() => create.mutate(undefined)} disabled={create.isPending || name.length < 2 || vision.length < 10 || !crewSlug}>Found</Button>
           </div>
         </WorldGate>
       </DialogContent>

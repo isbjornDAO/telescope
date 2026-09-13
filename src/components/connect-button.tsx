@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, LogOut, User } from "lucide-react";
+import { ChevronDown, LogOut, User, Wallet } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAccount, useDisconnect } from "wagmi";
 import { useUserStats } from "@/hooks/use-user-stats";
@@ -75,42 +75,40 @@ export const ConnectButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <Button
+                  <button
                     onClick={openConnectModal}
                     type="button"
-                    className="snow-button"
+                    className="retro-btn-blue"
                   >
-                    Connect Wallet
-                  </Button>
+                    <Wallet className="w-4 h-4 shrink-0" />
+                    <span>Connect Wallet</span>
+                  </button>
                 );
               }
               if (chain.unsupported) {
                 return (
-                  <Button
+                  <button
                     onClick={openChainModal}
-                    variant="destructive"
                     type="button"
+                    className="retro-btn-destructive"
                   >
                     Wrong network
-                  </Button>
+                  </button>
                 );
               }
               return (
                 <div style={{ display: "flex", gap: 12 }}>
                   <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="snow-button w-full justify-between gap-2 hover:text-white"
+                      <button
+                        type="button"
+                        className="retro-btn-blue w-full justify-between gap-2"
                       >
-                        {/* Face and level ride on the button itself. They used
-                            to be one tap away inside the menu, which is an odd
-                            place to keep the two things that say who you are
-                            and how far you have got. */}
-                        <Avatar className="h-6 w-6 flex-shrink-0 ring-1 ring-white/40">
-                          <AvatarImage src={discordUser?.avatar_url} alt="" />
-                          <AvatarFallback className="bg-white/20 text-white">
-                            <User className="h-3.5 w-3.5" />
+                        {/* Face and level ride on the button itself */}
+                        <Avatar className="h-5 w-5 flex-shrink-0 rounded-[3px] ring-1 ring-black/10">
+                          <AvatarImage src={discordUser?.avatar_url} alt="" className="rounded-[3px]" />
+                          <AvatarFallback className="bg-white/30 text-white text-[10px] font-bold rounded-[3px]">
+                            <User className="h-3 w-3" />
                           </AvatarFallback>
                         </Avatar>
                         {/* The name is the first thing to go when the header
@@ -119,15 +117,15 @@ export const ConnectButton = () => {
                         <span className="hidden sm:inline max-w-[9rem] truncate">
                           {discordUser?.username || userStats?.username || userStats?.discordId || account.displayName}
                         </span>
-                        <span className="flex-shrink-0 rounded-md bg-white/20 px-1.5 py-0.5 text-xs font-semibold tabular-nums">
+                        <span className="flex-shrink-0 rounded bg-black/10 px-1.5 py-0.5 text-[10px] font-bold tabular-nums">
                           Lv {account.level}
                         </span>
                         <ChevronDown
-                          className={`h-4 w-4 flex-shrink-0 transition-transform ${
+                          className={`h-3.5 w-3.5 flex-shrink-0 transition-transform ${
                             isOpen ? "rotate-180" : ""
                           }`}
                         />
-                      </Button>
+                      </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                       <DropdownMenuItem className="flex flex-col items-start">

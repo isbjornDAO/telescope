@@ -55,9 +55,11 @@ export function MintCounter({
     return (
         <div className="flex items-center space-x-2 mb-[1px]">
             <button
+                type="button"
                 onClick={handleDecrement}
                 disabled={value <= effectiveMin || max === 0}
-                className="w-8 h-8 flex items-center justify-center rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="retro-btn-secondary !w-8 !h-8 !p-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Decrease amount"
             >
                 <Minus className="w-4 h-4" />
             </button>
@@ -73,9 +75,11 @@ export function MintCounter({
             />
 
             <button
+                type="button"
                 onClick={handleIncrement}
                 disabled={value >= max || max === 0}
-                className="w-8 h-8 flex items-center justify-center rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="retro-btn-secondary !w-8 !h-8 !p-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Increase amount"
             >
                 <Plus className="w-4 h-4" />
             </button>

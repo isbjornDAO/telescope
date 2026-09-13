@@ -83,7 +83,7 @@ export function DonateModal() {
   return (
     <Credenza>
       <CredenzaTrigger asChild>
-        <button className="flex items-center gap-2 bg-white dark:bg-zinc-800 rounded-lg px-4 py-2 h-9 shadow hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
+        <button className="retro-btn-secondary !w-auto !px-3 gap-2">
           <Coffee className="h-4 w-4" />
           <span className="mobile-menu-text">Donate</span>
         </button>
@@ -123,8 +123,13 @@ export function DonateModal() {
                   {presetAmounts.map((preset) => (
                     <button
                       key={preset}
+                      type="button"
                       onClick={() => setAmount(preset)}
-                      className="flex-1 px-3 py-1.5 text-sm bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-600 rounded-lg transition-colors"
+                      className={`flex-1 !h-8 text-xs font-semibold ${
+                        amount === preset
+                          ? "retro-btn-blue"
+                          : "retro-btn-secondary"
+                      }`}
                     >
                       {preset}
                     </button>
@@ -134,7 +139,7 @@ export function DonateModal() {
                 <button
                   onClick={handleDonate}
                   disabled={!amount || isPending || isConfirming}
-                  className="w-full snow-button disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full retro-btn-blue disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isPending ? "Confirming..." : isConfirming ? "Sending..." : `Send ${amount || "0"} AVAX`}
                 </button>

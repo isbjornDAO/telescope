@@ -4,14 +4,12 @@ import Link from "next/link";
 import { type ReactNode } from "react";
 import { Anchor, Crown, Snowflake, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PageNavigation } from "@/components/page-navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/** Standard page container under the polar-bear header. */
+/** Standard page container under the retro header. */
 export function WorldPage({ title, subtitle, actions, children, wide }: { title?: ReactNode; subtitle?: ReactNode; actions?: ReactNode; children: ReactNode; wide?: boolean }) {
   return (
-    <div className={cn("w-full mx-auto pt-5 px-4 md:px-8 relative z-10 mb-16", wide ? "max-w-screen-xl" : "max-w-screen-lg")}>
-      <PageNavigation />
+    <div className={cn("w-full mx-auto relative z-10 mb-8", wide ? "max-w-screen-xl" : "max-w-screen-lg")}>
       {(title || actions) && (
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
           <div>
@@ -30,6 +28,41 @@ export function Frost({ className, children, ...rest }: React.HTMLAttributes<HTM
   return (
     <div className={cn("frost rounded-xl p-4 md:p-6", className)} {...rest}>
       {children}
+    </div>
+  );
+}
+
+export function RetroBox({
+  title,
+  icon,
+  iconColor = "blue",
+  actions,
+  children,
+  className,
+  contentClassName,
+}: {
+  title?: ReactNode;
+  icon?: ReactNode;
+  iconColor?: "blue" | "green" | "purple" | "rose" | "gold" | "slate";
+  actions?: ReactNode;
+  children: ReactNode;
+  className?: string;
+  contentClassName?: string;
+}) {
+  return (
+    <div className={cn("retro-box", className)}>
+      {title && (
+        <div className="retro-box-title justify-between pr-3">
+          <div className="flex items-center min-w-0">
+            {icon && <div className={cn("retro-box-icon", iconColor)}>{icon}</div>}
+            <span className="font-bold text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 px-3 uppercase tracking-wider truncate">
+              {title}
+            </span>
+          </div>
+          {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
+        </div>
+      )}
+      <div className={cn("p-4", contentClassName)}>{children}</div>
     </div>
   );
 }

@@ -1,10 +1,8 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAccount } from "wagmi";
+import { Lock, Unlock, RefreshCw } from "lucide-react";
 
 export function VoteLockSwitch() {
   const [isLocked, setIsLocked] = useState(false);
@@ -69,22 +67,52 @@ export function VoteLockSwitch() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Vote Lock Settings</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center space-x-4">
-          <Switch
-            checked={isLocked}
-            onCheckedChange={handleToggle}
-            disabled={isLoading}
-          />
-          <span className="text-sm font-medium">
-            {isLocked ? "Voting is locked" : "Voting is unlocked"}
-          </span>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-white/70 dark:bg-zinc-800/40">
+      <div className="flex items-start sm:items-center gap-3">
+        <div
+          className={`p-2 rounded-md shrink-0 ${
+            isLocked
+              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+              : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+          }`}
+        >
+          {isLoading ? (
+            <RefreshCw className="h-4 w-4 animate-spin" />
+          ) : isLocked ? (
+            <Lock className="h-4 w-4" />
+          ) : (
+            <Unlock className="h-4 w-4" />
+          )}
         </div>
-      </CardContent>
-    </Card>
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              Global Vote Lock
+            </span>
+            <span
+              className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded border ${
+                isLocked
+                  ? "bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300"
+                  : "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
+              }`}
+            >
+              {isLocked ? "Locked" : "Active"}
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {isLocked
+              ? "Ballot voting and project votes are currently frozen platform-wide."
+              : "Voting is active for all community members."}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center self-end sm:self-auto gap-2 shrink-0">
+        <Switch
+          checked={isLocked}
+          onCheckedChange={handleToggle}
+          disabled={isLoading}
+        />
+      </div>
+    </div>
   );
 }

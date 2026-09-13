@@ -274,7 +274,7 @@ export function MintWindow() {
                     <span className="text-zinc-500 text-xs mb-2">2 Avax ea.</span>
                     {isConnected
                         ? (<Button
-                            className="flex snow-button max-w-[150px] items-center justify-center relative min-h-[36px]"
+                            className="flex retro-btn-blue max-w-[150px] items-center justify-center relative min-h-[36px]"
                             disabled={isMintPending || isConfirming || maxAllowedToMint === 0 || numMinted === MAX_SUPPLY}
                             onClick={handleMint}>
                             <div className="flex items-center justify-center w-full h-full">

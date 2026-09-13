@@ -85,7 +85,7 @@ function NewEvent({ slug }: { slug: string }) {
       <div className="grid grid-cols-2 gap-2"><Input type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} /><Input type="datetime-local" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} /></div>
       {create.data && <div className="text-sm rounded bg-emerald-50 dark:bg-emerald-900/20 p-2">Door code: <b className="font-mono text-lg">{create.data.code}</b> · shown once. Put it on a QR at the door: <Link href={create.data.checkInUrl} className="underline break-all">{create.data.checkInUrl}</Link></div>}
       {create.error && <p className="text-xs text-red-600">{(create.error as Error).message}</p>}
-      <Button size="sm" className="snow-button" onClick={() => create.mutate(undefined)} disabled={create.isPending || !name || !startsAt || !endsAt}>Create event</Button>
+      <Button size="sm" className="retro-btn-blue" onClick={() => create.mutate(undefined)} disabled={create.isPending || !name || !startsAt || !endsAt}>Create event</Button>
     </div>
   );
 }

@@ -53,73 +53,70 @@ export const storage =
     })
     : null;
 
-export const web3Config = createConfig({
-  chains: [avalanche],
-  transports: {
-    [avalanche.id]: http(),
-  },
-  storage,
-});
+function buildConfig(): Config {
+  const projectId = env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
 
-export function Web3Provider({ children }: { children: React.ReactNode }) {
-  const [config, setConfig] = useState<Config | null>(null);
-
-  useEffect(() => {
-    const projectId = env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
-    // No WalletConnect key: offer the injected wallets only, rather than
-    // letting the connector throw and take the whole page down with it.
-    if (!projectId) {
-      setConfig(
-        createConfig({
-          chains: [avalanche, avalancheFuji],
-          transports: {
-            [avalanche.id]: http("https://avalanche-c-chain-rpc.publicnode.com"),
-            [avalancheFuji.id]: http("https://avalanche-fuji-c-chain-rpc.publicnode.com"),
-          },
-          storage,
-        })
-      );
-      return;
-    }
-    const config = getDefaultConfig({
-      appName: siteConfig.name,
-      projectId,
-      wallets: [
-        {
-          groupName: "Most used",
-          wallets: [coreWallet, metaMaskWallet, rainbowWallet],
-        },
-        {
-          groupName: "Other",
-          wallets: [
-            coinbaseWallet,
-            argentWallet,
-            trustWallet,
-            ledgerWallet,
-            coinbaseWallet,
-          ],
-        },
-      ],
+  if (!projectId) {
+    return createConfig({
       chains: [avalanche, avalancheFuji],
       transports: {
         [avalanche.id]: http("https://avalanche-c-chain-rpc.publicnode.com"),
-        [avalancheFuji.id]: http(
-          "https://avalanche-fuji-c-chain-rpc.publicnode.com"
-        ),
+        [avalancheFuji.id]: http("https://avalanche-fuji-c-chain-rpc.publicnode.com"),
       },
       storage,
+      ssr: true,
     });
+  }
 
-    setConfig(config);
-  }, []);
+  return getDefaultConfig({
+    appName: siteConfig.name,
+    projectId,
+    wallets: [
+      {
+        groupName: "Most used",
+        wallets: [coreWallet, metaMaskWallet, rainbowWallet],
+      },
+      {
+        groupName: "Other",
+        wallets: [
+          coinbaseWallet,
+          argentWallet,
+          trustWallet,
+          ledgerWallet,
+          coinbaseWallet,
+        ],
+      },
+    ],
+    chains: [avalanche, avalancheFuji],
+    transports: {
+      [avalanche.id]: http("https://avalanche-c-chain-rpc.publicnode.com"),
+      [avalancheFuji.id]: http(
+        "https://avalanche-fuji-c-chain-rpc.publicnode.com"
+      ),
+    },
+    storage,
+    ssr: true,
+  });
+}
 
-  const queryClient = new QueryClient();
+export const web3Config = buildConfig();
 
-  if (!config) return null;
+export function Web3Provider({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+            refetchOnWindowFocus: false,
+          },
+        },
+      })
+  );
 
   return (
-    <SessionProvider refetchInterval={0} refetchOnWindowFocus={true}>
-      <WagmiProvider config={config}>
+    <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
+      <WagmiProvider config={web3Config}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider modalSize="compact" theme={darkTheme()}>
             {children}

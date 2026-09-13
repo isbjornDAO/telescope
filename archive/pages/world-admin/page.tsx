@@ -106,7 +106,7 @@ function NewSeason() {
       <Input value={panel} onChange={(e) => setPanel(e.target.value)} placeholder="Local Systems panel: elder handles, comma separated (9–15)" />
       <Input value={reviewers} onChange={(e) => setReviewers(e.target.value)} placeholder="Research review pool: handles, comma separated" />
       {create.error && <p className="text-xs text-red-600">{(create.error as Error).message}</p>}
-      <Button size="sm" className="snow-button" onClick={() => create.mutate(undefined)} disabled={create.isPending || !theme || rq.length < 10 || !startsAt}>Create season</Button>
+      <Button size="sm" className="retro-btn-blue" onClick={() => create.mutate(undefined)} disabled={create.isPending || !theme || rq.length < 10 || !startsAt}>Create season</Button>
     </div>
   );
 }

@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { AdminWrapper } from "@/components/admin/AdminWrapper";
 import { formatDistanceToNow } from "date-fns";
-import { Trophy, Gift, Users } from "lucide-react";
+import { Trophy, Gift, Users, ArrowLeft } from "lucide-react";
+import { RetroBox, Stat } from "@/components/world/primitives";
 
 interface Claim {
   id: string;
@@ -58,10 +57,9 @@ export default function AdminClaimsPage() {
 
       setClaims(claimsData);
 
-      // Calculate claim counts for top users
-      const usersWithClaims = leaderboardData.map((user: any) => ({
+      const usersWithClaims = (Array.isArray(leaderboardData) ? leaderboardData : []).map((user: any) => ({
         ...user,
-        claimCount: claimsData.filter(
+        claimCount: (Array.isArray(claimsData) ? claimsData : []).filter(
           (claim: Claim) => claim.user.address === user.address
         ).length,
       }));
@@ -75,232 +73,176 @@ export default function AdminClaimsPage() {
   };
 
   const totalClaims = Array.isArray(claims) ? claims.length : 0;
-  const totalCoinsSpent = Array.isArray(claims) ? claims.reduce((sum, claim) => sum + claim.coinsSpent, 0) : 0;
-  const uniqueClaimers = Array.isArray(claims) ? new Set(claims.map((c) => c.user.address)).size : 0;
+  const totalCoinsSpent = Array.isArray(claims)
+    ? claims.reduce((sum, claim) => sum + (claim.coinsSpent || 0), 0)
+    : 0;
+  const uniqueClaimers = Array.isArray(claims)
+    ? new Set(claims.map((c) => c.user.address)).size
+    : 0;
 
   return (
     <AdminWrapper>
-      <div className="container mx-auto py-8 max-w-screen-lg">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Claims Management</h1>
-          <Button asChild variant="outline">
-            <Link href="/admin">Back to Dashboard</Link>
-          </Button>
+      <div className="w-full space-y-4 pb-12">
+        {/* Retro Topic Header Breadcrumb */}
+        <div className="retro-topic-header flex items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin"
+              className="retro-btn retro-btn-gray px-2.5 py-1 text-xs font-semibold inline-flex items-center gap-1"
+            >
+              <ArrowLeft className="h-3 w-3" />
+              Admin
+            </Link>
+            <span className="text-zinc-400 dark:text-zinc-600">/</span>
+            <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+              <Gift className="h-4 w-4 text-emerald-500" />
+              Claims Management
+            </span>
+          </div>
+          <Link href="/admin" className="snow-button-secondary text-xs h-7 px-2.5 inline-flex">
+            Dashboard
+          </Link>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Gift className="h-5 w-5" />
-                Total Claims
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{totalClaims}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5" />
-                Total Coins Spent
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{totalCoinsSpent.toLocaleString()}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Unique Claimers
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{uniqueClaimers}</p>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Stat label="Total Claims" value={totalClaims} hint="Rewards claimed by community" />
+          <Stat label="Total Coins Spent" value={totalCoinsSpent.toLocaleString()} hint="Reward store volume" />
+          <Stat label="Unique Claimers" value={uniqueClaimers} hint="Distinct wallet addresses" />
         </div>
 
         {/* Claims Table */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>All Claims</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-3 font-semibold">Address</th>
-                    <th className="text-left p-3 font-semibold">Reward</th>
-                    <th className="text-left p-3 font-semibold">Coins Spent</th>
-                    <th className="text-left p-3 font-semibold">When</th>
+        <RetroBox title="All Reward Claims" icon={<Gift className="h-4 w-4" />} iconColor="green">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="border-b border-zinc-200 dark:border-zinc-700 text-muted-foreground font-bold uppercase tracking-wider text-[10px]">
+                  <th className="pb-2">Address</th>
+                  <th className="pb-2">Reward</th>
+                  <th className="pb-2">Coins Spent</th>
+                  <th className="pb-2 text-right">Claimed</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-700/60">
+                {loading ? (
+                  <tr>
+                    <td colSpan={4} className="text-center py-8 text-muted-foreground">
+                      Loading claims...
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr>
-                      <td colSpan={4} className="text-center p-8 text-muted-foreground">
-                        Loading...
-                      </td>
-                    </tr>
-                  ) : Array.isArray(claims) && claims.length > 0 ? (
-                    claims.map((claim) => (
-                      <tr key={claim.id} className="border-b hover:bg-zinc-50">
-                        <td className="p-3">
-                          <div>
-                            <p className="font-mono text-sm">{claim.user.address}</p>
-                            {claim.user.username && (
-                              <p className="text-xs text-muted-foreground">@{claim.user.username}</p>
-                            )}
-                          </div>
-                        </td>
-                        <td className="p-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-zinc-100 rounded overflow-hidden flex-shrink-0">
-                              {claim.reward.imageUrl && (
-                                <img
-                                  src={claim.reward.imageUrl}
-                                  alt={claim.reward.name}
-                                  className="w-full h-full object-cover"
-                                />
-                              )}
-                            </div>
-                            <span className="font-medium">{claim.reward.name}</span>
-                          </div>
-                        </td>
-                        <td className="p-3">
-                          <span className="font-semibold">{claim.coinsSpent}</span> coins
-                        </td>
-                        <td className="p-3 text-sm text-muted-foreground">
-                          {formatDistanceToNow(new Date(claim.claimedAt), { addSuffix: true })}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={4} className="text-center p-8 text-muted-foreground">
-                        No claims yet
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Claims Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4 max-h-[400px] overflow-y-auto">
-                {loading ? (
-                  <p className="text-muted-foreground text-sm">Loading...</p>
                 ) : Array.isArray(claims) && claims.length > 0 ? (
-                  claims.slice(0, 10).map((claim) => (
-                    <div
-                      key={claim.id}
-                      className="flex items-start gap-3 p-3 border rounded-lg"
-                    >
-                      <div className="w-12 h-12 bg-zinc-100 rounded-lg overflow-hidden flex-shrink-0">
-                        {claim.reward.imageUrl && (
-                          <img
-                            src={claim.reward.imageUrl}
-                            alt={claim.reward.name}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm">
-                          {claim.user.username ||
-                            `${claim.user.address.slice(0, 6)}...${claim.user.address.slice(-4)}`}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          claimed <span className="font-medium">{claim.reward.name}</span>
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {claim.coinsSpent} Coins • {formatDistanceToNow(new Date(claim.claimedAt), { addSuffix: true })}
-                        </p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-xs text-muted-foreground">Level {claim.user.level}</p>
-                        <p className="text-xs font-medium">{claim.user.xp} XP • {claim.user.coins} Coins</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-muted-foreground text-sm text-center py-8">
-                    No claims yet
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Top Users by XP */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Users by XP</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {loading ? (
-                  <p className="text-muted-foreground text-sm">Loading...</p>
-                ) : topUsers.length > 0 ? (
-                  topUsers.map((user, index) => (
-                    <div
-                      key={user.address}
-                      className="flex items-center justify-between p-3 border rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`font-bold text-lg min-w-[2.5rem] text-center ${
-                            index === 0
-                              ? "text-yellow-500"
-                              : index === 1
-                              ? "text-gray-400"
-                              : index === 2
-                              ? "text-amber-600"
-                              : ""
-                          }`}
+                  claims.map((claim) => (
+                    <tr key={claim.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/40">
+                      <td className="py-2.5">
+                        <Link
+                          href={`/profile/${claim.user.address}`}
+                          className="font-mono text-zinc-900 dark:text-zinc-100 hover:text-sky-500 hover:underline"
                         >
-                          #{index + 1}
+                          {claim.user.address.slice(0, 6)}...{claim.user.address.slice(-4)}
+                        </Link>
+                        {claim.user.username && (
+                          <span className="block text-[10px] text-muted-foreground">@{claim.user.username}</span>
+                        )}
+                      </td>
+                      <td className="py-2.5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 bg-zinc-100 dark:bg-zinc-800 rounded overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-xs">
+                            🎁
+                          </div>
+                          <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                            {claim.reward.name}
+                          </span>
                         </div>
-                        <div>
-                          <p className="font-semibold text-sm">
-                            {user.username ||
-                              `${user.address.slice(0, 6)}...${user.address.slice(-4)}`}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Level {user.level} • {user.claimCount} claims
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold">{user.xp.toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground">XP</p>
-                      </div>
-                    </div>
+                      </td>
+                      <td className="py-2.5 font-bold tabular-nums text-amber-600 dark:text-amber-400">
+                        {claim.coinsSpent} coins
+                      </td>
+                      <td className="py-2.5 text-right text-muted-foreground">
+                        {formatDistanceToNow(new Date(claim.claimedAt), { addSuffix: true })}
+                      </td>
+                    </tr>
                   ))
                 ) : (
-                  <p className="text-muted-foreground text-sm text-center py-8">
-                    No users yet
-                  </p>
+                  <tr>
+                    <td colSpan={4} className="text-center py-8 text-muted-foreground">
+                      No claims logged yet.
+                    </td>
+                  </tr>
                 )}
-              </div>
-            </CardContent>
-          </Card>
+              </tbody>
+            </table>
+          </div>
+        </RetroBox>
+
+        {/* Bottom Split */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <RetroBox title="Recent Activity Stream" icon={<Gift className="h-4 w-4" />} iconColor="blue">
+            <div className="space-y-3 max-h-[400px] overflow-y-auto">
+              {loading ? (
+                <p className="text-muted-foreground text-xs">Loading activity...</p>
+              ) : Array.isArray(claims) && claims.length > 0 ? (
+                claims.slice(0, 10).map((claim) => (
+                  <div
+                    key={claim.id}
+                    className="flex items-center justify-between p-2.5 border border-zinc-200 dark:border-zinc-700/80 rounded-lg bg-white/60 dark:bg-zinc-800/40 text-xs"
+                  >
+                    <div>
+                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">
+                        {claim.user.username || `${claim.user.address.slice(0, 6)}...${claim.user.address.slice(-4)}`}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        claimed <span className="font-medium text-zinc-800 dark:text-zinc-200">{claim.reward.name}</span> · {claim.coinsSpent} Coins
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0 text-muted-foreground text-[10px]">
+                      <span>Level {claim.user.level}</span>
+                      <span className="block font-medium">{formatDistanceToNow(new Date(claim.claimedAt), { addSuffix: true })}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-xs text-center py-6">No claims yet.</p>
+              )}
+            </div>
+          </RetroBox>
+
+          <RetroBox title="Top Community Members" icon={<Trophy className="h-4 w-4" />} iconColor="gold">
+            <div className="space-y-2.5">
+              {loading ? (
+                <p className="text-muted-foreground text-xs">Loading leaderboard...</p>
+              ) : topUsers.length > 0 ? (
+                topUsers.map((user, index) => (
+                  <div
+                    key={user.address}
+                    className="flex items-center justify-between p-2.5 border border-zinc-200 dark:border-zinc-700/80 rounded-lg bg-white/60 dark:bg-zinc-800/40 text-xs"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="font-bold text-xs min-w-[1.5rem] text-center text-muted-foreground">
+                        #{index + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <Link
+                          href={`/profile/${user.address}`}
+                          className="font-semibold text-zinc-900 dark:text-zinc-100 hover:text-sky-500 hover:underline truncate block"
+                        >
+                          {user.username || `${user.address.slice(0, 6)}...${user.address.slice(-4)}`}
+                        </Link>
+                        <span className="text-[10px] text-muted-foreground">
+                          Level {user.level} · {user.claimCount} claims
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100">{user.xp.toLocaleString()}</span>
+                      <span className="block text-[10px] text-muted-foreground">XP</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-xs text-center py-6">No leaderboard data.</p>
+              )}
+            </div>
+          </RetroBox>
         </div>
       </div>
     </AdminWrapper>

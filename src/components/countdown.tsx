@@ -22,7 +22,7 @@ export function Countdown() {
         <a
           href="https://discord.gg/K4z7xxFVGc"
           target="_blank"
-          className="snow-button w-full md:w-auto mt-4 md:mt-0"
+          className="retro-btn-blue w-full md:w-auto mt-4 md:mt-0"
         >
           Join Discord
         </a>
