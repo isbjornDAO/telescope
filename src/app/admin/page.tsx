@@ -134,7 +134,6 @@ async function getAdminData(): Promise<AdminDashboardProps> {
     prisma.vote.groupBy({
       by: ["votedDate"],
       _count: { _all: true },
-      where: { votedDate: { not: undefined } },
     }),
     prisma.vote.groupBy({
       by: ["projectId", "votedDate"],

@@ -9,10 +9,6 @@ import {
   Plus,
   Trophy,
   Award,
-  Crown,
-  Shield,
-  Flame,
-  Globe,
   Copy,
   Check,
   ExternalLink,
@@ -23,31 +19,41 @@ import {
   User as UserIcon,
   Search,
   Users,
-  Eye,
   Flag,
+  Trash2,
 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useWorldQuery, useWorldSession, useWorldMutation, worldFetch } from "@/hooks/use-world";
+import { useUserDiscord } from "@/hooks/use-user-discord";
 import {
   WorldPage,
   NodeBadge,
   TournamentBadge,
   StatusBadge,
   fmtDate,
-  LoadingBlock,
   ErrorBlock,
 } from "@/components/world/primitives";
-import { Button } from "@/components/ui/button";
+import { ProfileSkeleton } from "@/components/ui/retro-skeletons";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
+interface BadgeItem {
+  id: string;
+  title: string;
+  desc: string;
+  icon: string;
+  rarity: string;
+  bg: string;
+  awardedAt: string;
+  reason?: string | null;
+  awardedBy?: string | null;
+}
 
 interface Profile {
   handle: string | null;
@@ -55,6 +61,9 @@ interface Profile {
   bio: string | null;
   nodeType?: "NODE" | "ANCHOR" | "ELDER" | string;
   standing?: number;
+  level?: number;
+  tags?: string[];
+  badges?: BadgeItem[];
   region?: { name: string; slug: string } | null;
   faction?: { name: string; slug: string; vision: string; standing: number } | null;
   crews?: { name: string; slug: string; role: string; isLead: boolean }[];
@@ -93,6 +102,7 @@ interface ForumStats {
 interface UserStats {
   xp: number;
   coins: number;
+  level?: number;
   discordId?: string;
   username?: string;
 }
@@ -111,11 +121,25 @@ interface ForumPostItem {
 
 interface WallMessage {
   id: string;
-  author: string;
-  authorAddress?: string;
+  profileAddress: string;
+  authorAddress?: string | null;
+  authorName: string;
   content: string;
   createdAt: string;
 }
+
+const SUGGESTED_TAGS = [
+  "Avalanche",
+  "Governance",
+  "DeFi",
+  "Zero Knowledge",
+  "Local Systems",
+  "Smart Contracts",
+  "AI Agents",
+  "Infrastructure",
+  "Cryptography",
+  "GameFi",
+];
 
 export default function ProfilePage() {
   const params = useParams();
@@ -124,14 +148,18 @@ export default function ProfilePage() {
   const { address: currentAccount } = useAccount();
 
   const isOwn =
-    !!me?.signedIn &&
-    (me.address?.toLowerCase() === rawKey.toLowerCase() ||
-      (!!me.handle && me.handle.toLowerCase() === rawKey.toLowerCase()));
+    (!!me?.signedIn &&
+      (me.address?.toLowerCase() === rawKey.toLowerCase() ||
+        (!!me.handle && me.handle.toLowerCase() === rawKey.toLowerCase()))) ||
+    (!!currentAccount && currentAccount.toLowerCase() === rawKey.toLowerCase());
 
   const profileUrl = isOwn && isSignedIn ? "/api/world/me" : `/api/world/profiles/${encodeURIComponent(rawKey)}`;
-  const { data: profile, isLoading, error } = useWorldQuery<Profile>(["profile", rawKey, isOwn], profileUrl);
+  const { data: profile, isLoading, error, refetch: mutateProfile } = useWorldQuery<Profile>(
+    ["profile", rawKey, isOwn],
+    profileUrl
+  );
 
-  // Address resolution for user-specific forum stats
+  // Address resolution for user-specific forum stats & wall
   const targetAddress = profile?.address || (rawKey.startsWith("0x") ? rawKey : undefined);
 
   const { data: forumStats } = useWorldQuery<ForumStats>(
@@ -144,173 +172,60 @@ export default function ProfilePage() {
     targetAddress ? `/api/users/${targetAddress}/stats` : ""
   );
 
+  // Discord user data — discordId comes from userStats (public) or profile.discordId (own session via /api/world/me)
+  const discordId = userStats?.discordId || (profile as any)?.discordId || "";
+  const { data: discordUser } = useUserDiscord(discordId);
+
   const { data: userPosts } = useWorldQuery<ForumPostItem[]>(
     ["userPosts", targetAddress],
     targetAddress ? `/api/users/${targetAddress}/forum-posts` : ""
+  );
+
+  // Message Wall (Persistent Database Backend)
+  const wallAddress = targetAddress || (rawKey.startsWith("0x") ? rawKey : profile?.address);
+  const wallUrl = wallAddress ? `/api/users/${encodeURIComponent(wallAddress)}/wall` : "";
+  const { data: wallMessages, refetch: mutateWall } = useWorldQuery<WallMessage[]>(
+    ["profileWall", wallAddress],
+    wallUrl
   );
 
   // Local state
   const [topicSearch, setTopicSearch] = useState("");
   const [copied, setCopied] = useState(false);
   const [wallInput, setWallInput] = useState("");
-  const [wallMessages, setWallMessages] = useState<WallMessage[]>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(`profile_wall_${rawKey}`);
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch {
-          // ignore
-        }
-      }
-    }
-    return [
-      {
-        id: "default-1",
-        author: "Telescope Protocol",
-        content: "Welcome to the decentralized node profile on Telescope! Leave a signature or greeting.",
-        createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
+  const postWallMutation = useWorldMutation(async () => {
+    if (!wallInput.trim() || !wallUrl) return;
+    await worldFetch(wallUrl, {
+      method: "POST",
+      body: {
+        content: wallInput.trim(),
+        authorAddress: currentAccount || undefined,
+        authorName: me?.handle ? `@${me.handle}` : currentAccount ? `${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}` : undefined,
       },
-    ];
+    });
+    setWallInput("");
+    await mutateWall();
   });
+
+  const handleDeleteWallMessage = async (msgId: string) => {
+    if (!wallUrl) return;
+    try {
+      await worldFetch(`${wallUrl}?id=${encodeURIComponent(msgId)}`, {
+        method: "DELETE",
+      });
+      await mutateWall();
+    } catch (err) {
+      console.error("Failed to delete wall message:", err);
+    }
+  };
 
   const handleCopyAddress = (addr: string) => {
     navigator.clipboard.writeText(addr);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
-  const handlePostWall = () => {
-    if (!wallInput.trim()) return;
-    const newMsg: WallMessage = {
-      id: "msg-" + Date.now(),
-      author: me?.handle ? `@${me.handle}` : currentAccount ? `${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}` : "Guest Visitor",
-      authorAddress: currentAccount || undefined,
-      content: wallInput.trim(),
-      createdAt: new Date().toISOString(),
-    };
-    const next = [newMsg, ...wallMessages];
-    setWallMessages(next);
-    setWallInput("");
-    if (typeof window !== "undefined") {
-      localStorage.setItem(`profile_wall_${rawKey}`, JSON.stringify(next));
-    }
-  };
-
-  // Badges array calculation (Retro inspired)
-  const badges = useMemo(() => {
-    if (!profile) return [];
-    const list: { id: string; title: string; desc: string; icon: string; rarity: string; bg: string }[] = [];
-
-    if (forumStats?.isSuperOG) {
-      list.push({
-        id: "super-og",
-        title: "Super OG Pioneer",
-        desc: "Among the first 100 pioneer nodes to post on Telescope",
-        icon: "🌟",
-        rarity: "Legendary",
-        bg: "from-amber-400 to-amber-600",
-      });
-    }
-
-    if (profile.nodeType === "ELDER") {
-      list.push({
-        id: "elder",
-        title: "Elder Node",
-        desc: "Trusted sovereign elder of the Telescope governance ring",
-        icon: "👑",
-        rarity: "Epic",
-        bg: "from-purple-500 to-indigo-600",
-      });
-    } else if (profile.nodeType === "ANCHOR") {
-      list.push({
-        id: "anchor",
-        title: "Anchor Node",
-        desc: "In-person verified anchor supporting consensus security",
-        icon: "⚓",
-        rarity: "Rare",
-        bg: "from-sky-400 to-blue-600",
-      });
-    } else {
-      list.push({
-        id: "node",
-        title: "Verified Node",
-        desc: "Cryptographically verified Avalanche C-Chain network node",
-        icon: "❄️",
-        rarity: "Common",
-        bg: "from-emerald-400 to-teal-600",
-      });
-    }
-
-    const hasWon = profile.seasonHistory.some((e) => e.isVictor);
-    if (hasWon) {
-      list.push({
-        id: "victor",
-        title: "Tournament Victor",
-        desc: "Champion of an official Telescope protocol tournament",
-        icon: "🏆",
-        rarity: "Legendary",
-        bg: "from-yellow-400 to-amber-500",
-      });
-    }
-
-    if (profile.seasonHistory.length > 0) {
-      list.push({
-        id: "competitor",
-        title: "Tournament Builder",
-        desc: `Participated in ${profile.seasonHistory.length} Season tournament rounds`,
-        icon: "⚔️",
-        rarity: "Rare",
-        bg: "from-red-400 to-pink-600",
-      });
-    }
-
-    if (profile.shipped.length > 0) {
-      list.push({
-        id: "shipped",
-        title: "Master Craftsperson",
-        desc: `Shipped ${profile.shipped.length} verified protocol artifacts`,
-        icon: "📦",
-        rarity: "Rare",
-        bg: "from-blue-500 to-cyan-600",
-      });
-    }
-
-    if ((forumStats?.totalPosts ?? 0) >= 5) {
-      list.push({
-        id: "broadcaster",
-        title: "Active Broadcaster",
-        desc: "Contributed 5+ public discussions to the network forum",
-        icon: "💬",
-        rarity: "Common",
-        bg: "from-emerald-500 to-green-600",
-      });
-    }
-
-    if ((forumStats?.longestPostStreak ?? 0) >= 2) {
-      list.push({
-        id: "streak",
-        title: "Signal Beacon",
-        desc: `Maintained a ${forumStats?.longestPostStreak}-day active communication streak`,
-        icon: "🔥",
-        rarity: "Rare",
-        bg: "from-orange-400 to-red-500",
-      });
-    }
-
-    if (profile.faction) {
-      list.push({
-        id: "faction",
-        title: `${profile.faction.name} Herald`,
-        desc: `Loyal member of the ${profile.faction.name} faction`,
-        icon: "🛡️",
-        rarity: "Rare",
-        bg: "from-indigo-400 to-purple-600",
-      });
-    }
-
-    return list;
-  }, [profile, forumStats]);
 
   // Filtered topics
   const filteredPosts = useMemo(() => {
@@ -325,19 +240,20 @@ export default function ProfilePage() {
     );
   }, [userPosts, topicSearch]);
 
-  const level = Math.max(1, Math.floor((userStats?.xp ?? 0) / 10));
+  // Real level from database (userStats.level or profile.level, fallback to 1)
+  const level = userStats?.level ?? profile?.level ?? 1;
 
   return (
     <WorldPage wide>
-      {isLoading && <LoadingBlock lines={6} />}
+      {isLoading && <ProfileSkeleton />}
       {error && <ErrorBlock error={error} />}
 
       {profile && (
         <div className="space-y-6">
           {/* Panoramic Cover Banner */}
-          <div className="retro-box overflow-hidden shadow-sm">
-            <div className="retro-profile-cover flex items-end justify-end p-3 sm:p-4">
-              <div className="relative z-10 flex items-center gap-2">
+          <div className="retro-box overflow-hidden shadow-sm relative z-20">
+            <div className="retro-profile-cover flex items-end justify-end p-3 sm:p-4 relative z-20">
+              <div className="relative z-20 flex items-center gap-2">
                 {targetAddress && (
                   <button
                     onClick={() => handleCopyAddress(targetAddress)}
@@ -348,7 +264,14 @@ export default function ProfilePage() {
                     <span>{copied ? "Copied" : "Share"}</span>
                   </button>
                 )}
-                {isOwn && <EditProfile profile={profile} />}
+                {isOwn && (
+                  <EditProfile
+                    profile={profile}
+                    open={isEditOpen}
+                    setOpen={setIsEditOpen}
+                    onUpdated={() => mutateProfile()}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -360,14 +283,22 @@ export default function ProfilePage() {
               {/* Primary Identity Box */}
               <div className="retro-box p-4 pt-0 text-center relative">
                 {/* Framed Avatar Stand */}
-                <div className="retro-profile-avatar-frame flex items-center justify-center">
-                  <div className="w-full h-full bg-gradient-to-tr from-[#2495D4] to-[#43B2EE] flex items-center justify-center font-bold text-white text-3xl shadow-inner">
-                    {profile.handle
-                      ? profile.handle.slice(0, 2).toUpperCase()
-                      : targetAddress
-                      ? targetAddress.slice(2, 4).toUpperCase()
-                      : "0X"}
-                  </div>
+                <div className="retro-profile-avatar-frame flex items-center justify-center overflow-hidden">
+                  {discordUser?.avatar_url ? (
+                    <img
+                      src={discordUser.avatar_url}
+                      alt={discordUser.global_name || discordUser.username}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-tr from-[#2495D4] to-[#43B2EE] flex items-center justify-center font-bold text-white text-3xl shadow-inner">
+                      {profile.handle
+                        ? profile.handle.slice(0, 2).toUpperCase()
+                        : targetAddress
+                        ? targetAddress.slice(2, 4).toUpperCase()
+                        : "0X"}
+                    </div>
+                  )}
                 </div>
 
                 {/* Name & Handle */}
@@ -376,6 +307,14 @@ export default function ProfilePage() {
                 </h1>
                 {profile.handle && (
                   <p className="text-xs text-muted-foreground font-mono mt-0.5">@{profile.handle}</p>
+                )}
+                {(discordUser?.global_name || discordUser?.username) && (
+                  <p className="text-[11px] text-muted-foreground mt-0.5 flex items-center justify-center gap-1">
+                    <svg className="w-3 h-3 text-[#5865F2]" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.03.056a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
+                    </svg>
+                    {discordUser.global_name || discordUser.username}
+                  </p>
                 )}
 
                 {/* Node Tier Badge */}
@@ -429,24 +368,47 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Tag Interests / Focus Areas */}
+                {/* Focus & Domains Tags (Real User Tags) */}
                 <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800 text-left">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-amber-500" />
-                    <span>Focus & Domains</span>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles className="w-3 h-3 text-amber-500" />
+                      <span>Focus & Domains</span>
+                    </div>
+                    {isOwn && (
+                      <button
+                        onClick={() => setIsEditOpen(true)}
+                        className="text-[10px] text-sky-600 dark:text-sky-400 hover:underline font-normal"
+                      >
+                        Edit
+                      </button>
+                    )}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
-                    <span className="retro-profile-tag">Avalanche</span>
-                    <span className="retro-profile-tag">Governance</span>
-                    <span className="retro-profile-tag">Local Systems</span>
+                    {profile.tags && profile.tags.length > 0 ? (
+                      profile.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="retro-profile-tag bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-300 font-mono"
+                        >
+                          #{tag}
+                        </span>
+                      ))
+                    ) : (
+                      <p className="text-[11px] text-muted-foreground italic">
+                        {isOwn
+                          ? "No domains added yet. Click Edit to add your focus areas."
+                          : "No focus domains listed."}
+                      </p>
+                    )}
                     {profile.faction && (
                       <span className="retro-profile-tag bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-950/40 dark:border-indigo-800 dark:text-indigo-300">
-                        {profile.faction.name}
+                        🛡️ {profile.faction.name}
                       </span>
                     )}
                     {profile.region && (
                       <span className="retro-profile-tag bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300">
-                        {profile.region.name}
+                        📍 {profile.region.name}
                       </span>
                     )}
                   </div>
@@ -464,7 +426,10 @@ export default function ProfilePage() {
                 </div>
                 <div className="p-4 text-xs space-y-3">
                   <p className="leading-relaxed text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">
-                    {profile.bio || (isOwn ? "You haven't written a bio yet. Click Edit to tell the community what you build!" : "This explorer hasn't added a bio yet.")}
+                    {profile.bio ||
+                      (isOwn
+                        ? "You haven't written a bio yet. Click Edit to tell the community what you build!"
+                        : "This explorer hasn't added a bio yet.")}
                   </p>
                   <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[11px] text-muted-foreground">
                     <span className="flex items-center gap-1">
@@ -486,17 +451,27 @@ export default function ProfilePage() {
                   <div className="p-4 text-xs space-y-2.5">
                     {profile.faction && (
                       <div>
-                        <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Faction</div>
-                        <div className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">{profile.faction.name}</div>
+                        <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+                          Faction
+                        </div>
+                        <div className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
+                          {profile.faction.name}
+                        </div>
                         {profile.faction.vision && (
-                          <p className="text-[11px] text-muted-foreground mt-0.5 italic">"{profile.faction.vision}"</p>
+                          <p className="text-[11px] text-muted-foreground mt-0.5 italic">
+                            &ldquo;{profile.faction.vision}&rdquo;
+                          </p>
                         )}
                       </div>
                     )}
                     {profile.region && (
                       <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
-                        <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Regional Node</div>
-                        <div className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">{profile.region.name}</div>
+                        <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+                          Regional Node
+                        </div>
+                        <div className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
+                          {profile.region.name}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -506,36 +481,58 @@ export default function ProfilePage() {
 
             {/* ── RIGHT COLUMN: Badges, Topics, Tournaments, Wall ─── */}
             <div className="lg:col-span-8 space-y-6">
-              {/* 1. Badges Showcase */}
-              <div className="retro-box shadow-sm">
+              {/* 1. Official Team-Awarded Badges Showcase */}
+              <div className="retro-box shadow-sm relative">
                 <div className="retro-box-title bg-gradient-to-r from-[#FAC72B] to-[#D98200] text-white flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Award className="w-4 h-4 text-white" />
                     <span className="font-bold text-xs uppercase tracking-wider text-white drop-shadow-sm">
-                      My Badges ({badges.length})
+                      Protocol Badges ({profile.badges?.length ?? 0})
                     </span>
                   </div>
-                  <span className="text-[10px] text-white/90 font-medium">Protocol Achievements</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-white/90 font-medium hidden sm:inline">
+                      Official Honors
+                    </span>
+                    {me?.isAdmin && (
+                      <AwardBadgeDialog
+                        target={profile.handle || targetAddress || rawKey}
+                        onAwarded={() => mutateProfile()}
+                      />
+                    )}
+                  </div>
                 </div>
 
                 <div className="p-4 sm:p-5">
-                  {badges.length === 0 ? (
-                    <p className="text-xs text-muted-foreground text-center py-4">No badges earned yet.</p>
+                  {!profile.badges || profile.badges.length === 0 ? (
+                    <div className="text-center py-6 px-4 space-y-1.5">
+                      <Award className="w-8 h-8 text-amber-500/40 mx-auto" />
+                      <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                        No official badges awarded yet
+                      </p>
+                      <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
+                        Badges are granted by the Telescope team for protocol milestones, tournament leadership, and community contributions.
+                      </p>
+                    </div>
                   ) : (
                     <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-                      {badges.map((b) => (
+                      {profile.badges.map((b) => (
                         <div
                           key={b.id}
                           className="retro-badge-card group relative"
                           title={`${b.title} — ${b.desc} (${b.rarity})`}
                         >
                           <span className="text-xl select-none filter drop-shadow-sm">{b.icon}</span>
-                          {/* Tooltip on hover */}
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50 w-44 p-2 bg-zinc-900 text-white text-[10px] rounded-md shadow-lg pointer-events-none text-center">
+                          {/* Rich Tooltip on hover */}
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50 w-48 p-2.5 bg-zinc-950 text-white text-[10px] rounded-md shadow-xl pointer-events-none text-center border border-zinc-700">
                             <div className="font-bold text-amber-300">{b.title}</div>
-                            <div className="text-zinc-300 text-[9px] mt-0.5">{b.desc}</div>
-                            <div className="text-[8px] uppercase tracking-wider text-amber-400/80 mt-1 font-mono">
-                              {b.rarity}
+                            <div className="text-zinc-300 text-[9px] mt-0.5 leading-tight">{b.desc}</div>
+                            {b.reason && (
+                              <div className="text-emerald-400 text-[9px] mt-1 italic">&ldquo;{b.reason}&rdquo;</div>
+                            )}
+                            <div className="flex items-center justify-between pt-1 mt-1.5 border-t border-zinc-800 text-[8px] text-zinc-400 font-mono">
+                              <span className="text-amber-400 uppercase tracking-wider">{b.rarity}</span>
+                              <span>{fmtDate(b.awardedAt)}</span>
                             </div>
                           </div>
                         </div>
@@ -582,7 +579,9 @@ export default function ProfilePage() {
                               /{post.boardName}/
                             </span>
                             {post.isOp && (
-                              <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950 px-1 rounded">
+                              <span
+                                className="retro-op-badge"
+                                title="Original Poster (Thread Creator)">
                                 OP
                               </span>
                             )}
@@ -647,7 +646,7 @@ export default function ProfilePage() {
                       <Package className="w-3.5 h-3.5 text-white" />
                       <span className="font-bold text-xs uppercase tracking-wider text-white">Shipped Proofs</span>
                     </div>
-                    {isOwn && <AddProof />}
+                    {isOwn && <AddProof onAdded={() => mutateProfile()} />}
                   </div>
                   <div className="p-3 text-xs">
                     {profile.shipped.length === 0 ? (
@@ -671,16 +670,16 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* 4. Guestbook / Message Wall */}
+              {/* 4. Guestbook / Persistent Message Wall */}
               <div className="retro-box overflow-hidden shadow-sm">
                 <div className="retro-box-title bg-gradient-to-r from-[#40586F] to-[#2B3B4B] text-white flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Users className="w-3.5 h-3.5 text-white" />
                     <span className="font-bold text-xs uppercase tracking-wider text-white">
-                      Message Wall ({wallMessages.length})
+                      Message Wall ({wallMessages?.length ?? 0})
                     </span>
                   </div>
-                  <span className="text-[10px] text-white/80 font-medium">Public Guestbook</span>
+                  <span className="text-[10px] text-white/80 font-medium">Verified Guestbook</span>
                 </div>
 
                 <div className="p-4 sm:p-5 space-y-4">
@@ -690,42 +689,73 @@ export default function ProfilePage() {
                       placeholder={`Leave a message on ${profile.name}'s wall...`}
                       value={wallInput}
                       onChange={(e) => setWallInput(e.target.value)}
+                      maxLength={500}
                       rows={2}
-                      className="text-xs bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 rounded-md"
+                      className="text-xs bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 rounded-md focus:border-sky-500"
                     />
-                    <div className="flex justify-end">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-muted-foreground">
+                        {wallInput.length}/500 chars
+                      </span>
                       <button
-                        onClick={handlePostWall}
-                        disabled={!wallInput.trim()}
+                        onClick={() => postWallMutation.mutate(undefined)}
+                        disabled={!wallInput.trim() || postWallMutation.isPending}
                         className="retro-btn retro-btn-green px-4 py-1.5 text-xs font-bold uppercase inline-flex items-center gap-1.5 disabled:opacity-50"
                       >
                         <Send className="w-3 h-3" />
-                        <span>Sign Wall</span>
+                        <span>{postWallMutation.isPending ? "Signing..." : "Sign Wall"}</span>
                       </button>
                     </div>
                   </div>
 
                   {/* Messages Feed */}
                   <div className="space-y-3 pt-2">
-                    {wallMessages.map((msg) => (
-                      <div
-                        key={msg.id}
-                        className="p-3 rounded bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs flex gap-3 items-start"
-                      >
-                        <div className="w-8 h-8 rounded bg-sky-100 dark:bg-sky-950 border border-sky-300 dark:border-sky-800 flex items-center justify-center font-bold text-sky-700 dark:text-sky-300 text-xs flex-shrink-0">
-                          {msg.author.slice(0, 2).toUpperCase()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-bold text-zinc-900 dark:text-zinc-100">{msg.author}</span>
-                            <span className="text-[10px] text-muted-foreground">{fmtDate(msg.createdAt)}</span>
+                    {!wallMessages || wallMessages.length === 0 ? (
+                      <p className="text-xs text-muted-foreground text-center py-4">
+                        No signatures on this node&apos;s wall yet. Be the first to leave a greeting!
+                      </p>
+                    ) : (
+                      wallMessages.map((msg) => {
+                        const canDelete =
+                          isOwn ||
+                          me?.isAdmin ||
+                          (!!currentAccount && msg.authorAddress?.toLowerCase() === currentAccount.toLowerCase());
+
+                        return (
+                          <div
+                            key={msg.id}
+                            className="p-3 rounded bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs flex gap-3 items-start group relative transition-colors hover:border-zinc-300 dark:hover:border-zinc-700"
+                          >
+                            <div className="w-8 h-8 rounded bg-sky-100 dark:bg-sky-950 border border-sky-300 dark:border-sky-800 flex items-center justify-center font-bold text-sky-700 dark:text-sky-300 text-xs flex-shrink-0">
+                              {msg.authorName.slice(0, 2).replace(/^@/, "").toUpperCase()}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono text-xs">
+                                  {msg.authorName}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] text-muted-foreground">{fmtDate(msg.createdAt)}</span>
+                                  {canDelete && (
+                                    <button
+                                      onClick={() => handleDeleteWallMessage(msg.id)}
+                                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500 transition-opacity p-0.5"
+                                      title="Delete signature"
+                                      aria-label="Delete signature"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                              <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                                {msg.content}
+                              </p>
+                            </div>
                           </div>
-                          <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                            {msg.content}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                        );
+                      })
+                    )}
                   </div>
                 </div>
               </div>
@@ -737,16 +767,44 @@ export default function ProfilePage() {
   );
 }
 
-function EditProfile({ profile }: { profile: Profile }) {
-  const [open, setOpen] = useState(false);
+function EditProfile({
+  profile,
+  open,
+  setOpen,
+  onUpdated,
+}: {
+  profile: Profile;
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  onUpdated: () => void;
+}) {
   const [handle, setHandle] = useState(profile.handle ?? "");
   const [bio, setBio] = useState(profile.bio ?? "");
+  const [tags, setTags] = useState<string[]>(profile.tags ?? []);
+  const [tagInput, setTagInput] = useState("");
+
+  const handleAddTag = (t?: string) => {
+    const raw = (t ?? tagInput).trim();
+    if (!raw) return;
+    const clean = raw.replace(/^#/, "").trim();
+    if (!clean || clean.length > 30) return;
+    if (tags.some((existing) => existing.toLowerCase() === clean.toLowerCase())) return;
+    if (tags.length >= 12) return;
+    setTags([...tags, clean]);
+    if (!t) setTagInput("");
+  };
+
+  const handleRemoveTag = (indexToRemove: number) => {
+    setTags(tags.filter((_, idx) => idx !== indexToRemove));
+  };
+
   const save = useWorldMutation(async () => {
     await worldFetch("/api/world/me", {
       method: "PATCH",
-      body: { handle: handle || undefined, bio },
+      body: { handle: handle || undefined, bio, tags },
     });
     setOpen(false);
+    onUpdated();
   });
 
   return (
@@ -771,6 +829,7 @@ function EditProfile({ profile }: { profile: Profile }) {
               className="mt-1 text-xs"
             />
           </div>
+
           <div>
             <Label className="font-bold text-xs">Bio & What You Build</Label>
             <Textarea
@@ -782,8 +841,91 @@ function EditProfile({ profile }: { profile: Profile }) {
               className="mt-1 text-xs"
             />
           </div>
+
+          {/* Focus & Domains Tags Editor */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <Label className="font-bold text-xs">Focus & Domains Tags</Label>
+              <span className="text-[10px] text-muted-foreground">{tags.length}/12 tags</span>
+            </div>
+
+            {/* Current Tags */}
+            <div className="flex flex-wrap gap-1.5 mb-2 min-h-[32px] p-1.5 rounded bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+              {tags.length === 0 ? (
+                <span className="text-[11px] text-muted-foreground italic px-1">
+                  No tags added yet. Choose suggestions or type below.
+                </span>
+              ) : (
+                tags.map((tag, idx) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 border border-sky-300 dark:border-sky-800 font-mono"
+                  >
+                    #{tag}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTag(idx)}
+                      className="hover:text-red-500 ml-0.5 font-bold"
+                      aria-label={`Remove ${tag}`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))
+              )}
+            </div>
+
+            {/* Tag Input */}
+            <div className="flex gap-1.5">
+              <Input
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddTag();
+                  }
+                }}
+                placeholder="Type a domain and press Enter..."
+                className="text-xs h-8"
+                maxLength={30}
+              />
+              <button
+                type="button"
+                onClick={() => handleAddTag()}
+                disabled={!tagInput.trim() || tags.length >= 12}
+                className="retro-btn retro-btn-blue px-3 text-xs font-bold disabled:opacity-50"
+              >
+                Add
+              </button>
+            </div>
+
+            {/* Suggested Tags Pills */}
+            <div className="mt-2">
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                Suggestions:
+              </span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {SUGGESTED_TAGS.filter(
+                  (s) => !tags.some((t) => t.toLowerCase() === s.toLowerCase())
+                ).map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => handleAddTag(s)}
+                    disabled={tags.length >= 12}
+                    className="text-[10px] px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                  >
+                    +{s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {save.error && <p className="text-xs text-red-600">{(save.error as Error).message}</p>}
-          <div className="flex justify-end gap-2 pt-2">
+
+          <div className="flex justify-end gap-2 pt-2 border-t border-zinc-200 dark:border-zinc-800">
             <button
               onClick={() => setOpen(false)}
               className="retro-btn retro-btn-gray px-4 py-1.5 text-xs font-semibold"
@@ -804,7 +946,103 @@ function EditProfile({ profile }: { profile: Profile }) {
   );
 }
 
-function AddProof() {
+function AwardBadgeDialog({ target, onAwarded }: { target: string; onAwarded: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [selectedBadgeId, setSelectedBadgeId] = useState("");
+  const [reason, setReason] = useState("");
+  const { data: availableBadges, isLoading } = useWorldQuery<
+    { id: string; name: string; description: string; icon: string; rarity: string }[]
+  >(["availableBadges"], open ? "/api/admin/badges" : "");
+
+  const award = useWorldMutation(async () => {
+    if (!selectedBadgeId) return;
+    await worldFetch("/api/admin/badges", {
+      method: "POST",
+      body: {
+        target,
+        badgeId: selectedBadgeId,
+        reason: reason.trim() || undefined,
+      },
+    });
+    setOpen(false);
+    setSelectedBadgeId("");
+    setReason("");
+    onAwarded();
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <button
+          className="retro-btn retro-btn-green px-2.5 py-1 text-xs inline-flex items-center gap-1.5 shadow-sm font-bold"
+          title="Award an official badge to this node"
+        >
+          <Award className="w-3.5 h-3.5" />
+          <span>Award Badge</span>
+        </button>
+      </DialogTrigger>
+      <DialogContent className="retro-box p-0 border-0 overflow-hidden max-w-md">
+        <div className="retro-box-title bg-gradient-to-r from-[#FAC72B] to-[#D98200] text-white flex items-center gap-2">
+          <Award className="w-4 h-4 text-white" />
+          <span className="font-bold text-sm">Award Official Badge</span>
+        </div>
+        <div className="p-5 space-y-4 text-xs">
+          <p className="text-muted-foreground text-[11px]">
+            As a Telescope World Admin, you can grant an official protocol badge to this user.
+          </p>
+          <div>
+            <Label className="font-bold text-xs">Select Badge</Label>
+            {isLoading ? (
+              <p className="text-xs text-muted-foreground mt-1">Loading badges...</p>
+            ) : (
+              <select
+                value={selectedBadgeId}
+                onChange={(e) => setSelectedBadgeId(e.target.value)}
+                className="w-full mt-1 p-2 text-xs rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+              >
+                <option value="">-- Choose a badge to award --</option>
+                {availableBadges?.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.icon} {b.name} ({b.rarity}) — {b.description}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+          <div>
+            <Label className="font-bold text-xs">Reason / Citation (Optional)</Label>
+            <Textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              maxLength={200}
+              rows={2}
+              placeholder="e.g. Outstanding contributor to the Avalanche consensus testing round..."
+              className="mt-1 text-xs"
+            />
+          </div>
+          {award.error && <p className="text-xs text-red-600">{(award.error as Error).message}</p>}
+          <div className="flex justify-end gap-2 pt-2 border-t border-zinc-200 dark:border-zinc-800">
+            <button
+              onClick={() => setOpen(false)}
+              className="retro-btn retro-btn-gray px-4 py-1.5 text-xs font-semibold"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => award.mutate(undefined)}
+              disabled={award.isPending || !selectedBadgeId}
+              className="retro-btn retro-btn-green px-5 py-1.5 text-xs font-bold disabled:opacity-50"
+            >
+              {award.isPending ? "Granting..." : "Grant Badge"}
+            </button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddProof({ onAdded }: { onAdded?: () => void }) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -816,6 +1054,7 @@ function AddProof() {
     setOpen(false);
     setTitle("");
     setDescription("");
+    onAdded?.();
   });
 
   return (
@@ -854,7 +1093,7 @@ function AddProof() {
             />
           </div>
           {add.error && <p className="text-xs text-red-600">{(add.error as Error).message}</p>}
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-2 border-t border-zinc-200 dark:border-zinc-800">
             <button
               onClick={() => setOpen(false)}
               className="retro-btn retro-btn-gray px-4 py-1.5 text-xs font-semibold"

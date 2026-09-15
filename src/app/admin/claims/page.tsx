@@ -24,7 +24,7 @@ interface Claim {
     description: string;
     xpRequired: number;
     imageUrl: string;
-  };
+  } | null;
 }
 
 interface UserStats {
@@ -150,7 +150,7 @@ export default function AdminClaimsPage() {
                             🎁
                           </div>
                           <span className="font-semibold text-zinc-900 dark:text-zinc-100">
-                            {claim.reward.name}
+                            {claim.reward?.name || "Deleted Reward"}
                           </span>
                         </div>
                       </td>
@@ -191,7 +191,7 @@ export default function AdminClaimsPage() {
                         {claim.user.username || `${claim.user.address.slice(0, 6)}...${claim.user.address.slice(-4)}`}
                       </p>
                       <p className="text-[11px] text-muted-foreground">
-                        claimed <span className="font-medium text-zinc-800 dark:text-zinc-200">{claim.reward.name}</span> · {claim.coinsSpent} Coins
+                        claimed <span className="font-medium text-zinc-800 dark:text-zinc-200">{claim.reward ? claim.reward.name : "Deleted Reward"}</span> · {claim.coinsSpent} Coins
                       </p>
                     </div>
                     <div className="text-right shrink-0 text-muted-foreground text-[10px]">

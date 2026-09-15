@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
   Trophy,
   Crown,
-  Users,
   Landmark,
   FileText,
   Sparkles,
@@ -18,10 +17,8 @@ import { useWorldQuery } from "@/hooks/use-world";
 import {
   WorldPage,
   RetroBox,
-  StatusBadge,
   fmtDate,
 } from "@/components/world/primitives";
-import { Button } from "@/components/ui/button";
 
 interface SeasonRow {
   number: number;
@@ -81,7 +78,7 @@ const TOURNAMENT_TRACKS = [
 ];
 
 export default function TournamentsPage() {
-  const { data } = useWorldQuery<SeasonRow[]>(["seasons"], "/api/world/seasons");
+  const { data, isLoading } = useWorldQuery<SeasonRow[]>(["seasons"], "/api/world/seasons");
   const live = data?.find((s) => s.phase === "building" || s.phase === "voting");
   const past = (data ?? []).filter((s) => s !== live);
 
@@ -98,30 +95,40 @@ export default function TournamentsPage() {
                     <Sparkles className="h-3 w-3 text-amber-300" />
                     Bi-Annual Tournament Circuit
                   </span>
-                  {live && (
+                  {isLoading ? (
+                    <span className="bg-white/20 backdrop-blur-sm text-transparent font-mono text-[11px] px-2.5 py-0.5 rounded uppercase font-bold tracking-wider animate-pulse inline-block w-32 h-5">
+                      Loading...
+                    </span>
+                  ) : live ? (
                     <span className="bg-emerald-500/90 text-white font-mono text-[11px] px-2.5 py-0.5 rounded uppercase font-bold tracking-wider border border-emerald-400/40">
                       Live: {live.name} · {live.phase}
                     </span>
-                  )}
+                  ) : null}
                 </div>
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white drop-shadow-md">
                   Telescope Tournaments
                 </h1>
-                <p className="text-sm text-sky-100/90 max-w-2xl mt-1 drop-shadow-sm line-clamp-2">
-                  {live
-                    ? live.theme
-                    : "The competitive arena of isbjornDAO. Research, design, and ship on Avalanche."}
-                </p>
+                {isLoading ? (
+                  <div className="h-4 bg-white/20 rounded animate-pulse w-80 max-w-full mt-2" />
+                ) : (
+                  <p className="text-sm text-sky-100/90 max-w-2xl mt-1 drop-shadow-sm line-clamp-2">
+                    {live
+                      ? live.theme
+                      : "The competitive arena of isbjornDAO. Research, design, and ship on Avalanche."}
+                  </p>
+                )}
               </div>
 
-              {live && (
+              {isLoading ? (
+                <div className="retro-btn-blue text-sm px-4 py-2 font-bold opacity-80 animate-pulse w-48 h-9 shrink-0" />
+              ) : live ? (
                 <Link href={`/tournaments/${live.number}`} className="shrink-0">
                   <button className="retro-btn-blue text-sm px-4 py-2 font-bold flex items-center gap-2 shadow-lg">
                     Enter Tournament Arena
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 </Link>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
@@ -130,7 +137,11 @@ export default function TournamentsPage() {
         <div className="retro-stat-counters grid-cols-2 sm:grid-cols-4">
           <div className="p-1">
             <div className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">
-              {live?.name ?? "Winter I"}
+              {isLoading ? (
+                <span className="inline-block w-16 h-5 bg-zinc-200 dark:bg-zinc-700 animate-pulse rounded my-0.5" />
+              ) : (
+                live?.name ?? "Winter I"
+              )}
             </div>
             <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
               Active Season
@@ -138,7 +149,11 @@ export default function TournamentsPage() {
           </div>
           <div className="border-l border-zinc-200 dark:border-zinc-700 p-1">
             <div className="text-base sm:text-lg font-bold text-sky-600 dark:text-sky-400 tabular-nums">
-              ${(live?.poolAmount ?? 50000).toLocaleString()}
+              {isLoading ? (
+                <span className="inline-block w-20 h-5 bg-zinc-200 dark:bg-zinc-700 animate-pulse rounded my-0.5" />
+              ) : (
+                `$${(live?.poolAmount ?? 50000).toLocaleString()}`
+              )}
             </div>
             <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
               Prize Pool
@@ -146,15 +161,23 @@ export default function TournamentsPage() {
           </div>
           <div className="border-l border-zinc-200 dark:border-zinc-700 p-1">
             <div className="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
-              Week {live?.week ?? 2} / 6
+              {isLoading ? (
+                <span className="inline-block w-20 h-5 bg-zinc-200 dark:bg-zinc-700 animate-pulse rounded my-0.5" />
+              ) : (
+                `Week ${live?.week ?? 2} / 6`
+              )}
             </div>
             <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-              Phase: {live?.phase ?? "Building"}
+              Phase: {isLoading ? "..." : live?.phase ?? "Building"}
             </div>
           </div>
           <div className="border-l border-zinc-200 dark:border-zinc-700 p-1">
             <div className="text-base sm:text-lg font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">
-              {live?.entries ?? 4} Competing
+              {isLoading ? (
+                <span className="inline-block w-16 h-5 bg-zinc-200 dark:bg-zinc-700 animate-pulse rounded my-0.5" />
+              ) : (
+                `${live?.entries ?? 4} Competing`
+              )}
             </div>
             <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
               Tournament Entries
@@ -182,7 +205,6 @@ export default function TournamentsPage() {
                 id,
                 name,
                 icon: Icon,
-                iconColor,
                 subtitle,
                 line,
                 enabled,
@@ -201,12 +223,10 @@ export default function TournamentsPage() {
                 >
                   <div>
                     {/* Header */}
-                    <div className="retro-box-title justify-between pr-3">
-                      <div className="flex items-center min-w-0">
-                        <div className={`retro-box-icon ${iconColor}`}>
-                          <Icon className="h-5 w-5 drop-shadow-sm" />
-                        </div>
-                        <span className="font-bold text-xs text-zinc-800 dark:text-zinc-100 px-3 uppercase tracking-wider truncate">
+                    <div className="retro-box-title justify-between px-3.5 sm:px-4">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Icon className="h-4 w-4 text-[#2689BF] dark:text-[#52aae0] shrink-0" />
+                        <span className="font-bold text-sm text-zinc-800 dark:text-zinc-100 truncate">
                           {name}
                         </span>
                       </div>

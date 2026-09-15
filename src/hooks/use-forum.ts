@@ -64,3 +64,76 @@ export function useForumBoards() {
     refetchOnWindowFocus: false,
   });
 }
+
+export interface FeedPost {
+  id: string;
+  comment: string;
+  imageHash: string | null;
+  walletAddress: string | null;
+  posterId: string;
+  anonymous: boolean;
+  createdAt: string;
+  isOp: boolean;
+  authorName: string;
+  authorAvatar: string | null;
+  user?: {
+    username?: string | null;
+    handle?: string | null;
+    discordAvatar?: string | null;
+  };
+}
+
+export interface FeedThread {
+  id: string;
+  subject: string | null;
+  bumpedAt: string;
+  createdAt: string;
+  replyCount: number;
+  board: {
+    id: string;
+    name: string;
+    title: string;
+  };
+  opPost: FeedPost | null;
+  previewReplies: FeedPost[];
+  audienceLabel?: string;
+  restricted?: boolean;
+}
+
+export interface FeedPagination {
+  page: number;
+  limit: number;
+  totalThreads: number;
+  totalPages: number;
+}
+
+export interface FeedResponse {
+  threads: FeedThread[];
+  pagination: FeedPagination;
+}
+
+export interface UseForumFeedOptions {
+  page?: number;
+  limit?: number;
+  board?: string | null;
+}
+
+export function useForumFeed({ page = 1, limit = 8, board = null }: UseForumFeedOptions = {}) {
+  return useQuery<FeedResponse>({
+    queryKey: ["forum", "feed", { page, limit, board }],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set("page", page.toString());
+      params.set("limit", limit.toString());
+      if (board && board !== "all") {
+        params.set("board", board);
+      }
+      const res = await fetch(`/api/forum/feed?${params.toString()}`);
+      if (!res.ok) throw new Error("Failed to fetch forum feed");
+      return res.json();
+    },
+    staleTime: 15_000,
+    refetchOnWindowFocus: false,
+  });
+}
+

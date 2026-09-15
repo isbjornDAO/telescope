@@ -5,8 +5,17 @@ import * as React from "react";
 
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 
-const TOAST_LIMIT = 1;
+const TOAST_LIMIT = 5;
 const TOAST_REMOVE_DELAY = 1000000;
+
+export type ToastType =
+  | "success"
+  | "error"
+  | "warning"
+  | "info"
+  | "purple"
+  | "pink"
+  | "default";
 
 type ToasterToast = ToastProps & {
   id: string;
@@ -14,6 +23,10 @@ type ToasterToast = ToastProps & {
   description?: React.ReactNode;
   action?: ToastActionElement;
   txHash?: string;
+  icon?: React.ReactNode;
+  toastType?: ToastType;
+  badgeType?: ToastType;
+  time?: string;
 };
 
 const actionTypes = {
@@ -138,7 +151,20 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">;
 
-function toast({ txHash, ...props }: Toast & { txHash?: string }) {
+function toast({
+  txHash,
+  icon,
+  toastType,
+  badgeType,
+  time,
+  ...props
+}: Toast & {
+  txHash?: string;
+  icon?: React.ReactNode;
+  toastType?: ToastType;
+  badgeType?: ToastType;
+  time?: string;
+}) {
   const id = genId();
 
   const update = (props: ToasterToast) =>
@@ -155,6 +181,9 @@ function toast({ txHash, ...props }: Toast & { txHash?: string }) {
       ...props,
       id,
       txHash,
+      icon,
+      toastType: toastType || badgeType,
+      time,
       open: true,
       onOpenChange: (open) => {
         if (!open) dismiss();

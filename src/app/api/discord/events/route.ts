@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 const DISCORD_API_URL = "https://discord.com/api/v10";
 
 // In-memory cache
-let cachedEvents: any = null;
+let cachedEvents: { events: unknown[]; guildsCount: number } | null = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
@@ -156,7 +156,7 @@ export async function GET() {
         );
 
         if (invitesResponse.ok) {
-          const invites: any[] = await invitesResponse.json();
+          const invites = (await invitesResponse.json()) as Array<{ code: string; max_age: number }>;
           if (invites.length > 0) {
             // Use the first permanent invite, or any invite
             const permanentInvite = invites.find(inv => inv.max_age === 0) || invites[0];
@@ -176,32 +176,36 @@ export async function GET() {
         if (i < botGuilds.length - 1) {
           await delay(300);
         }
-      } catch (error) {
+      } catch {
         console.log(`⚠️ Could not fetch invites for ${guild.name}`);
       }
     }
 
-    // Transform to frontend-friendly format
-    const transformedEvents = allEvents.map(event => {
-      const guildIconUrl = event.guildIcon
-        ? `https://cdn.discordapp.com/icons/${event.guild_id}/${event.guildIcon}.png`
-        : null;
+    // Transform to frontend-friendly format and sort chronologically
+    const transformedEvents = allEvents
+      .filter(event => event.status !== 3 && event.status !== 4)
+      .map(event => {
+        const guildIconUrl = event.guildIcon
+          ? `https://cdn.discordapp.com/icons/${event.guild_id}/${event.guildIcon}.png`
+          : null;
 
-      return {
-        id: event.id,
-        name: event.name,
-        description: event.description || "",
-        scheduledStartTime: event.scheduled_start_time,
-        scheduledEndTime: event.scheduled_end_time,
-        guildId: event.guild_id,
-        guildName: event.guildName,
-        guildIcon: guildIconUrl,
-        guildInvite: guildInvites.get(event.guild_id),
-        creator: event.creator,
-        location: event.entity_metadata?.location,
-        userCount: event.user_count,
-      };
-    });
+        return {
+          id: event.id,
+          name: event.name,
+          description: event.description || "",
+          scheduledStartTime: event.scheduled_start_time,
+          scheduledEndTime: event.scheduled_end_time,
+          guildId: event.guild_id,
+          guildName: event.guildName,
+          guildIcon: guildIconUrl,
+          guildInvite: guildInvites.get(event.guild_id),
+          creator: event.creator,
+          location: event.entity_metadata?.location,
+          userCount: event.user_count,
+          status: event.status,
+        };
+      })
+      .sort((a, b) => new Date(a.scheduledStartTime).getTime() - new Date(b.scheduledStartTime).getTime());
 
     const response = {
       events: transformedEvents,

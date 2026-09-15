@@ -10,27 +10,22 @@ import {
   Landmark,
   Handshake,
   ArrowLeft,
-  Sparkles,
   Trophy,
-  Calendar,
-  CheckCircle2,
-  ExternalLink,
 } from "lucide-react";
 import { useWorldQuery } from "@/hooks/use-world";
 import {
   WorldPage,
   RetroBox,
   Empty,
-  LoadingBlock,
   ErrorBlock,
   SeasonStrip,
   StatusBadge,
   fmtDate,
   fmtDateTime,
 } from "@/components/world/primitives";
+import { TournamentDetailSkeleton } from "@/components/ui/retro-skeletons";
 import { Bracket, type BracketRound } from "@/components/world/bracket";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 
 interface Entry {
   id: string;
@@ -82,7 +77,7 @@ export default function SeasonPage() {
 
   return (
     <WorldPage wide>
-      {isLoading && <LoadingBlock lines={6} />}
+      {isLoading && <TournamentDetailSkeleton />}
       {error && <ErrorBlock error={error} />}
 
       {data && (

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, MessageSquare, Trophy, Calendar, Gift, ChevronDown, Search, ShieldCheck, type LucideIcon } from "lucide-react";
+import { Home, MessageSquare, Calendar, Gift, ChevronDown, Search, ShieldCheck, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAccount } from "wagmi";
 import { Address } from "viem";
@@ -57,17 +57,6 @@ export const TABS: TabItem[] = [
       { href: "/forum/eco", label: "Ecosystem" },
       { href: "/forum/gov", label: "Governance" },
     ],
-  },
-  {
-    href: "/tournaments",
-    label: "Tournaments",
-    icon: Trophy,
-    badgeColor: "bg-[#2689BF]",
-    textColor: "text-[#2689BF] dark:text-[#74c2ee]",
-    match: (p: string) =>
-      p.startsWith("/tournaments") ||
-      p.startsWith("/entries") ||
-      p.startsWith("/rounds"),
   },
   {
     href: "/calendar",

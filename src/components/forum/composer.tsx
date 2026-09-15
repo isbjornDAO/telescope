@@ -1,11 +1,26 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState, useRef, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, Send, ChevronUp, ChevronDown, Globe, Lock } from "lucide-react";
-import { AudiencePicker, type AudienceOptions } from "@/components/forum/audience-picker";
+import {
+  Loader2,
+  Send,
+  ChevronUp,
+  ChevronDown,
+  Globe,
+  Lock,
+  Image as ImageIcon,
+  X,
+  Type,
+} from "lucide-react";
+import {
+  AudienceDropdown,
+  AudiencePicker,
+  type AudienceOptions,
+} from "@/components/forum/audience-picker";
 import { EVERYONE, serializeAudience, describeAudience, type Audience } from "@/lib/world/audience";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
@@ -13,17 +28,13 @@ import { cn } from "@/lib/utils";
 /**
  * The box you type in.
  *
- * It is the first thing on the forum, above trending and above the board
- * list, because the point of the page is to talk rather than to browse.
- * Everything optional is out of the way: a subject line appears only when
- * there is something to title, and the audience line already says "Anyone".
+ * Sized for quick posting without unnecessary clutter:
+ * - Header: Retro title bar.
+ * - Textarea: Compact writing area with clipboard paste image support.
+ * - Footer: Single row with Board, Audience pill, quick tool icons (Image, Title), and Post.
  *
- * Sized for a thumb — a 44px send button, 16px text in the textarea so iOS
- * does not zoom the page on focus, and nothing that needs two hands.
- *
- * When scrolled past the top of the viewport, it smoothly morphs into a
- * compact, non-intrusive floating bottom bar so the user can compose and
- * post from anywhere on the page without losing context or scroll position.
+ * When scrolled past the top of the viewport, it morphs into a compact
+ * floating bottom bar.
  */
 export function Composer({
   boardName,
@@ -51,9 +62,15 @@ export function Composer({
   const { openConnectModal } = useConnectModal();
   const [comment, setComment] = useState("");
   const [subject, setSubject] = useState("");
+  const [showTitle, setShowTitle] = useState(false);
   const [audience, setAudience] = useState<Audience>(EVERYONE);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const bottomFileInputRef = useRef<HTMLInputElement>(null);
 
   // Bottom bar visibility & expansion states
   const containerRef = useRef<HTMLDivElement>(null);
@@ -69,7 +86,6 @@ export function Composer({
     const checkVisibility = () => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      // It has scrolled past the top of the viewport when rect.bottom <= 0
       setIsOutOfView(rect.bottom <= 0);
     };
 
@@ -97,11 +113,63 @@ export function Composer({
 
   const ready = comment.trim().length > 0 && isConnected && !sending;
 
+  function handleImageSelect(file: File) {
+    if (!file.type.startsWith("image/")) {
+      setError("Please select an image file");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Image must be under 10MB");
+      return;
+    }
+    setError(null);
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeImage() {
+    setImageFile(null);
+    setImagePreview(null);
+  }
+
+  function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") !== -1) {
+        const file = items[i].getAsFile();
+        if (file) {
+          handleImageSelect(file);
+          break;
+        }
+      }
+    }
+  }
+
   async function send() {
     if (!ready) return;
     setSending(true);
     setError(null);
     try {
+      let uploadedImageUrl: string | null = null;
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("file", imageFile);
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadData.url) {
+          throw new Error(uploadData.error || "Image upload failed");
+        }
+        uploadedImageUrl = uploadData.url;
+      }
+
       const res = await fetch(`/api/forum/boards/${boardName}/threads`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -110,14 +178,17 @@ export function Composer({
           subject: subject.trim() || null,
           walletAddress: address,
           anonymous: true,
-          // The server re-parses this. Sending it is a request, not a decision.
           audience: serializeAudience(audience),
+          imageHash: uploadedImageUrl,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "That did not go through.");
       setComment("");
       setSubject("");
+      setShowTitle(false);
+      setImageFile(null);
+      setImagePreview(null);
       setAudience(EVERYONE);
       setIsPrivacyOpen(false);
       setIsTitleOpen(false);
@@ -133,70 +204,174 @@ export function Composer({
     <>
       {/* Primary In-Page Composer */}
       <div ref={containerRef} className={cn("retro-box", className)}>
-        <div className="retro-box-title">
-          <div className="retro-box-icon green">
-            <Send className="w-5 h-5 drop-shadow-sm" />
-          </div>
-          <span className="font-bold text-xs sm:text-sm text-zinc-700 dark:text-zinc-200 px-3 uppercase tracking-wider">
+        {/* Header */}
+        <div className="retro-box-title px-3.5 sm:px-4 gap-2">
+          <Send className="w-4 h-4 text-[#2689BF] dark:text-[#52aae0] shrink-0" />
+          <span className="font-bold text-sm text-zinc-800 dark:text-zinc-100">
             New Thread
           </span>
         </div>
 
+        {/* Optional Title Input (clean, un-bloated) */}
+        {(showTitle || subject.length > 0) && (
+          <div className="flex items-center border-b border-zinc-200 dark:border-zinc-800 px-3 py-1 bg-white/40 dark:bg-zinc-900/30">
+            <input
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Title (optional)"
+              autoFocus
+              className="w-full bg-transparent text-sm font-semibold outline-none text-zinc-900 dark:text-zinc-100 placeholder:text-muted-foreground/60 placeholder:font-normal"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setShowTitle(false);
+                setSubject("");
+              }}
+              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1"
+              title="Remove title"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        {/* Textarea */}
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
+          onPaste={handlePaste}
+          onKeyDown={(e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && ready) {
+              e.preventDefault();
+              send();
+            }
+          }}
           placeholder={placeholder}
           rows={compact ? 2 : 3}
-          // text-base is 16px. Anything smaller and iOS Safari zooms on focus.
-          className="w-full resize-none bg-transparent px-3 py-3 text-base outline-none placeholder:text-muted-foreground"
+          className="w-full resize-none bg-transparent px-3 py-2.5 text-base sm:text-sm outline-none placeholder:text-muted-foreground text-zinc-900 dark:text-zinc-100 leading-relaxed"
         />
 
-        {comment.trim().length > 0 && (
-          <input
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            placeholder="Give it a title (optional)"
-            className="min-h-11 w-full border-t border-zinc-100 bg-transparent px-3 text-base outline-none placeholder:text-muted-foreground dark:border-zinc-800"
-          />
+        {/* Compact Image Preview Chip */}
+        {imagePreview && (
+          <div className="px-3 pb-2 flex items-center gap-2">
+            <div className="relative inline-flex items-center gap-1.5 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded border border-zinc-200 dark:border-zinc-700 text-xs">
+              <img src={imagePreview} alt="Preview" className="h-5 w-5 object-cover rounded" />
+              <span className="truncate max-w-[160px] text-zinc-700 dark:text-zinc-300 font-medium">
+                {imageFile?.name || "image"}
+              </span>
+              <button
+                type="button"
+                onClick={removeImage}
+                className="text-zinc-400 hover:text-red-500 ml-1 font-bold text-sm leading-none"
+                title="Remove image"
+              >
+                &times;
+              </button>
+            </div>
+          </div>
         )}
 
-        <div className="border-t border-zinc-100 px-1 py-1 dark:border-zinc-800">
-          <AudiencePicker value={audience} onChange={setAudience} options={audienceOptions} />
-        </div>
+        {/* Hidden File Input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*,image/gif"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) handleImageSelect(file);
+            e.target.value = "";
+          }}
+          className="hidden"
+        />
 
-        {error && <p className="px-3 pb-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {error && <p className="px-3 pb-2 text-xs text-red-600 dark:text-red-400">{error}</p>}
 
-        <div className="flex items-center gap-2 border-t border-zinc-100 p-2 dark:border-zinc-800">
+        {/* Compact Single Footer Action Row */}
+        <div className="flex items-center gap-2 border-t border-zinc-200 dark:border-zinc-800 p-2 bg-zinc-50/50 dark:bg-zinc-900/30">
+          {/* Board Selector */}
           {boards && boards.length > 0 && (
-            <select
-              value={boardName}
-              onChange={(e) => onBoardChange?.(e.target.value)}
-              aria-label="Board"
-              className="min-h-10 flex-1 rounded-md bg-zinc-100 px-3 text-sm dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 font-medium"
-            >
-              {boards.map((b) => (
-                <option key={b.name} value={b.name}>
-                  /{b.name}/ {b.title}
-                </option>
-              ))}
-            </select>
+            <Select value={boardName} onValueChange={(val) => onBoardChange?.(val)}>
+              <SelectTrigger
+                className="h-8 min-w-[110px] max-w-[160px] bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-xs font-semibold text-zinc-800 dark:text-zinc-200 shadow-none focus:ring-0 px-2.5 gap-1 shrink-0"
+                aria-label="Board"
+              >
+                <span className="truncate">
+                  /{selectedBoard?.name || boardName}/ {selectedBoard?.title}
+                </span>
+              </SelectTrigger>
+              <SelectContent className="z-[60] bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700">
+                {boards.map((b) => (
+                  <SelectItem key={b.name} value={b.name} className="text-xs font-medium cursor-pointer">
+                    /{b.name}/ {b.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           )}
 
-          {isConnected ? (
+          {/* Compact Audience Dropdown Pill */}
+          <AudienceDropdown
+            value={audience}
+            onChange={setAudience}
+            options={audienceOptions}
+            className="h-8 px-2 py-0 text-xs shrink-0"
+          />
+
+          {/* Image Attach Button */}
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            title={imageFile ? imageFile.name : "Attach image"}
+            aria-label="Attach image"
+            className={cn(
+              "h-8 w-8 flex items-center justify-center rounded text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors shrink-0",
+              imagePreview && "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50"
+            )}
+          >
+            <ImageIcon className="w-4 h-4" />
+          </button>
+
+          {/* Title Toggle Button */}
+          {!showTitle && subject.length === 0 && (
             <button
               type="button"
-              onClick={send}
-              disabled={!ready}
-              className="ml-auto retro-btn retro-btn-green px-5 min-h-10 text-sm disabled:opacity-50"
+              onClick={() => setShowTitle(true)}
+              title="Add title"
+              aria-label="Add title"
+              className="h-8 px-2 flex items-center gap-1 rounded text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors text-xs font-medium shrink-0"
             >
-              {sending ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <Send className="h-4 w-4 mr-1.5" />}
-              Post
+              <Type className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline text-[11px]">Title</span>
             </button>
-          ) : (
-            <span className="ml-auto flex min-h-10 items-center px-2 text-xs sm:text-sm text-muted-foreground font-medium">
-              Connect wallet to post
-            </span>
           )}
+
+          {/* Right: Submit Button or Connect Wallet */}
+          <div className="ml-auto flex items-center shrink-0">
+            {isConnected ? (
+              <button
+                type="button"
+                onClick={send}
+                disabled={!ready}
+                className="retro-btn retro-btn-green px-4 h-8 text-xs font-bold disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {sending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Send className="h-3.5 w-3.5" />
+                )}
+                <span>Post</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => openConnectModal?.()}
+                className="retro-btn retro-btn-gray px-3 h-8 text-xs font-semibold"
+              >
+                Connect
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -280,6 +455,23 @@ export function Composer({
                     )}
                   </AnimatePresence>
 
+                  {/* Image Attachment Chip in Bottom Bar if attached */}
+                  {imagePreview && (
+                    <div className="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800/90 border-b border-zinc-200 dark:border-zinc-700 flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2 truncate">
+                        <img src={imagePreview} alt="Attached" className="h-5 w-5 object-cover rounded border" />
+                        <span className="truncate text-zinc-700 dark:text-zinc-300">{imageFile?.name || "Image attached"}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="text-muted-foreground hover:text-red-500 font-bold px-1"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  )}
+
                   {/* Error Banner */}
                   {error && (
                     <div className="py-1.5 px-3 bg-red-50 dark:bg-red-950/40 border-b border-red-200 dark:border-red-900/50 text-xs text-red-600 dark:text-red-400 flex items-center justify-between">
@@ -296,7 +488,7 @@ export function Composer({
 
                   {/* Compact Attached Bar Row (50px height like top ticker) */}
                   <div className="flex items-center gap-1.5 sm:gap-2 h-[50px] px-2 sm:px-3">
-                    {/* Shadcn Board Selector (Fixed size for all cases) */}
+                    {/* Shadcn Board Selector */}
                     {boards && boards.length > 0 && (
                       <Select value={boardName} onValueChange={(val) => onBoardChange?.(val)}>
                         <SelectTrigger
@@ -334,7 +526,32 @@ export function Composer({
                       />
                     </div>
 
-                    {/* Privacy Button: Globe for "anyone" by default, Lock when restricted */}
+                    {/* Image Attachment Button in bottom bar */}
+                    <input
+                      ref={bottomFileInputRef}
+                      type="file"
+                      accept="image/*,image/gif"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageSelect(file);
+                        e.target.value = "";
+                      }}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => bottomFileInputRef.current?.click()}
+                      aria-label="Attach image"
+                      title={imageFile ? imageFile.name : "Attach image"}
+                      className={cn(
+                        "h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center rounded text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors shrink-0",
+                        imagePreview && "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50"
+                      )}
+                    >
+                      <ImageIcon className="w-4 h-4" />
+                    </button>
+
+                    {/* Privacy Button */}
                     <button
                       type="button"
                       onClick={() => {

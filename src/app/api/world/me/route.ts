@@ -18,12 +18,13 @@ const patchSchema = z.object({
   handle: z.string().regex(HANDLE_RE, "3–24 lowercase letters, digits or underscores").optional(),
   bio: z.string().max(280).nullable().optional(),
   regionSlug: z.string().nullable().optional(),
+  tags: z.array(z.string().trim().min(1).max(30)).max(15).optional(),
 });
 
 export const PATCH = handle(async (req: NextRequest) => {
   const user = await requireWorldUser(req);
   const body = await parseBody(req, patchSchema);
-  const data: { handle?: string; bio?: string | null; regionId?: string | null } = {};
+  const data: { handle?: string; bio?: string | null; regionId?: string | null; tags?: string[] } = {};
 
   if (body.handle !== undefined && body.handle !== user.handle) {
     const taken = await prisma.user.findUnique({ where: { handle: body.handle } });
@@ -31,6 +32,7 @@ export const PATCH = handle(async (req: NextRequest) => {
     data.handle = body.handle;
   }
   if (body.bio !== undefined) data.bio = body.bio;
+  if (body.tags !== undefined) data.tags = body.tags;
   if (body.regionSlug !== undefined) {
     if (body.regionSlug === null) data.regionId = null;
     else {
@@ -40,5 +42,5 @@ export const PATCH = handle(async (req: NextRequest) => {
     }
   }
   const updated = await prisma.user.update({ where: { id: user.id }, data });
-  return ok({ handle: updated.handle, bio: updated.bio, regionId: updated.regionId });
+  return ok({ handle: updated.handle, bio: updated.bio, regionId: updated.regionId, tags: updated.tags });
 });

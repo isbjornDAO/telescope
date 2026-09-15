@@ -6,6 +6,8 @@ import { notifyNewReply } from "@/lib/discord/notify";
 import { viewerFromRequest } from "@/lib/world/viewer";
 import { audienceFromBody, canReadThread, distinctPosterCount, ownerOf, readablePosts } from "@/lib/world/forum-access";
 import { describeMissing, isOwner, serializeAudience } from "@/lib/world/audience";
+import { calculateLevel, getRankInfo, getXpForNextLevel, getXpProgress } from "@/lib/xp";
+import { isAdmin, isAdminWallet } from "@/lib/auth";
 
 // Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
@@ -62,11 +64,50 @@ export async function GET(
     // outbound Discord call per anonymous post.
     const postsWithUserData = await Promise.all(
       thread.posts.map(async (post) => {
-        if (post.anonymous !== false) return { ...post, user: undefined };
+        if (post.anonymous !== false) {
+          return {
+            ...post,
+            isOp: false,
+            user: undefined,
+          };
+        }
+
+        if (!post.walletAddress) return { ...post, user: undefined };
 
         const user = await prisma.user.findUnique({
           where: { address: post.walletAddress },
-          select: { createdAt: true, discordId: true, username: true }
+          select: {
+            createdAt: true,
+            discordId: true,
+            username: true,
+            handle: true,
+            bio: true,
+            xp: true,
+            coins: true,
+            level: true,
+            nodeType: true,
+            faction: {
+              select: {
+                name: true,
+                slug: true,
+                avatar: true,
+              }
+            },
+            collectables: {
+              take: 5,
+              select: {
+                collectable: {
+                  select: {
+                    id: true,
+                    collectableId: true,
+                    name: true,
+                    imageUrl: true,
+                    rarity: true,
+                  }
+                }
+              }
+            }
+          }
         });
 
         const postCount = await prisma.post.count({
@@ -98,15 +139,43 @@ export async function GET(
           }
         }
 
-        return {
-          ...post,
-          user: user ? {
+        let enrichedUser = undefined;
+        if (user) {
+          const xp = user.xp ?? 0;
+          const level = calculateLevel(xp);
+          const rankInfo = getRankInfo(level);
+          const xpProgress = getXpProgress(xp);
+          const xpForNextLevel = getXpForNextLevel(xp);
+          const isAdminUser = isAdmin(user.discordId ?? undefined) || isAdminWallet(post.walletAddress);
+          const badges = (user.collectables || [])
+            .map((c) => c.collectable)
+            .filter(Boolean);
+
+          enrichedUser = {
             createdAt: user.createdAt,
             postCount,
             discordId: user.discordId,
             username: discordUsername,
-            discordAvatar
-          } : undefined
+            discordAvatar,
+            handle: user.handle,
+            bio: user.bio,
+            xp,
+            coins: user.coins ?? 0,
+            level,
+            nodeType: user.nodeType,
+            faction: user.faction,
+            isAdmin: isAdminUser,
+            rankTitle: rankInfo.title,
+            rankTheme: rankInfo.theme,
+            xpProgress,
+            xpForNextLevel,
+            badges,
+          };
+        }
+
+        return {
+          ...post,
+          user: enrichedUser
         };
       })
     );
@@ -191,6 +260,7 @@ export async function POST(
 
     // Create post and update thread in a transaction
     const result = await prisma.$transaction(async (tx) => {
+      const isAnon = anonymous !== undefined ? Boolean(anonymous) : true;
       const post = await tx.post.create({
         data: {
           threadId: thread.id,
@@ -198,8 +268,8 @@ export async function POST(
           imageHash: imageHash || null,
           walletAddress,
           posterId,
-          isOp: isOpPost,
-          anonymous: anonymous !== undefined ? anonymous : true,
+          isOp: isAnon ? false : isOpPost,
+          anonymous: isAnon,
           audience: serializeAudience(audience) as never
         }
       });

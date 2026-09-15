@@ -88,22 +88,22 @@ export default function RootLayout({
               <div className="bg relative overflow-hidden flex flex-col justify-between">
                 <ParallaxBanner />
                 <div className="relative z-10 flex flex-col justify-between flex-1 h-full">
-                  <Toaster />
                   <Navbar />
                 </div>
               </div>
-              <main className="flex-1 -mt-4 sm:-mt-8 relative z-20 pb-16">
+              <main className="flex-1 -mt-4 sm:-mt-8 relative z-20 pb-16 sm:pb-20">
                 <div className="w-full max-w-screen-lg mx-auto px-2.5 sm:px-4">
                   <div className="retro-shell overflow-hidden min-h-[650px] flex flex-col">
                     <PageNavigation />
                     <div className="p-2.5 sm:p-4 flex-1">
                       {children}
                     </div>
+                    <Footer />
                   </div>
                 </div>
               </main>
-              <Footer />
             </div>
+            <Toaster />
           </Web3Provider>
         </ThemeProvider>
         <Analytics />

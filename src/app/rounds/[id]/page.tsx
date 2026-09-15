@@ -9,13 +9,12 @@ import {
   WorldPage,
   RetroBox,
   Empty,
-  LoadingBlock,
   ErrorBlock,
   StatusBadge,
   fmtDateTime,
 } from "@/components/world/primitives";
+import { MatchupRoundSkeleton } from "@/components/ui/retro-skeletons";
 import { WorldGate } from "@/components/world/world-gate";
-import { Button } from "@/components/ui/button";
 
 interface RoundView {
   id: string;
@@ -55,7 +54,7 @@ export default function RoundPage() {
 
   return (
     <WorldPage wide>
-      {isLoading && <LoadingBlock />}
+      {isLoading && <MatchupRoundSkeleton />}
       {error && <ErrorBlock error={error} />}
 
       {data && (

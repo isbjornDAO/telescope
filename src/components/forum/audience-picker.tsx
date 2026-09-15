@@ -1,9 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Globe, Lock } from "lucide-react";
+import { Globe, Lock, ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EVERYONE, describeAudience, type Audience, type NodeType } from "@/lib/world/audience";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 /**
  * Choosing who can read what you are about to post.
@@ -67,7 +73,7 @@ function choicesFor(opts: AudienceOptions): Choice[] {
   return out;
 }
 
-export function AudiencePicker({
+export function AudienceDropdown({
   value,
   onChange,
   options = {},
@@ -78,7 +84,96 @@ export function AudiencePicker({
   options?: AudienceOptions;
   className?: string;
 }) {
+  const choices = choicesFor(options);
+  const restricted = value.kind !== "everyone";
+  const current = describeAudience(value);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-all border outline-none",
+            restricted
+              ? "border-sky-300 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900/50 shadow-sm"
+              : "border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600",
+            className
+          )}
+          aria-label="Audience access level"
+        >
+          {restricted ? (
+            <Lock className="h-3.5 w-3.5 flex-shrink-0 text-sky-600 dark:text-sky-400" />
+          ) : (
+            <Globe className="h-3.5 w-3.5 flex-shrink-0 text-zinc-500 dark:text-zinc-400" />
+          )}
+          <span className="truncate max-w-[140px] sm:max-w-[180px]">{current}</span>
+          <ChevronDown className="h-3 w-3 text-muted-foreground opacity-60" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        className="w-64 p-1.5 z-50 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-xl"
+      >
+        <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-zinc-100 dark:border-zinc-800 mb-1 flex items-center justify-between">
+          <span>Audience Access</span>
+          <span className="text-[9px] font-normal lowercase opacity-75">who can view</span>
+        </div>
+        {choices.map((c) => {
+          const selected = describeAudience(c.audience) === current;
+          const isRestricted = c.audience.kind !== "everyone";
+          return (
+            <DropdownMenuItem
+              key={c.key}
+              onClick={() => onChange(c.audience)}
+              className={cn(
+                "flex items-start justify-between gap-2 p-2 rounded-md cursor-pointer text-xs transition-colors",
+                selected
+                  ? "bg-sky-50 dark:bg-sky-950/40 text-sky-900 dark:text-sky-100 font-medium"
+                  : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              )}
+            >
+              <div className="flex items-start gap-2 min-w-0">
+                {isRestricted ? (
+                  <Lock className="h-3.5 w-3.5 mt-0.5 text-sky-600 dark:text-sky-400 flex-shrink-0" />
+                ) : (
+                  <Globe className="h-3.5 w-3.5 mt-0.5 text-zinc-500 dark:text-zinc-400 flex-shrink-0" />
+                )}
+                <div className="flex flex-col min-w-0">
+                  <span className="truncate">{c.label}</span>
+                  <span className="text-[10px] text-muted-foreground font-normal leading-tight">
+                    {c.hint}
+                  </span>
+                </div>
+              </div>
+              {selected && <Check className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400 flex-shrink-0 ml-1 mt-0.5" />}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export function AudiencePicker({
+  value,
+  onChange,
+  options = {},
+  variant = "bar",
+  className,
+}: {
+  value: Audience;
+  onChange: (a: Audience) => void;
+  options?: AudienceOptions;
+  variant?: "bar" | "pill";
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
+
+  if (variant === "pill") {
+    return <AudienceDropdown value={value} onChange={onChange} options={options} className={className} />;
+  }
+
   const choices = choicesFor(options);
   const restricted = value.kind !== "everyone";
   const current = describeAudience(value);

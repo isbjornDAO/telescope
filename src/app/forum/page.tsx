@@ -42,11 +42,9 @@ export default function ForumPage() {
 
       {/* Main Boards Box */}
       <section className="retro-box">
-        <div className="retro-box-title">
-          <div className="retro-box-icon slate">
-            <MessageSquare className="h-5 w-5 drop-shadow-sm" />
-          </div>
-          <span className="font-bold text-xs sm:text-sm text-zinc-700 dark:text-zinc-200 px-3 uppercase tracking-wider">
+        <div className="retro-box-title px-3.5 sm:px-4 gap-2">
+          <MessageSquare className="h-4 w-4 text-[#2689BF] dark:text-[#52aae0] shrink-0" />
+          <span className="font-bold text-sm text-zinc-800 dark:text-zinc-100">
             Discussion Boards
           </span>
         </div>

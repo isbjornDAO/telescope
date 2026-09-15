@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { handle, ok } from "@/lib/world/api";
 import { seasonPhase, seasonWeek } from "@/lib/world/seasons";
-import { MOCK_SEASON_ROW } from "@/lib/world/mock-tournaments";
 
 export const dynamic = "force-dynamic";
 
@@ -28,10 +27,6 @@ export const GET = handle(async () => {
     sponsors: s.sponsors,
     victor: victorBySeason.get(s.id) ?? null,
   }));
-
-  if (!mapped.some((s) => s.phase === "building" || s.phase === "voting")) {
-    mapped.unshift(MOCK_SEASON_ROW);
-  }
 
   return ok(mapped);
 });

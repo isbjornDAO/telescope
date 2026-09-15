@@ -40,11 +40,9 @@ export function AdminWrapper({ children }: { children: React.ReactNode }) {
     return (
       <div className="w-full py-8">
         <div className="retro-box max-w-md mx-auto">
-          <div className="retro-box-title">
-            <div className="retro-box-icon rose">
-              <ShieldAlert className="h-4 w-4" />
-            </div>
-            <span className="font-bold text-xs uppercase tracking-wider text-zinc-800 dark:text-zinc-200 px-3">
+          <div className="retro-box-title px-3.5 sm:px-4 gap-2">
+            <ShieldAlert className="h-4 w-4 text-[#2689BF] dark:text-[#52aae0] shrink-0" />
+            <span className="font-bold text-sm text-zinc-800 dark:text-zinc-100">
               Admin Access Required
             </span>
           </div>
@@ -66,11 +64,9 @@ export function AdminWrapper({ children }: { children: React.ReactNode }) {
     return (
       <div className="w-full py-8">
         <div className="retro-box max-w-md mx-auto">
-          <div className="retro-box-title">
-            <div className="retro-box-icon rose">
-              <ShieldAlert className="h-4 w-4" />
-            </div>
-            <span className="font-bold text-xs uppercase tracking-wider text-zinc-800 dark:text-zinc-200 px-3">
+          <div className="retro-box-title px-3.5 sm:px-4 gap-2">
+            <ShieldAlert className="h-4 w-4 text-[#2689BF] dark:text-[#52aae0] shrink-0" />
+            <span className="font-bold text-sm text-zinc-800 dark:text-zinc-100">
               Access Denied
             </span>
           </div>

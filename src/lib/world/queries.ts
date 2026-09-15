@@ -76,7 +76,7 @@ export async function alliedFactionIds(factionId: string | null, seasonNumber: n
 
 /** The three-layer public profile. Aggregates and proofs, never names unless chosen. */
 export async function publicProfile(user: User, opts: { owner?: boolean } = {}) {
-  const [aggregates, proofs, crews, faction, region, intents, entries, standingEvents] = await Promise.all([
+  const [aggregates, proofs, crews, faction, region, intents, entries, standingEvents, userBadges] = await Promise.all([
     loadTrustAggregates(user.id, user.trustScore),
     prisma.proof.findMany({
       where: { userId: user.id },
@@ -99,6 +99,11 @@ export async function publicProfile(user: User, opts: { owner?: boolean } = {}) 
       orderBy: { createdAt: "desc" },
     }),
     prisma.standingEvent.findMany({ where: { targetType: "USER", targetId: user.id }, orderBy: { createdAt: "desc" }, take: 20 }),
+    prisma.userBadge.findMany({
+      where: { userId: user.id },
+      include: { badge: true },
+      orderBy: { awardedAt: "desc" },
+    }),
   ]);
 
   return {
@@ -108,6 +113,19 @@ export async function publicProfile(user: User, opts: { owner?: boolean } = {}) 
     nodeType: user.nodeType,
     band: aggregates.band,
     standing: user.standing,
+    level: user.level ?? 1,
+    tags: user.tags ?? [],
+    badges: userBadges.map((ub) => ({
+      id: ub.badge.id,
+      title: ub.badge.name,
+      desc: ub.badge.description,
+      icon: ub.badge.icon,
+      rarity: ub.badge.rarity,
+      bg: ub.badge.bg || "from-amber-400 to-amber-600",
+      awardedAt: ub.awardedAt.toISOString(),
+      reason: ub.reason,
+      awardedBy: ub.awardedBy,
+    })),
     region,
     faction,
     crews: crews.map((c) => ({ ...c.crew, role: c.role, isLead: c.isLead })),
@@ -124,6 +142,7 @@ export async function publicProfile(user: User, opts: { owner?: boolean } = {}) 
       !opts.owner && e.amount < 0 && e.reason.startsWith("Slashing") ? { ...e, reason: "Stake called on a vouch (see findings)" } : e
     ),
     since: user.createdAt,
+    address: user.address,
   };
 }
 

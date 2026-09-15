@@ -12,8 +12,6 @@ import {
   Crown,
   Trophy,
   GitBranch,
-  Shield,
-  Layers,
   Send,
 } from "lucide-react";
 import { useWorldQuery, useWorldMutation, worldFetch } from "@/hooks/use-world";
@@ -21,12 +19,12 @@ import {
   WorldPage,
   RetroBox,
   Empty,
-  LoadingBlock,
   ErrorBlock,
   TournamentBadge,
   StatusBadge,
   fmtDate,
 } from "@/components/world/primitives";
+import { EntryDetailSkeleton } from "@/components/ui/retro-skeletons";
 import { WorldGate } from "@/components/world/world-gate";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -72,7 +70,7 @@ export default function EntryPage() {
 
   return (
     <WorldPage wide>
-      {isLoading && <LoadingBlock lines={6} />}
+      {isLoading && <EntryDetailSkeleton />}
       {error && <ErrorBlock error={error} />}
 
       {data && (

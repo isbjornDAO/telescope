@@ -6,6 +6,7 @@ import { Address } from "viem";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useUserStats } from "@/hooks/use-user-stats";
+import { ShopCardSkeleton } from "@/components/ui/retro-skeletons";
 import { Gift } from "lucide-react";
 import Image from "next/image";
 
@@ -28,7 +29,7 @@ interface Reward {
 export default function ClaimPage() {
   const { address, isConnected } = useAccount();
   const { toast } = useToast();
-  const { data: userStats, refetch: refetchUserStats } = useUserStats(
+  const { data: userStats, isLoading: isUserStatsLoading, refetch: refetchUserStats } = useUserStats(
     address as Address,
     isConnected
   );
@@ -149,16 +150,16 @@ export default function ClaimPage() {
                 </h2>
               </div>
               <span className="text-[10px] text-white/80 font-mono">
-                {userStats?.coins ?? 0} Coins Available
+                {isUserStatsLoading && !userStats ? (
+                  <span className="inline-block w-14 h-3 bg-white/30 animate-pulse rounded" />
+                ) : (
+                  `${userStats?.coins ?? 0} Coins Available`
+                )}
               </span>
             </div>
             <div className="space-y-4">
               {loading ? (
-                <>
-                  {[1, 2].map((i) => (
-                    <div key={i} className="h-48 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded-lg" />
-                  ))}
-                </>
+                <ShopCardSkeleton count={2} />
               ) : rewards.length > 0 ? (
                 rewards.filter(reward => reward.available > 0).map((reward) => {
                   const isMysteriousKey = reward.name === 'Mysterious Key';

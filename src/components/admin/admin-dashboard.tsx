@@ -100,7 +100,7 @@ export interface AdminDashboardProps {
     id: string;
     claimedAt: string;
     user: { address: string; discordId: string | null; username: string | null };
-    reward: { name: string; xpRequired: number; imageUrl: string };
+    reward: { name: string; xpRequired: number; imageUrl?: string | null } | null;
   }>;
   projects: Array<{
     id: string;
@@ -450,7 +450,7 @@ export function AdminDashboard({
                           </div>
                           <div className="min-w-0">
                             <span className="font-semibold text-zinc-900 dark:text-zinc-100 block truncate">
-                              {claim.reward.name}
+                              {claim.reward?.name || "Deleted Reward"}
                             </span>
                             <span className="text-[11px] text-muted-foreground">
                               {claim.user.address.slice(0, 6)}...{claim.user.address.slice(-4)} {claim.user.discordId ? `· Discord: ${claim.user.discordId}` : ""}
@@ -838,7 +838,7 @@ export function AdminDashboard({
                       <tr key={claim.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/40">
                         <td className="py-2.5 font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                           <span className="text-base">🎁</span>
-                          {claim.reward.name}
+                          {claim.reward?.name || "Deleted Reward"}
                         </td>
                         <td className="py-2.5">
                           <Link href={`/profile/${claim.user.address}`} className="hover:text-sky-500 hover:underline">
@@ -849,7 +849,7 @@ export function AdminDashboard({
                           {claim.user.discordId || "—"}
                         </td>
                         <td className="py-2.5 font-bold tabular-nums">
-                          {claim.reward.xpRequired} XP
+                          {claim.reward?.xpRequired ?? 0} XP
                         </td>
                         <td className="py-2.5 text-right text-muted-foreground">
                           {fmtDateTime(claim.claimedAt)}

@@ -52,10 +52,14 @@ export function RetroBox({
   return (
     <div className={cn("retro-box", className)}>
       {title && (
-        <div className="retro-box-title justify-between pr-3">
-          <div className="flex items-center min-w-0">
-            {icon && <div className={cn("retro-box-icon", iconColor)}>{icon}</div>}
-            <span className="font-bold text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 px-3 uppercase tracking-wider truncate">
+        <div className="retro-box-title justify-between px-3.5 sm:px-4">
+          <div className="flex items-center gap-2 min-w-0">
+            {icon && (
+              <span className="text-[#2689BF] dark:text-[#52aae0] shrink-0 [&>svg]:h-4 [&>svg]:w-4">
+                {icon}
+              </span>
+            )}
+            <span className="font-bold text-sm text-zinc-800 dark:text-zinc-100 truncate">
               {title}
             </span>
           </div>
