@@ -8,7 +8,6 @@ import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
 
 import { ConnectButton } from "@/components/connect-button";
-import { BackButton } from "@/components/back-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { TABS, ADMIN_TAB } from "@/components/page-navigation";
@@ -28,9 +27,6 @@ export function Navbar() {
     <header className="w-full bg-transparent flex flex-col justify-between flex-1 h-full">
       <TopTicker />
       <div className="w-full relative flex-1 min-h-[160px] sm:min-h-[200px] md:min-h-[240px] max-w-screen-lg mx-auto pt-3 md:pt-5 pb-3 md:pb-4 px-4 md:px-8 flex items-start justify-end">
-        <div className="flex items-center gap-4 absolute left-4 top-3 md:left-8 md:top-5 z-10">
-          <BackButton />
-        </div>
         <Link href="/" className="contents">
           <Image
             src="/logo.png"

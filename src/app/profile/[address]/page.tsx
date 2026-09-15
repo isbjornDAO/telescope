@@ -33,6 +33,7 @@ import {
   fmtDate,
   ErrorBlock,
 } from "@/components/world/primitives";
+import { getRankInfo } from "@/lib/xp";
 import { ProfileSkeleton } from "@/components/ui/retro-skeletons";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -242,6 +243,11 @@ export default function ProfilePage() {
 
   // Real level from database (userStats.level or profile.level, fallback to 1)
   const level = userStats?.level ?? profile?.level ?? 1;
+  const rank = getRankInfo(level);
+
+  // Preferred display name: Discord name -> profile.name -> Explorer
+  const discordName = discordUser?.global_name || discordUser?.username || userStats?.username;
+  const displayName = discordName || profile?.name || "Explorer";
 
   return (
     <WorldPage wide>
@@ -249,141 +255,163 @@ export default function ProfilePage() {
       {error && <ErrorBlock error={error} />}
 
       {profile && (
-        <div className="space-y-6">
-          {/* ── Cover Banner + Hero Identity ─────────────────────────── */}
-          <div className="retro-box overflow-hidden shadow-sm relative z-20">
-            {/* Cover photo area — Share/Edit buttons float top-right */}
-            <div className="retro-profile-cover relative z-20">
-              <div className="retro-cover-actions">
-                {targetAddress && (
-                  <button
-                    onClick={() => handleCopyAddress(targetAddress)}
-                    className="retro-btn retro-btn-gray px-2.5 py-1 text-xs inline-flex items-center gap-1.5 shadow-sm"
-                    title="Copy C-Chain address"
-                  >
-                    {copied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                    <span>{copied ? "Copied" : "Share"}</span>
-                  </button>
-                )}
-                {isOwn && (
-                  <EditProfile
-                    profile={profile}
-                    open={isEditOpen}
-                    setOpen={setIsEditOpen}
-                    onUpdated={() => mutateProfile()}
-                  />
-                )}
+        <div className="space-y-4">
+          {/* ── Cover Profile Banner (Standalone Baccons style) ──────────── */}
+          <div className="bc-cover-profile">
+            {isOwn && (
+              <div className="absolute top-2 right-2 z-20">
+                <button
+                  onClick={() => setIsEditOpen(true)}
+                  className="retro-btn retro-btn-gray px-2.5 py-1 text-xs inline-flex items-center gap-1.5 shadow-sm bg-black/40 text-white border-white/20 hover:bg-black/60"
+                >
+                  <Pencil className="w-3 h-3" />
+                  <span>Edit Profile</span>
+                </button>
               </div>
-            </div>
-
-            {/* Hero strip: avatar bottom-left overlapping cover + identity text */}
-            <div className="retro-profile-hero">
-              {/* Avatar — Baccons-style photo stamp anchored bottom-left */}
-              <div className="retro-profile-avatar-frame flex items-center justify-center overflow-hidden">
-                {discordUser?.avatar_url ? (
-                  <img
-                    src={discordUser.avatar_url}
-                    alt={discordUser.global_name || discordUser.username}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-tr from-[#2495D4] to-[#43B2EE] flex items-center justify-center font-bold text-white text-3xl shadow-inner">
-                    {profile.handle
-                      ? profile.handle.slice(0, 2).toUpperCase()
-                      : targetAddress
-                      ? targetAddress.slice(2, 4).toUpperCase()
-                      : "0X"}
-                  </div>
-                )}
-              </div>
-
-              {/* Identity: name / handle / discord / badge — rendered over cover dark gradient */}
-              <div className="retro-profile-identity">
-                <h1>{profile.name}</h1>
-                {profile.handle && (
-                  <span className="handle">@{profile.handle}</span>
-                )}
-                {(discordUser?.global_name || discordUser?.username) && (
-                  <span className="text-[11px] flex items-center gap-1" style={{ color: "rgba(255,255,255,0.82)", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>
-                    <svg className="w-3 h-3" style={{ color: "#7b8ee8" }} viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.03.056a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
-                    </svg>
-                    {discordUser.global_name || discordUser.username}
-                  </span>
-                )}
-                <div className="mt-1">
-                  <NodeBadge nodeType={profile.nodeType || "NODE"} />
-                </div>
-              </div>
-            </div>
-
-            {/* Sub-hero strip: wallet chip + 3-cell stats */}
-            <div className="retro-profile-subhero">
-              {targetAddress && (
-                <div className="flex items-center gap-1 text-[11px] font-mono text-muted-foreground bg-zinc-100 dark:bg-zinc-800/80 px-2.5 py-1 rounded-md border border-zinc-200 dark:border-zinc-700">
-                  <span>
-                    {targetAddress.slice(0, 6)}...{targetAddress.slice(-4)}
-                  </span>
-                  <a
-                    href={`https://snowtrace.io/address/${targetAddress}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:text-sky-600 transition-colors ml-1"
-                    title="View on Snowtrace"
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                </div>
-              )}
-              {/* 3-Cell Metric Strip */}
-              <div className="retro-stat-counters">
-                <div>
-                  <div className="text-base font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">
-                    {forumStats?.totalThreads ?? 0}
-                  </div>
-                  <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                    Topics
-                  </div>
-                </div>
-                <div className="border-x border-zinc-200 dark:border-zinc-700">
-                  <div className="text-base font-bold text-[#2495D4] dark:text-sky-400 tabular-nums">
-                    Lvl {level}
-                  </div>
-                  <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                    {userStats?.xp ?? 0} XP
-                  </div>
-                </div>
-                <div>
-                  <div className="text-base font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
-                    {profile.standing ?? 100}
-                  </div>
-                  <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                    Standing
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Dual-Column Magazine Layout (32% Left Identity / 68% Right Feed) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* ── LEFT COLUMN: Bio, Tags, Affiliations ────────── */}
-            <div className="lg:col-span-4 space-y-5">
-              {/* "About Me" Bio Box */}
-              <div className="retro-box overflow-hidden">
-                <div className="retro-box-title bg-gradient-to-r from-[#2B83B7] to-[#1E6B99] text-white flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <UserIcon className="w-3.5 h-3.5 text-white" />
-                    <span className="font-bold text-xs uppercase tracking-wider text-white">About Me</span>
+          {isOwn && (
+            <EditProfile
+              profile={profile}
+              open={isEditOpen}
+              setOpen={setIsEditOpen}
+              onUpdated={() => mutateProfile()}
+            />
+          )}
+
+          {/* ── Dual-Column Layout (Left: Info / Right: Mural & Feed) ──── */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+            {/* ── LEFT COLUMN (Baccons .site.left) ───────────────────── */}
+            <div className="lg:col-span-4 space-y-4">
+              {/* Primary Profile Card with Avatar pulled up into cover */}
+              <div className="bc-box bc-profile-card">
+                <div className="bc-info-profile">
+                  {/* Avatar Stand (margin-top: -70px into cover, z-index: 30) */}
+                  <div className="bc-avatar-wrap">
+                    <div className="bc-foto flex items-center justify-center">
+                      {discordUser?.avatar_url ? (
+                        <img
+                          src={discordUser.avatar_url}
+                          alt={displayName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-tr from-[#2495D4] to-[#43B2EE] flex items-center justify-center font-bold text-white text-3xl shadow-inner">
+                          {profile.handle
+                            ? profile.handle.slice(0, 2).toUpperCase()
+                            : displayName && !displayName.startsWith("0x")
+                            ? displayName.slice(0, 2).toUpperCase()
+                            : targetAddress
+                            ? targetAddress.slice(2, 4).toUpperCase()
+                            : "0X"}
+                        </div>
+                      )}
+                      <div className="bc-overlay" />
+                    </div>
                   </div>
-                  <span className="text-[10px] text-white/80 font-mono">ID #{profile.since.slice(0, 4)}</span>
+
+                  {/* Username & Handle */}
+                  <h1>{displayName}</h1>
+                  {profile.handle ? (
+                    <p className="text-xs text-muted-foreground font-mono -mt-1 mb-1">@{profile.handle}</p>
+                  ) : discordUser?.username && discordUser.username.toLowerCase() !== displayName.toLowerCase() ? (
+                    <p className="text-xs text-muted-foreground font-mono -mt-1 mb-1 flex items-center justify-center gap-1">
+                      <svg className="w-3 h-3 text-[#5865F2]" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.03.056a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
+                      </svg>
+                      @{discordUser.username}
+                    </p>
+                  ) : null}
+
+                  {/* Forum Progression Tarja Rank Banner */}
+                  <div className="flex justify-center my-2">
+                    <div className={`retro-tarja ${rank.theme}`} title={`Rank: ${rank.title} (Level ${level})`}>
+                      <div className="retro-tarja-sheen-container"><div className="retro-tarja-sheen" /></div>
+                      <span className="retro-tarja-title">{rank.title}</span>
+                      <div className="retro-tarja-rank">Lvl. {level}</div>
+                    </div>
+                  </div>
+
+                  {/* Mini Badges Rack */}
+                  {profile.badges && profile.badges.length > 0 && (
+                    <div className="retro-badge-rack justify-center my-2">
+                      {profile.badges.map((b) => (
+                        <div key={b.id} className="retro-badge-chip" title={`${b.title} (${b.rarity})`}>
+                          <span className="text-sm select-none">{b.icon}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* 3-Column Stats Strip (Baccons .nums) */}
+                  <div className="bc-nums">
+                    <ul>
+                      <li>
+                        {forumStats?.totalThreads ?? 0}<br />
+                        <span>topics</span>
+                      </li>
+                      <li>
+                        <b>Lvl {level}</b><br />
+                        <span>level</span>
+                      </li>
+                      <li>
+                        <b>{profile.standing ?? 100}</b><br />
+                        <span>standing</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Favorite Topics (Skills / Tags) */}
+                  <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800">
+                    <div className="bc-skills-title">
+                      <span>Favorite Topics</span>
+                    </div>
+                    <div className="bc-tags-list">
+                      {profile.tags && profile.tags.length > 0 ? (
+                        profile.tags.map((tag) => (
+                          <span key={tag} className="bc-tag-item">
+                            #{tag}
+                          </span>
+                        ))
+                      ) : (
+                        <p className="text-[11px] text-muted-foreground italic">
+                          {isOwn
+                            ? "No favorite topics added yet."
+                            : "No favorite topics listed."}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Social / Links */}
+                  <div className="bc-social-list">
+                    {targetAddress && (
+                      <a
+                        href={`https://snowtrace.io/address/${targetAddress}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Snowtrace"
+                        className="hover:text-sky-500"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* "About Me" Bio Box */}
+              <div className="bc-box">
+                <div className="bc-box-title">
+                  <span><b>About</b> Me</span>
                 </div>
                 <div className="p-4 text-xs space-y-3">
                   <p className="leading-relaxed text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">
                     {profile.bio ||
                       (isOwn
-                        ? "You haven't written a bio yet. Click Edit to tell the community what you build!"
-                        : "This explorer hasn't added a bio yet.")}
+                        ? "You haven't written a bio yet. Click Edit Profile to introduce yourself!"
+                        : "This user hasn't added a bio yet.")}
                   </p>
                   <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[11px] text-muted-foreground">
                     <span className="flex items-center gap-1">
@@ -395,58 +423,11 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Focus & Domains Tags */}
-              <div className="retro-box overflow-hidden">
-                <div className="retro-box-title bg-gradient-to-r from-[#40586F] to-[#2B3B4B] text-white flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    <span className="font-bold text-xs uppercase tracking-wider text-white">Focus &amp; Domains</span>
-                  </div>
-                  {isOwn && (
-                    <button
-                      onClick={() => setIsEditOpen(true)}
-                      className="text-[10px] text-white/70 hover:text-white font-normal transition-colors"
-                    >
-                      Edit
-                    </button>
-                  )}
-                </div>
-                <div className="p-4 flex flex-wrap gap-1.5">
-                  {profile.tags && profile.tags.length > 0 ? (
-                    profile.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="retro-profile-tag bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-300 font-mono"
-                      >
-                        #{tag}
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-[11px] text-muted-foreground italic">
-                      {isOwn
-                        ? "No domains added yet. Click Edit to add your focus areas."
-                        : "No focus domains listed."}
-                    </p>
-                  )}
-                  {profile.faction && (
-                    <span className="retro-profile-tag bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-950/40 dark:border-indigo-800 dark:text-indigo-300">
-                      🛡️ {profile.faction.name}
-                    </span>
-                  )}
-                  {profile.region && (
-                    <span className="retro-profile-tag bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300">
-                      📍 {profile.region.name}
-                    </span>
-                  )}
-                </div>
-              </div>
-
               {/* Faction & Regional Alignment */}
               {(profile.faction || profile.region) && (
-                <div className="retro-box overflow-hidden">
-                  <div className="retro-box-title bg-gradient-to-r from-[#833F96] to-[#5D236E] text-white flex items-center gap-2">
-                    <Flag className="w-3.5 h-3.5 text-white" />
-                    <span className="font-bold text-xs uppercase tracking-wider text-white">Affiliations</span>
+                <div className="bc-box">
+                  <div className="bc-box-title azul">
+                    <span><b>Affiliations</b></span>
                   </div>
                   <div className="p-4 text-xs space-y-2.5">
                     {profile.faction && (
@@ -455,7 +436,7 @@ export default function ProfilePage() {
                           Faction
                         </div>
                         <div className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
-                          {profile.faction.name}
+                          🛡️ {profile.faction.name}
                         </div>
                         {profile.faction.vision && (
                           <p className="text-[11px] text-muted-foreground mt-0.5 italic">
@@ -470,7 +451,7 @@ export default function ProfilePage() {
                           Regional Node
                         </div>
                         <div className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
-                          {profile.region.name}
+                          📍 {profile.region.name}
                         </div>
                       </div>
                     )}
@@ -479,52 +460,50 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* ── RIGHT COLUMN: Wall, Badges, Topics, Tournaments ─── */}
-            <div className="lg:col-span-8 space-y-6">
-              {/* 1. Guestbook / Persistent Message Wall — TOP of right column */}
-              <div className="retro-box overflow-hidden shadow-sm">
-                <div className="retro-box-title bg-gradient-to-r from-[#40586F] to-[#2B3B4B] text-white flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-3.5 h-3.5 text-white" />
-                    <span className="font-bold text-xs uppercase tracking-wider text-white">
-                      Message Wall ({wallMessages?.length ?? 0})
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-white/80 font-medium">Verified Guestbook</span>
+            {/* ── RIGHT COLUMN (Baccons .site.right) ──────────────────── */}
+            <div className="lg:col-span-8 space-y-4">
+              {/* 1. Message Wall (Persistent Guestbook) */}
+              <div className="bc-box">
+                <div className="bc-box-title">
+                  <span><b>Message</b> Wall ({wallMessages?.length ?? 0})</span>
                 </div>
 
-                <div className="p-4 sm:p-5 space-y-4">
-                  {/* Composer for Guestbook */}
+                <div className="p-4 space-y-4">
+                  {/* Comment Composer */}
                   <div className="space-y-2">
                     <Textarea
-                      placeholder={`Leave a message on ${profile.name}'s wall...`}
+                      placeholder={`Leave a message on ${displayName}'s wall...`}
                       value={wallInput}
                       onChange={(e) => setWallInput(e.target.value)}
                       maxLength={500}
                       rows={2}
-                      className="text-xs bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 rounded-md focus:border-sky-500"
+                      className="text-xs bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 rounded focus:border-sky-500"
                     />
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] text-muted-foreground">
-                        {wallInput.length}/500 chars
+                        {wallInput.length}/500 characters
                       </span>
                       <button
                         onClick={() => postWallMutation.mutate(undefined)}
                         disabled={!wallInput.trim() || postWallMutation.isPending}
-                        className="retro-btn retro-btn-green px-4 py-1.5 text-xs font-bold uppercase inline-flex items-center gap-1.5 disabled:opacity-50"
+                        className="bc-btn-action text-xs font-bold inline-flex items-center gap-1.5 disabled:opacity-50"
                       >
                         <Send className="w-3 h-3" />
-                        <span>{postWallMutation.isPending ? "Signing..." : "Sign Wall"}</span>
+                        <span>{postWallMutation.isPending ? "Posting..." : "Post Message"}</span>
                       </button>
                     </div>
                   </div>
 
-                  {/* Messages Feed */}
-                  <div className="space-y-3 pt-2">
+                  {/* Messages Timeline */}
+                  <div className="space-y-3 pt-1">
                     {!wallMessages || wallMessages.length === 0 ? (
-                      <p className="text-xs text-muted-foreground text-center py-4">
-                        No signatures on this node&apos;s wall yet. Be the first to leave a greeting!
-                      </p>
+                      <div className="bc-alert-box">
+                        <h3 className="flex items-center gap-1.5">
+                          <Flag className="w-3.5 h-3.5 text-sky-500" />
+                          <span>No messages yet</span>
+                        </h3>
+                        <p>Be the first to leave a greeting on this wall.</p>
+                      </div>
                     ) : (
                       wallMessages.map((msg) => {
                         const canDelete =
@@ -533,35 +512,29 @@ export default function ProfilePage() {
                           (!!currentAccount && msg.authorAddress?.toLowerCase() === currentAccount.toLowerCase());
 
                         return (
-                          <div
-                            key={msg.id}
-                            className="p-3 rounded bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs flex gap-3 items-start group relative transition-colors hover:border-zinc-300 dark:hover:border-zinc-700"
-                          >
-                            <div className="w-8 h-8 rounded bg-sky-100 dark:bg-sky-950 border border-sky-300 dark:border-sky-800 flex items-center justify-center font-bold text-sky-700 dark:text-sky-300 text-xs flex-shrink-0">
+                          <div key={msg.id} className="bc-box-comment">
+                            <div className="bc-comment-avatar flex items-center justify-center font-bold text-sky-700 dark:text-sky-300 text-sm bg-sky-50 dark:bg-sky-950">
                               {msg.authorName.slice(0, 2).replace(/^@/, "").toUpperCase()}
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono text-xs">
-                                  {msg.authorName}
-                                </span>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[10px] text-muted-foreground">{fmtDate(msg.createdAt)}</span>
+                            <div className="bc-comment-right">
+                              <div className="bc-comment-bubble">
+                                <div className="bc-name">
+                                  <span className="font-mono text-xs text-zinc-900 dark:text-zinc-100">{msg.authorName}</span>
                                   {canDelete && (
                                     <button
                                       onClick={() => handleDeleteWallMessage(msg.id)}
-                                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500 transition-opacity p-0.5"
-                                      title="Delete signature"
-                                      aria-label="Delete signature"
+                                      className="text-muted-foreground hover:text-red-500 p-0.5"
+                                      title="Delete message"
                                     >
                                       <Trash2 className="w-3 h-3" />
                                     </button>
                                   )}
                                 </div>
+                                <p className="whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">{msg.content}</p>
+                                <div className="bc-info">
+                                  <span>{fmtDate(msg.createdAt)}</span>
+                                </div>
                               </div>
-                              <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                                {msg.content}
-                              </p>
                             </div>
                           </div>
                         );
@@ -571,37 +544,27 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* 2. Official Team-Awarded Badges Showcase */}
-              <div className="retro-box shadow-sm relative">
-                <div className="retro-box-title bg-gradient-to-r from-[#FAC72B] to-[#D98200] text-white flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Award className="w-4 h-4 text-white" />
-                    <span className="font-bold text-xs uppercase tracking-wider text-white drop-shadow-sm">
-                      Protocol Badges ({profile.badges?.length ?? 0})
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-white/90 font-medium hidden sm:inline">
-                      Official Honors
-                    </span>
-                    {me?.isAdmin && (
-                      <AwardBadgeDialog
-                        target={profile.handle || targetAddress || rawKey}
-                        onAwarded={() => mutateProfile()}
-                      />
-                    )}
-                  </div>
+              {/* 2. Protocol Badges Showcase */}
+              <div className="bc-box">
+                <div className="bc-box-title">
+                  <span><b>Protocol</b> Badges ({profile.badges?.length ?? 0})</span>
+                  {me?.isAdmin && (
+                    <AwardBadgeDialog
+                      target={profile.handle || targetAddress || rawKey}
+                      onAwarded={() => mutateProfile()}
+                    />
+                  )}
                 </div>
 
-                <div className="p-4 sm:p-5">
+                <div className="p-4">
                   {!profile.badges || profile.badges.length === 0 ? (
                     <div className="text-center py-6 px-4 space-y-1.5">
-                      <Award className="w-8 h-8 text-amber-500/40 mx-auto" />
+                      <Award className="w-8 h-8 text-sky-500/40 mx-auto" />
                       <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                         No official badges awarded yet
                       </p>
                       <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
-                        Badges are granted by the Telescope team for protocol milestones, tournament leadership, and community contributions.
+                        Badges are awarded by the Telescope team for protocol milestones and ecosystem contributions.
                       </p>
                     </div>
                   ) : (
@@ -613,7 +576,6 @@ export default function ProfilePage() {
                           title={`${b.title} — ${b.desc} (${b.rarity})`}
                         >
                           <span className="text-xl select-none filter drop-shadow-sm">{b.icon}</span>
-                          {/* Rich Tooltip on hover */}
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50 w-48 p-2.5 bg-zinc-950 text-white text-[10px] rounded-md shadow-xl pointer-events-none text-center border border-zinc-700">
                             <div className="font-bold text-amber-300">{b.title}</div>
                             <div className="text-zinc-300 text-[9px] mt-0.5 leading-tight">{b.desc}</div>
@@ -632,24 +594,17 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* 3. User Topics & Forum Activity */}
-              <div className="retro-box overflow-hidden shadow-sm">
-                <div className="retro-box-title bg-gradient-to-r from-[#2495D4] to-[#126391] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4 text-white" />
-                    <span className="font-bold text-xs uppercase tracking-wider text-white drop-shadow-sm">
-                      Discussions & Topics ({userPosts?.length ?? 0})
-                    </span>
-                  </div>
-
-                  {/* Search inside topics bar (Retro style) */}
-                  <div className="relative w-full sm:w-48">
+              {/* 3. Topics on forum */}
+              <div className="bc-box">
+                <div className="bc-box-title azul">
+                  <span><b>Discussions</b> & Topics ({userPosts?.length ?? 0})</span>
+                  <div className="relative w-36 sm:w-48">
                     <input
                       type="text"
                       placeholder="Search topics..."
                       value={topicSearch}
                       onChange={(e) => setTopicSearch(e.target.value)}
-                      className="w-full h-6 pl-6 pr-2 text-[11px] rounded bg-white/20 text-white placeholder-white/70 border border-white/30 focus:outline-none focus:bg-white focus:text-zinc-900 dark:focus:bg-zinc-800 dark:focus:text-zinc-100 transition-all"
+                      className="w-full h-6 pl-6 pr-2 text-[11px] rounded bg-white/20 text-white placeholder-white/70 border border-white/30 focus:outline-none focus:bg-white focus:text-zinc-900 transition-all"
                     />
                     <Search className="w-3 h-3 text-white/70 absolute left-2 top-1.5 pointer-events-none" />
                   </div>
@@ -658,7 +613,7 @@ export default function ProfilePage() {
                 <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
                   {filteredPosts.length === 0 ? (
                     <div className="p-6 text-center text-xs text-muted-foreground">
-                      No forum topics found for this node.
+                      No topics found for this user.
                     </div>
                   ) : (
                     filteredPosts.slice(0, 6).map((post) => (
@@ -671,7 +626,7 @@ export default function ProfilePage() {
                             {post.isOp && (
                               <span
                                 className="retro-op-badge"
-                                title="Original Poster (Thread Creator)">
+                                title="Topic Author">
                                 OP
                               </span>
                             )}
@@ -697,19 +652,16 @@ export default function ProfilePage() {
               </div>
 
               {/* 4. Tournaments & Shipped Artifacts */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {/* Tournaments History */}
-                <div className="retro-box overflow-hidden shadow-sm">
-                  <div className="retro-box-title bg-gradient-to-r from-[#54C301] to-[#3B8F00] text-white flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Trophy className="w-3.5 h-3.5 text-white" />
-                      <span className="font-bold text-xs uppercase tracking-wider text-white">Season Tournaments</span>
-                    </div>
-                    <span className="text-[10px] text-white/80 font-bold">{profile.seasonHistory.length}</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Tournaments */}
+                <div className="bc-box">
+                  <div className="bc-box-title azul">
+                    <span><b>Season</b> Tournaments</span>
+                    <span className="text-[10px] opacity-80 font-bold">{profile.seasonHistory.length}</span>
                   </div>
                   <div className="p-3 text-xs">
                     {profile.seasonHistory.length === 0 ? (
-                      <p className="text-muted-foreground py-3 text-center">No tournament entries yet.</p>
+                      <p className="text-muted-foreground py-3 text-center">No tournaments entered yet.</p>
                     ) : (
                       <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
                         {profile.seasonHistory.map((e) => (
@@ -730,17 +682,14 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Shipped Proofs */}
-                <div className="retro-box overflow-hidden shadow-sm">
-                  <div className="retro-box-title bg-gradient-to-r from-[#2495D4] to-[#126391] text-white flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Package className="w-3.5 h-3.5 text-white" />
-                      <span className="font-bold text-xs uppercase tracking-wider text-white">Shipped Proofs</span>
-                    </div>
+                <div className="bc-box">
+                  <div className="bc-box-title azul">
+                    <span><b>Shipped</b> Proofs</span>
                     {isOwn && <AddProof onAdded={() => mutateProfile()} />}
                   </div>
                   <div className="p-3 text-xs">
                     {profile.shipped.length === 0 ? (
-                      <p className="text-muted-foreground py-3 text-center">No shipped artifacts listed.</p>
+                      <p className="text-muted-foreground py-3 text-center">No shipped proofs listed yet.</p>
                     ) : (
                       <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
                         {profile.shipped.map((p) => (
@@ -809,12 +758,6 @@ function EditProfile({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className="retro-btn retro-btn-blue px-3 py-1 text-xs font-bold inline-flex items-center gap-1.5 shadow-sm">
-          <Pencil className="w-3 h-3" />
-          <span>Edit Profile</span>
-        </button>
-      </DialogTrigger>
       <DialogContent className="retro-box p-0 border-0 overflow-hidden max-w-md">
         <div className="retro-box-title bg-gradient-to-r from-[#2B83B7] to-[#1E6B99] text-white">
           <span className="font-bold text-sm">Edit Your Profile</span>
@@ -982,7 +925,7 @@ function AwardBadgeDialog({ target, onAwarded }: { target: string; onAwarded: ()
         </button>
       </DialogTrigger>
       <DialogContent className="retro-box p-0 border-0 overflow-hidden max-w-md">
-        <div className="retro-box-title bg-gradient-to-r from-[#FAC72B] to-[#D98200] text-white flex items-center gap-2">
+        <div className="retro-box-title bg-gradient-to-r from-[#2495D4] to-[#126391] text-white flex items-center gap-2">
           <Award className="w-4 h-4 text-white" />
           <span className="font-bold text-sm">Award Official Badge</span>
         </div>

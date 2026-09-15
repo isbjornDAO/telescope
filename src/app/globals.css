@@ -1955,158 +1955,451 @@ header nav.retro-ticker .msg .comments {
 }
 
 
-/* ── Retro Profile Styles ─────────────────────── */
-.retro-profile-cover {
-  height: 220px;
+/* ── Baccons Authentic Profile Styles (Telescope Brand Colors) ── */
+.bc-breadcrumb {
+  background-color: #F4F4F5;
+  background-image: linear-gradient(#FAFAFA, #F0F0F2);
+  border: 1px solid #E4E4E7;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  height: 38px;
+  font-size: 12.5px;
+  color: #52525B;
+  margin-bottom: 12px;
+}
+.dark .bc-breadcrumb {
+  background-color: #18181b;
+  background-image: linear-gradient(#202024, #18181b);
+  border-color: #27272a;
+  color: #A1A1AA;
+}
+.bc-breadcrumb ul {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+}
+.bc-breadcrumb ul li {
+  color: #71717A;
+  font-size: 12px;
+}
+.dark .bc-breadcrumb ul li {
+  color: #A1A1AA;
+}
+.bc-breadcrumb ul li.active {
+  font-weight: 700;
+  color: #18181B;
+}
+.dark .bc-breadcrumb ul li.active {
+  color: #FAFAFA;
+}
+
+.bc-cover-profile {
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12);
   background-color: #2495D4;
   background-image: linear-gradient(135deg, #1A6C9B 0%, #2495D4 50%, #4FB6EE 100%);
-  border-radius: 6px 6px 0 0;
+  border-radius: 6px;
+  height: 190px;
   position: relative;
   overflow: hidden;
   border: 1px solid #C8C8C8;
-  border-bottom: none;
-}
-/* Pixel-grid pattern overlay */
-.retro-profile-cover::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-  background-size: 18px 18px;
-  pointer-events: none;
-  z-index: 0;
-}
-/* Bottom gradient fade for avatar/identity legibility */
-.retro-profile-cover::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 80px;
-  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
-  pointer-events: none;
   z-index: 1;
 }
-.dark .retro-profile-cover {
+.dark .bc-cover-profile {
   background-color: #1a2a38;
   background-image: linear-gradient(135deg, #10212f 0%, #1e3a52 50%, #274b6b 100%);
   border-color: #333338;
 }
 
-/* Cover action buttons (Share / Edit) — top-right */
-.retro-cover-actions {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+/* Base box styles */
+.bc-box {
+  background-color: #FFFFFF;
+  border: 1px solid #D4D4D8;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.dark .bc-box {
+  background-color: #18181b;
+  border-color: #27272a;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Left Profile Card: MUST HAVE overflow: visible so avatar floats over cover */
+.bc-profile-card {
+  overflow: visible !important;
+  position: relative;
   z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
-/* Profile hero: avatar bottom-left of cover, overlapping downward */
-.retro-profile-hero {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  gap: 16px;
-  padding: 0 20px 0 20px;
-  /* avatar overlap: pull up into the cover */
-  margin-top: -66px;
-  z-index: 10;
-}
-
-.retro-profile-avatar-frame {
-  width: 130px;
-  height: 130px;
-  border: 4px solid #FFFFFF;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(0, 0, 0, 0.12);
-  border-radius: 10px;
-  background: #F4F4F5;
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-  z-index: 11;
-}
-.dark .retro-profile-avatar-frame {
-  border-color: #3f3f46;
-  background: #18181b;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.08);
-}
-
-/* Identity strip next to avatar */
-.retro-profile-identity {
-  padding-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-  /* Text on cover bottom needs white color */
-  color: #FFFFFF;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-}
-.retro-profile-identity h1 {
-  font-size: 1.3rem;
-  font-weight: 800;
-  line-height: 1.15;
-  color: #FFFFFF;
-  letter-spacing: -0.01em;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.7);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.retro-profile-identity .handle {
-  font-size: 11px;
-  color: rgba(255,255,255,0.82);
-  font-family: monospace;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-}
-
-/* Below-hero strip: wallet chip + stats (inside white card area) */
-.retro-profile-subhero {
+.bc-box-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding: 10px 20px;
-  border-bottom: 1px solid #E4E4E7;
-  background: transparent;
+  height: 40px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 5px 5px 0 0;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.25);
 }
-.dark .retro-profile-subhero {
-  border-color: #2e2e33;
-}
-.retro-profile-subhero .retro-stat-counters {
-  margin: 0;
-  min-width: 240px;
+.bc-box-title b {
+  font-weight: 800;
+  margin-right: 3px;
 }
 
-@media (max-width: 640px) {
-  .retro-profile-cover {
-    height: 160px;
-  }
-  .retro-profile-hero {
-    margin-top: -48px;
-    padding: 0 12px;
-    gap: 12px;
-  }
-  .retro-profile-avatar-frame {
-    width: 96px;
-    height: 96px;
-  }
-  .retro-profile-identity h1 {
-    font-size: 1.1rem;
-  }
-  .retro-profile-subhero {
-    padding: 8px 12px;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .retro-profile-subhero .retro-stat-counters {
-    width: 100%;
-  }
+/* Info profile inside left card */
+.bc-info-profile {
+  padding-bottom: 18px;
+  text-align: center;
+}
+
+/* Avatar Stand: high z-index, floats cleanly over the cover banner with ZERO clipping */
+.bc-info-profile .bc-avatar-wrap {
+  background-color: #FFFFFF;
+  border: 4px solid #FFFFFF;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22), 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  width: 140px;
+  height: 140px;
+  border-radius: 10px;
+  margin: -70px auto 0;
+  position: relative;
+  z-index: 30;
+  overflow: hidden;
+}
+.dark .bc-info-profile .bc-avatar-wrap {
+  background-color: #18181b;
+  border-color: #27272a;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+.bc-info-profile .bc-avatar-wrap .bc-foto {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.bc-info-profile .bc-avatar-wrap .bc-overlay {
+  border: 1px solid rgba(0,0,0,0.08);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  border-radius: 6px;
+}
+
+.bc-info-profile h1 {
+  margin: 12px auto 2px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #18181B;
+  letter-spacing: -0.01em;
+}
+.dark .bc-info-profile h1 {
+  color: #F4F4F5;
+}
+
+.bc-info-profile .bc-web {
+  margin: 4px 10px 10px;
+  font-size: 11.5px;
+  color: #71717A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.dark .bc-info-profile .bc-web {
+  color: #A1A1AA;
+}
+
+/* Nums stats 3-column strip */
+.bc-info-profile .bc-nums {
+  margin: 14px 12px;
+  background-color: #F4F4F5;
+  background-image: linear-gradient(#FFFFFF, #ECECEC);
+  border: 1px solid #D4D4D8;
+  border-radius: 6px;
+  padding: 8px 4px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.dark .bc-info-profile .bc-nums {
+  background-color: #202023;
+  background-image: linear-gradient(#27272a, #1d1d20);
+  border-color: #333338;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.bc-info-profile .bc-nums ul {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+}
+.bc-info-profile .bc-nums ul li {
+  padding: 0 4px;
+  font-size: 15px;
+  color: #18181B;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.dark .bc-info-profile .bc-nums ul li {
+  color: #F4F4F5;
+}
+.bc-info-profile .bc-nums ul li:nth-child(2) {
+  border-left: 1px solid #D4D4D8;
+  border-right: 1px solid #D4D4D8;
+}
+.dark .bc-info-profile .bc-nums ul li:nth-child(2) {
+  border-left-color: #333338;
+  border-right-color: #333338;
+}
+.bc-info-profile .bc-nums ul li span {
+  color: #71717A;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-top: 2px;
+}
+.dark .bc-info-profile .bc-nums ul li span {
+  color: #A1A1AA;
+}
+
+/* Telescope Brand Action Buttons */
+.bc-btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: #4f8aae;
+  background-image: linear-gradient(#5a9ec6, #3f7b9e);
+  border: 1px solid #2e5f7d;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.45), 0 2px 4px rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  padding: 0 16px;
+  height: 32px;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.bc-btn-action:hover {
+  background-color: #5596be;
+  background-image: linear-gradient(#65a9d2, #4784a8);
+}
+.bc-btn-action.success {
+  background-color: #43A047;
+  background-image: linear-gradient(#4CAF50, #388E3C);
+  border-color: #2E7D32;
+}
+
+.bc-btn-cog {
+  background-color: #ECECEC;
+  background-image: linear-gradient(#FFFFFF, #EBEBEB);
+  border: 1px solid #C4C4C4;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.8), 0 1px 2px rgba(0, 0, 0, 0.08);
+  color: #3F3F46;
+  padding: 0 10px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+.bc-btn-cog:hover {
+  background-color: #E2E2E2;
+  border-color: #AAAAAA;
+}
+.dark .bc-btn-cog {
+  background-color: #27272a;
+  background-image: linear-gradient(#27272a, #202023);
+  border-color: #3f3f46;
+  color: #E4E4E7;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* Skills / Tags in left card */
+.bc-info-profile .bc-skills-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #71717A;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.dark .bc-info-profile .bc-skills-title {
+  color: #A1A1AA;
+}
+.bc-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 12px;
+}
+.bc-tag-item {
+  background-color: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  box-shadow: 0 1px rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: monospace;
+  color: #334155;
+  transition: all 0.15s;
+}
+.bc-tag-item:hover {
+  background-color: #E2E8F0;
+}
+.dark .bc-tag-item {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+.dark .bc-tag-item:hover {
+  background-color: #334155;
+  color: #f1f5f9;
+}
+
+/* Social icons list */
+.bc-social-list {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px 0 2px;
+}
+.bc-social-list a {
+  color: #71717A;
+  transition: color 0.15s;
+}
+.bc-social-list a:hover {
+  color: #2495D4;
+}
+
+/* Comments list (Message Wall) */
+.bc-box-comment {
+  padding: 10px 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.bc-box-comment .bc-comment-avatar {
+  background-color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  width: 54px;
+  height: 54px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid #D4D4D8;
+  position: relative;
+}
+.dark .bc-box-comment .bc-comment-avatar {
+  background-color: #18181b;
+  border-color: #27272a;
+}
+.bc-box-comment .bc-comment-right {
+  flex: 1;
+  min-width: 0;
+}
+.bc-box-comment .bc-comment-bubble {
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 10px 14px;
+  position: relative;
+  font-size: 13px;
+  line-height: 17px;
+  color: #334155;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.dark .bc-box-comment .bc-comment-bubble {
+  background-color: #1c1c22;
+  border-color: #2e2e38;
+  color: #E2E8F0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+/* Speech bubble arrow pointing to avatar */
+.bc-box-comment .bc-comment-bubble:before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 10px 10px;
+  border-color: transparent transparent #F8FAFC transparent;
+  filter: drop-shadow(-1px 1px #CBD5E1) drop-shadow(-1px 0 #CBD5E1);
+  position: absolute;
+  left: -10px;
+  top: 16px;
+}
+.dark .bc-box-comment .bc-comment-bubble:before {
+  border-color: transparent transparent #1c1c22 transparent;
+  filter: drop-shadow(-1px 1px #2e2e38) drop-shadow(-1px 0 #2e2e38);
+}
+.bc-box-comment .bc-comment-bubble .bc-name {
+  color: #0F172A;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dark .bc-box-comment .bc-comment-bubble .bc-name {
+  color: #F8FAFC;
+}
+.bc-box-comment .bc-comment-bubble .bc-info {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+/* Alert box */
+.bc-alert-box {
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 14px;
+  color: #64748B;
+  font-size: 13px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.dark .bc-alert-box {
+  background-color: #1c1c22;
+  border-color: #2e2e38;
+  color: #94A3B8;
+}
+.bc-alert-box h3 {
+  font-weight: 700;
+  color: #0284C7;
+  margin-bottom: 2px;
+}
+.dark .bc-alert-box h3 {
+  color: #38BDF8;
+}
+.bc-alert-box p {
+  color: #64748B;
+  font-size: 12px;
+}
+.dark .bc-alert-box p {
+  color: #94A3B8;
 }
 
 .retro-stat-counters {
