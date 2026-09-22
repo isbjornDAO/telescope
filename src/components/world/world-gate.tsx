@@ -37,7 +37,7 @@ export function WorldGate({ children, message, compact }: { children: ReactNode;
               {s.signIn.error && <p className="text-red-600 mt-1">{(s.signIn.error as Error).message}</p>}
             </div>
           </div>
-          <Button className="snow-button" onClick={() => s.signIn.mutate()} disabled={s.signIn.isPending}>
+          <Button className="retro-btn-blue" onClick={() => s.signIn.mutate()} disabled={s.signIn.isPending}>
             {s.signIn.isPending ? "Waiting for signature…" : "Sign in"}
           </Button>
         </div>
@@ -51,7 +51,7 @@ export function SignInInline() {
   const s = useWorldSession();
   if (!s.isConnected || s.isSignedIn) return null;
   return (
-    <Button size="sm" className="snow-button" onClick={() => s.signIn.mutate()} disabled={s.signIn.isPending}>
+    <Button size="sm" className="retro-btn-blue" onClick={() => s.signIn.mutate()} disabled={s.signIn.isPending}>
       {s.signIn.isPending ? "Signing…" : "Sign in to the world"}
     </Button>
   );

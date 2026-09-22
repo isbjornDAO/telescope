@@ -50,7 +50,7 @@ export default function CrewPage() {
               {data.viewer.isLead && (
                 <div className="mt-4 flex gap-2">
                   <Input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="invite by name or wallet" />
-                  <Button size="sm" className="snow-button" onClick={() => invite.mutate(undefined)} disabled={invite.isPending || !handle}><UserPlus className="h-3.5 w-3.5" /></Button>
+                  <Button size="sm" className="retro-btn-blue" onClick={() => invite.mutate(undefined)} disabled={invite.isPending || !handle}><UserPlus className="h-3.5 w-3.5" /></Button>
                 </div>
               )}
               {invite.error && <p className="text-xs text-red-600 mt-1">{(invite.error as Error).message}</p>}

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { isAdmin } from "@/lib/auth";
+import { isAdmin, isAdminWallet } from "@/lib/auth";
 
 // Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
       where: { address: walletAddress },
     });
 
-    if (!user?.discordId || !isAdmin(user.discordId)) {
+    if (!isAdminWallet(walletAddress) && (!user?.discordId || !isAdmin(user.discordId))) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       where: { address: walletAddress },
     });
 
-    if (!user?.discordId || !isAdmin(user.discordId)) {
+    if (!isAdminWallet(walletAddress) && (!user?.discordId || !isAdmin(user.discordId))) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

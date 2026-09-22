@@ -9,6 +9,9 @@ export type SiteConfig = {
   };
   links: {
     twitter: string;
+    discord?: string;
+    telegram?: string;
+    github?: string;
   };
   ogImage: string;
 };

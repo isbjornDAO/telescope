@@ -3,10 +3,10 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useAccount } from "wagmi";
 import { Address } from "viem";
-import { PageNavigation } from "@/components/page-navigation";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useUserStats } from "@/hooks/use-user-stats";
+import { ShopCardSkeleton } from "@/components/ui/retro-skeletons";
 import { Gift } from "lucide-react";
 import Image from "next/image";
 
@@ -29,7 +29,7 @@ interface Reward {
 export default function ClaimPage() {
   const { address, isConnected } = useAccount();
   const { toast } = useToast();
-  const { data: userStats, refetch: refetchUserStats } = useUserStats(
+  const { data: userStats, isLoading: isUserStatsLoading, refetch: refetchUserStats } = useUserStats(
     address as Address,
     isConnected
   );
@@ -138,29 +138,34 @@ export default function ClaimPage() {
 
   return (
     <div className="w-full">
-      <div className="w-full max-w-screen-lg mx-auto pt-5 px-4 md:px-8 relative z-10 mb-16 md:mb-24 pb-8">
-        <PageNavigation />
-
+      <div className="w-full relative z-10 mb-8">
         <div className="space-y-6">
           {/* Available Rewards */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Gift className="h-6 w-6" />
-              <h2 className="text-2xl font-bold">Shop</h2>
+            <div className="retro-box-title bg-gradient-to-r from-[#54C301] to-[#3B8F00] text-white flex items-center justify-between gap-2 mb-4 rounded-md">
+              <div className="flex items-center gap-2">
+                <Gift className="h-4 w-4 text-white" />
+                <h2 className="text-xs uppercase tracking-wider font-bold text-white drop-shadow-sm">
+                  Shop & Protocol Rewards
+                </h2>
+              </div>
+              <span className="text-[10px] text-white/80 font-mono">
+                {isUserStatsLoading && !userStats ? (
+                  <span className="inline-block w-14 h-3 bg-white/30 animate-pulse rounded" />
+                ) : (
+                  `${userStats?.coins ?? 0} Coins Available`
+                )}
+              </span>
             </div>
             <div className="space-y-4">
               {loading ? (
-                <>
-                  {[1, 2].map((i) => (
-                    <div key={i} className="h-48 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded-lg" />
-                  ))}
-                </>
+                <ShopCardSkeleton count={2} />
               ) : rewards.length > 0 ? (
                 rewards.filter(reward => reward.available > 0).map((reward) => {
                   const isMysteriousKey = reward.name === 'Mysterious Key';
                   return (
                   <div key={reward.id} className="relative">
-                    <div className={`snow-button-card rounded-lg shadow-lg hover:shadow-xl transition-all overflow-hidden ${
+                    <div className={`rounded-lg shadow-lg hover:shadow-xl transition-all overflow-hidden ${
                       isMysteriousKey 
                         ? 'bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-950 dark:via-zinc-900 dark:to-blue-950 border-2 border-blue-300 dark:border-blue-700 animate-shimmer bg-[length:200%_100%]' 
                         : 'bg-zinc-100 dark:bg-zinc-800'
@@ -219,7 +224,7 @@ export default function ClaimPage() {
                                 reward.available <= 0 ||
                                 reward.hasClaimed
                               }
-                              className="snow-button sm:ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="retro-btn-blue sm:ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               {claiming === reward.id ? (
                                 "Claiming..."

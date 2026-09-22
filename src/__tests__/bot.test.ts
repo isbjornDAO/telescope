@@ -7,23 +7,23 @@ import type { ForumThreadPayload } from '../types/discord';
 // Mock the Discord.js client
 jest.mock('discord.js');
 
-describe('Discord Bot Webhook Handler', () => {
-  let mockReq: Partial<Request>;
-  let mockRes: Partial<Response>;
-  let mockClient: jest.Mocked<Client>;
+let mockReq: Partial<Request>;
+let mockRes: Partial<Response>;
+let mockClient: any;
 
+describe('Discord Bot Webhook Handler', () => {
   beforeEach(() => {
     // Reset mocks before each test
     mockRes = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn().mockReturnThis(),
+      status: jest.fn<any>().mockReturnThis(),
+      json: jest.fn<any>().mockReturnThis(),
     };
 
     mockClient = {
       channels: {
-        fetch: jest.fn(),
+        fetch: jest.fn<any>(),
       },
-    } as unknown as jest.Mocked<Client>;
+    };
 
     process.env.DISCORD_BOT_TOKEN = 'mock-token';
     process.env.DISCORD_GENERAL_CHANNEL_ID = 'mock-channel';
@@ -57,7 +57,7 @@ describe('Discord Bot Webhook Handler', () => {
     };
 
     const mockChannel = {
-      send: jest.fn().mockResolvedValue(true),
+      send: jest.fn<any>().mockResolvedValue(true),
       isTextBased: () => true,
     };
 
@@ -102,11 +102,13 @@ async function handleWebhook(req: Request, res: Response) {
 
     const channel = await mockClient.channels.fetch(process.env.DISCORD_GENERAL_CHANNEL_ID);
     if (!channel) {
-      return res.status(500).json({ error: 'Channel not found' });
+      return res.status!(500).json!({ error: 'Channel not found' });
     }
 
-    return res.json({ ok: true });
+    await channel.send(payload);
+
+    return res.json!({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status!(500).json!({ error: 'Internal server error' });
   }
 }

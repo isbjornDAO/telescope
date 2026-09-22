@@ -11,7 +11,9 @@ export const dynamic = "force-dynamic";
 
 export const GET = handle(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const round = await prisma.round.findUnique({ where: { id: params.id }, include: { season: { select: { number: true, name: true } } } });
-  if (!round) throw new WorldError("No such round.", 404);
+  if (!round) {
+    throw new WorldError("No such round.", 404);
+  }
   const entries = await prisma.entry.findMany({
     where: { seasonId: round.seasonId, tournament: round.tournament, status: { in: ["ACTIVE", "FINALIST", "WINNER", "ELIMINATED"] } },
     include: { crew: { select: { name: true, slug: true } }, faction: { select: { name: true, slug: true } }, author: { select: { handle: true, address: true } } },

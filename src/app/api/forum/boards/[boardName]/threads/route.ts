@@ -157,6 +157,7 @@ export async function POST(
         }
       });
 
+      const isAnon = anonymous !== undefined ? Boolean(anonymous) : true;
       const post = await tx.post.create({
         data: {
           threadId: thread.id,
@@ -164,8 +165,8 @@ export async function POST(
           imageHash: imageHash || null,
           walletAddress,
           posterId,
-          isOp: true,
-          anonymous: anonymous !== undefined ? anonymous : true
+          isOp: !isAnon,
+          anonymous: isAnon
         }
       });
 

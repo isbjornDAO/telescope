@@ -43,7 +43,7 @@ function NewCrew() {
   const create = useWorldMutation(async () => { await worldFetch("/api/world/crews", { method: "POST", body: { name, description } }); setOpen(false); setName(""); setDescription(""); });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button className="snow-button"><Plus className="h-4 w-4 mr-1" /> Form a crew</Button></DialogTrigger>
+      <DialogTrigger asChild><Button className="retro-btn-blue"><Plus className="h-4 w-4 mr-1" /> Form a crew</Button></DialogTrigger>
       <DialogContent>
         <DialogHeader><DialogTitle>Form a crew</DialogTitle></DialogHeader>
         <WorldGate message="Sign in to form a crew.">
@@ -52,7 +52,7 @@ function NewCrew() {
             <div><Label>What you ship</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} /></div>
             <p className="text-xs text-muted-foreground">You lead it. Region of origin is your home region. If you are in a faction, the crew joins it.</p>
             {create.error && <p className="text-sm text-red-600">{(create.error as Error).message}</p>}
-            <Button className="snow-button" onClick={() => create.mutate(undefined)} disabled={create.isPending || name.length < 2}>Create</Button>
+            <Button className="retro-btn-blue" onClick={() => create.mutate(undefined)} disabled={create.isPending || name.length < 2}>Create</Button>
           </div>
         </WorldGate>
       </DialogContent>

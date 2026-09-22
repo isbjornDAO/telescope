@@ -11,22 +11,22 @@ export const GET = handle(async () => {
   });
   const victors = await prisma.entry.findMany({ where: { isVictor: true }, select: { seasonId: true, title: true, id: true, crew: { select: { name: true, slug: true } } } });
   const victorBySeason = new Map(victors.map((v) => [v.seasonId, v]));
-  return ok(
-    seasons.map((s) => ({
-      number: s.number,
-      name: s.name,
-      theme: s.theme,
-      researchQuestion: s.researchQuestion,
-      startsAt: s.startsAt,
-      submissionsClose: s.submissionsClose,
-      endsAt: s.endsAt,
-      status: s.status,
-      phase: seasonPhase(s),
-      week: seasonWeek(s),
-      entries: s._count.entries,
-      poolAmount: s.poolAmount,
-      sponsors: s.sponsors,
-      victor: victorBySeason.get(s.id) ?? null,
-    }))
-  );
+  const mapped = seasons.map((s) => ({
+    number: s.number,
+    name: s.name,
+    theme: s.theme,
+    researchQuestion: s.researchQuestion,
+    startsAt: s.startsAt.toISOString(),
+    submissionsClose: s.submissionsClose.toISOString(),
+    endsAt: s.endsAt.toISOString(),
+    status: s.status,
+    phase: seasonPhase(s),
+    week: seasonWeek(s),
+    entries: s._count.entries,
+    poolAmount: s.poolAmount,
+    sponsors: s.sponsors,
+    victor: victorBySeason.get(s.id) ?? null,
+  }));
+
+  return ok(mapped);
 });

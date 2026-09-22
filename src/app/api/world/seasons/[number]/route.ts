@@ -11,7 +11,9 @@ export const GET = handle(async (req: NextRequest, { params }: { params: { numbe
   const number = Number(params.number);
   if (!Number.isInteger(number)) throw new WorldError("Season numbers are integers.", 422);
   const season = await prisma.season.findUnique({ where: { number } });
-  if (!season) throw new WorldError("No such season.", 404);
+  if (!season) {
+    throw new WorldError("No such season.", 404);
+  }
   const session = getWorldSession(req);
   const me = session ? await prisma.user.findFirst({ where: { address: { equals: session.address, mode: "insensitive" } }, select: { id: true } }) : null;
   return ok(await seasonView(season, me?.id ?? null), noStore);

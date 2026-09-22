@@ -4,14 +4,10 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { AudiencePicker, AudienceTag } from "@/components/forum/audience-picker";
-import { EVERYONE, serializeAudience, type Audience } from "@/lib/world/audience";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
+import { AudienceTag } from "@/components/forum/audience-picker";
+import { Composer } from "@/components/forum/composer";
+import { ThreadCardGridSkeleton } from "@/components/ui/retro-skeletons";
 import { useAccount } from "wagmi";
-import { PageNavigation } from "@/components/page-navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface Thread {
@@ -45,26 +41,7 @@ export default function BoardPage() {
 
   const [threads, setThreads] = useState<Thread[]>([]);
   const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
   const [showNewThread, setShowNewThread] = useState(false);
-  const [subject, setSubject] = useState("");
-  // Who may read the thread being written. Open unless the author narrows it.
-  const [audience, setAudience] = useState<Audience>(EVERYONE);
-  const [comment, setComment] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>("");
-  const [stayAnonymous, setStayAnonymous] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('stayAnonymous');
-      return saved !== null ? JSON.parse(saved) : false;
-    }
-    return false;
-  });
-
-  const handleAnonymousChange = (checked: boolean) => {
-    setStayAnonymous(checked);
-    localStorage.setItem('stayAnonymous', JSON.stringify(checked));
-  };
 
   useEffect(() => {
     fetchThreads();
@@ -83,209 +60,98 @@ export default function BoardPage() {
     }
   };
 
-  const createThread = async () => {
-    if (!address || !comment.trim() || !imageFile) return;
-
-    setCreating(true);
-    try {
-      // Upload image first
-      const formData = new FormData();
-      formData.append('file', imageFile);
-      
-      const uploadResponse = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      });
-      
-      const uploadData = await uploadResponse.json();
-      
-      if (!uploadData.url) {
-        throw new Error('Image upload failed');
-      }
-
-      const response = await fetch(`/api/forum/boards/${boardName}/threads`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          subject: subject.trim() || null,
-          comment,
-          walletAddress: address,
-          imageHash: uploadData.url,
-          anonymous: stayAnonymous,
-          audience: serializeAudience(audience)
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        if (data.xpAwarded) {
-          // Invalidate user stats to refresh XP display
-          queryClient.invalidateQueries({ queryKey: ["userStats", address] });
-          alert(`Thread created! You earned 1 XP. Total XP: ${data.newXp} (Level ${data.newLevel})`);
-        }
-        router.push(`/forum/thread/${data.threadId}`);
-      }
-    } catch (error) {
-      console.error("Error creating thread:", error);
-      alert('Failed to create thread. Please try again.');
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="w-full max-w-screen-lg mx-auto px-4 md:px-8 py-16">
-        <div className="h-12 w-48 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded mb-8" />
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded-lg" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full">
-      <div className="w-full max-w-screen-lg mx-auto pt-5 px-4 md:px-8 relative z-10 mb-4">
-        <PageNavigation />
-      </div>
-      <div className="w-full max-w-screen-lg mx-auto px-4 md:px-8 pb-16">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-          <Link href="/" className="hover:text-primary">Home</Link>
-          <span>›</span>
-          <Link href="/forum" className="hover:text-primary">Forum</Link>
-          <span>›</span>
-          <span className="text-foreground font-medium">/{boardName}/</span>
-        </div>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8">
-          <div>
-            <h1 className="text-2xl md:text-4xl font-bold" style={{ color: "var(--telescope-blue)" }}>/{boardName}/</h1>
+      <div className="w-full pb-16">
+        {/* Retro Board Header Bar */}
+        <div className="retro-topic-header mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="retro-btn retro-btn-gray px-2.5 py-1 text-xs font-semibold inline-flex items-center gap-1"
+            >
+              Home
+            </Link>
+            <span className="text-zinc-400 dark:text-zinc-600">/</span>
+            <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
+              /{boardName}/
+            </span>
           </div>
-        {isConnected && (
-          <Button onClick={() => setShowNewThread(!showNewThread)} className="w-full sm:w-auto">
-            {showNewThread ? "Cancel" : "New Thread"}
-          </Button>
-        )}
-        {!isConnected && (
-          <p className="text-sm text-muted-foreground">
-            Connect wallet to post
-          </p>
-        )}
-      </div>
+
+          <div className="flex items-center gap-2">
+            {isConnected ? (
+              <button
+                onClick={() => setShowNewThread(!showNewThread)}
+                className={`retro-btn px-4 py-1.5 text-xs font-bold uppercase tracking-wider ${
+                  showNewThread ? "retro-btn-gray" : "retro-btn-green"
+                }`}
+              >
+                {showNewThread ? "Cancel" : "New Thread"}
+              </button>
+            ) : (
+              <span className="text-xs text-muted-foreground font-medium">
+                Connect wallet to post
+              </span>
+            )}
+          </div>
+        </div>
 
       {showNewThread && (
-        <Card className="p-4 md:p-6 mb-8">
-          <h2 className="text-lg md:text-xl font-bold mb-4">Create New Thread</h2>
-          <div className="space-y-4">
-            <Input
-              placeholder="Subject (optional)"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              maxLength={100}
-              className="text-base"
-            />
-            <Textarea
-              placeholder="Write your post..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              rows={6}
-              className="text-base"
-            />
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Image (required) *
-              </label>
-              <Input
-                type="file"
-                accept="image/*,image/gif"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    setImageFile(file);
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      setImagePreview(reader.result as string);
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                }}
-                className="cursor-pointer"
-              />
-              {imagePreview && (
-                <div className="mt-4">
+        <div className="mb-8">
+          <Composer
+            boardName={boardName}
+            enableFloatingBar={false}
+            onPosted={(threadId) => {
+              setShowNewThread(false);
+              queryClient.invalidateQueries({ queryKey: ["userStats", address] });
+              router.push(`/forum/thread/${threadId}`);
+            }}
+          />
+        </div>
+      )}
+
+      {loading ? (
+        <ThreadCardGridSkeleton count={10} />
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+        {threads.map((thread) => (
+          <Link key={thread.id} href={`/forum/thread/${thread.id}`}>
+            <div className="retro-box p-3 hover:shadow-md transition h-full flex flex-col">
+              {/* Thread Image */}
+              {thread.posts[0]?.imageHash && (
+                <div className="w-full aspect-square overflow-hidden rounded bg-zinc-100 mb-2 border border-zinc-200 dark:border-zinc-700">
                   <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="max-w-full max-h-64 rounded border"
+                    src={thread.posts[0].imageHash}
+                    alt={thread.subject || 'Thread image'}
+                    className="w-full h-full object-cover"
                   />
                 </div>
               )}
-            </div>
-            <AudiencePicker value={audience} onChange={setAudience} />
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="anonymous"
-                checked={stayAnonymous}
-                onCheckedChange={(checked) => handleAnonymousChange(checked as boolean)}
-              />
-              <label
-                htmlFor="anonymous"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Stay Anonymous
-              </label>
-            </div>
-            <Button
-              onClick={createThread}
-              disabled={creating || !comment.trim() || !imageFile}
-              className="w-full"
-            >
-              {creating ? "Creating..." : "Create Thread"}
-            </Button>
-          </div>
-        </Card>
-      )}
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-        {threads.map((thread) => (
-          <Link key={thread.id} href={`/forum/thread/${thread.id}`}>
-            <div className="hover:opacity-80 transition-opacity cursor-pointer h-full">
-              <div className="p-3 bg-white dark:bg-zinc-900 rounded h-full flex flex-col">
-                {/* Thread Image */}
-                {thread.posts[0]?.imageHash && (
-                  <div className="w-full aspect-square overflow-hidden rounded bg-zinc-100 mb-2">
-                    <img
-                      src={thread.posts[0].imageHash}
-                      alt={thread.subject || 'Thread image'}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-
-                {/* Thread Info */}
-                <div className="space-y-1">
-                  <h3 className="font-semibold text-xs line-clamp-2 min-h-[2rem]">
+              {/* Thread Info */}
+              <div className="space-y-1 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-bold text-xs line-clamp-2 min-h-[2rem] text-zinc-800 dark:text-zinc-100">
                     {thread.subject || 'No Subject'}
                   </h3>
                   <p className="text-xs text-muted-foreground line-clamp-2">
                     {thread.posts[0]?.comment}
                   </p>
-                  <div className="flex flex-wrap items-center gap-1.5 text-xs pt-1">
-                    {/* text-white here was invisible on the white card it sits on. */}
-                    <span className="truncate text-muted-foreground">{thread.replyCount} replies</span>
-                    {thread.restricted && thread.audienceLabel && <AudienceTag label={thread.audienceLabel} />}
-                  </div>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs pt-2">
+                  <span className="retro-comments-badge text-zinc-700 dark:text-zinc-200">
+                    {thread.replyCount} {thread.replyCount === 1 ? "reply" : "replies"}
+                  </span>
+                  {thread.restricted && thread.audienceLabel && <AudienceTag label={thread.audienceLabel} />}
                 </div>
               </div>
             </div>
           </Link>
         ))}
       </div>
+      )}
 
-      {threads.length === 0 && (
+      {!loading && threads.length === 0 && (
         <Card className="p-12 text-center">
           <p className="text-muted-foreground mb-4">No threads yet. Be the first to post!</p>
           {!address && (

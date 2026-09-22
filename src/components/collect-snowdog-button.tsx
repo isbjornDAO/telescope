@@ -149,7 +149,7 @@ export function CollectSnowdogButton({ address }: CollectSnowdogButtonProps) {
   return (
     <div
       onClick={isEligible && !claiming && !checking ? handleCollect : undefined}
-      className="snow-button-card flex items-center justify-between p-4 rounded-lg cursor-pointer hover:shadow-lg transition-all bg-gradient-to-r from-blue-50/30 to-blue-100/30 dark:from-blue-950/30 dark:to-blue-900/30 border-2 border-blue-200 dark:border-blue-800"
+      className="flex items-center justify-between p-4 rounded-lg cursor-pointer hover:shadow-lg transition-all bg-gradient-to-r from-blue-50/30 to-blue-100/30 dark:from-blue-950/30 dark:to-blue-900/30 border-2 border-blue-200 dark:border-blue-800"
     >
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 bg-white dark:bg-zinc-900 rounded-lg border-2 border-blue-300 dark:border-blue-700 flex items-center justify-center overflow-hidden">
@@ -188,9 +188,9 @@ export function CollectSnowdogButton({ address }: CollectSnowdogButtonProps) {
             <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-400">Claimed</span>
           </div>
         ) : isEligible ? (
-          <div className="snow-button px-4 py-2">
-            <span className="text-sm font-semibold">Collect</span>
-          </div>
+          <button type="button" className="retro-btn-blue">
+            <span>Collect</span>
+          </button>
         ) : (
           <div className="px-4 py-2 bg-zinc-200/70 dark:bg-zinc-800/70 rounded-lg">
             <span className="text-sm font-semibold">Not Eligible</span>

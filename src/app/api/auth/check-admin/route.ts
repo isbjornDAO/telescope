@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAdmin } from "@/lib/auth";
+import { isAdmin, isAdminWallet } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 // Never executed at build time: this route touches the database.
@@ -15,6 +15,13 @@ export async function GET(request: Request) {
         { isAdmin: false, error: "Wallet address is required" },
         { status: 400 }
       );
+    }
+
+    if (isAdminWallet(walletAddress)) {
+      return NextResponse.json({ 
+        isAdmin: true,
+        discordId: "1078316901953966132" 
+      });
     }
 
     // Get user from database

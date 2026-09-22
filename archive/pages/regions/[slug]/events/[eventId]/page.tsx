@@ -37,7 +37,7 @@ export default function EventPage() {
               ) : (
                 <div className="mt-3 flex gap-2 max-w-sm">
                   <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="door code" className="font-mono" />
-                  <Button className="snow-button" onClick={() => checkin.mutate(undefined)} disabled={checkin.isPending || code.length < 4}>Check in</Button>
+                  <Button className="retro-btn-blue" onClick={() => checkin.mutate(undefined)} disabled={checkin.isPending || code.length < 4}>Check in</Button>
                 </div>
               )}
               {checkin.error && <p className="text-xs text-red-600 mt-1">{(checkin.error as Error).message}</p>}
@@ -46,7 +46,7 @@ export default function EventPage() {
 
           {data.attendees && (
             <Frost>
-              <SectionTitle icon={<Link2 className="h-4 w-4 text-sky-500" />} right={data.isAdmin ? <Button size="sm" className="snow-button" onClick={() => attest.mutate(undefined)} disabled={attest.isPending}>Attest the room{data.pendingVouches ? ` (${data.pendingVouches} pending)` : ""}</Button> : undefined}>People in the room</SectionTitle>
+              <SectionTitle icon={<Link2 className="h-4 w-4 text-sky-500" />} right={data.isAdmin ? <Button size="sm" className="retro-btn-blue" onClick={() => attest.mutate(undefined)} disabled={attest.isPending}>Attest the room{data.pendingVouches ? ` (${data.pendingVouches} pending)` : ""}</Button> : undefined}>People in the room</SectionTitle>
               <p className="text-xs text-muted-foreground mb-2">Vouch in person for someone you met here. Costs 1.0 of your budget. It counts once the region attests the room.</p>
               {attest.data && <p className="text-xs text-emerald-600 mb-2">Attested {attest.data.attested} vouches.</p>}
               {attest.error && <p className="text-xs text-red-600 mb-2">{(attest.error as Error).message}</p>}

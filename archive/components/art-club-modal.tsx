@@ -96,14 +96,14 @@ export function ArtClubModal() {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
-              <button className="snow-button flex-1" disabled>
+              <button className="retro-btn-blue flex-1" disabled>
                 Submissions Opening Soon
               </button>
               <a
                 href="https://discord.gg/K4z7xxFVGc"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="snow-button-secondary flex-1 text-center"
+                className="retro-btn-secondary flex-1 text-center"
               >
                 Join Discord for Updates
               </a>

@@ -11,7 +11,10 @@ export const siteConfig: SiteConfig = {
     author: "https://gabrielrusso.me",
   },
   links: {
-    twitter: "https://x.com/gabrielrvita",
+    twitter: "https://x.com/IsbjornDAO",
+    discord: "https://discord.gg/tyFug3Pz8G",
+    telegram: "https://t.me/iggyavax",
+    github: "https://github.com/isbjornDAO/telescope",
   },
   ogImage: `${env.NEXT_PUBLIC_APP_URL}/og.jpg`,
 };

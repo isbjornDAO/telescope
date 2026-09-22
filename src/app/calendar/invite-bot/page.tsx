@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PageNavigation } from "@/components/page-navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Copy, ExternalLink, CheckCircle } from "lucide-react";
@@ -34,10 +33,7 @@ export default function InviteBotPage() {
 
   return (
     <div className="w-full">
-      <div className="w-full max-w-screen-lg mx-auto pt-5 px-4 md:px-8 relative z-10 mb-4">
-        <PageNavigation />
-      </div>
-      <div className="w-full max-w-screen-lg mx-auto px-4 md:px-8 pb-16">
+      <div className="w-full max-w-screen-lg mx-auto px-4 md:px-8 pb-16 pt-4">
         <h1 className="text-2xl md:text-4xl font-bold mb-8">
           Invite Telescope Bot
         </h1>

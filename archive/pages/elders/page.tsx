@@ -92,7 +92,7 @@ function ReviewCard({ r }: { r: Review }) {
               {r.tournament === "RESEARCH_PAPERS" && <div className="grid gap-1"><Ten v={advances} set={setAdvances} label="Advances the question" /><Ten v={rigour} set={setRigour} label="Rigour and honesty" /><Ten v={buildable} set={setBuildable} label="Could a crew build from it" /></div>}
               <Textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={2} placeholder="Comment (kept with the review)" />
               {submit.error && <p className="text-xs text-red-600">{(submit.error as Error).message}</p>}
-              <Button size="sm" className="snow-button" onClick={() => submit.mutate(undefined)} disabled={submit.isPending || (r.tournament === "LOCAL_SYSTEMS" && r.stage === "round" && approve === null)}>Submit review</Button>
+              <Button size="sm" className="retro-btn-blue" onClick={() => submit.mutate(undefined)} disabled={submit.isPending || (r.tournament === "LOCAL_SYSTEMS" && r.stage === "round" && approve === null)}>Submit review</Button>
             </>
           )}
         </div>

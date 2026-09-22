@@ -65,6 +65,8 @@ model User {
   feedback        Feedback[]
   checkIns        EventCheckIn[]
   entriesAuthored Entry[]        @relation("EntryAuthor")
+  tags            String[]       @default([])
+  badges          UserBadge[]
 }
 
 // ─────────────────────────────────────────────────────────────────────
@@ -777,6 +779,9 @@ model Thread {
   // The author, so they can always read and narrow their own thread. Never
   // sent to a client that has not proven it owns it.
   ownerAddress String?
+
+  @@index([deleted, bumpedAt])
+  @@index([boardId, deleted, bumpedAt])
 }
 
 model Post {
@@ -793,6 +798,8 @@ model Post {
   // Who may read this post, set by its author. Narrows the thread above it
   // and can never widen it. Null is open.
   audience      Json?
+
+  @@index([threadId, createdAt])
 }
 
 model Reward {
@@ -819,7 +826,7 @@ model Claim {
   userId     String   @db.ObjectId
   user       User     @relation(fields: [userId], references: [id])
   rewardId   String   @db.ObjectId
-  reward     Reward   @relation(fields: [rewardId], references: [id])
+  reward     Reward?  @relation(fields: [rewardId], references: [id])
   claimedAt  DateTime @default(now())
   coinsSpent Int // Coins spent at time of claim
 }
@@ -849,3 +856,40 @@ model UserCollectable {
 
   @@unique([userId, collectableId]) // A user can only have one of each collectable
 }
+
+model WallMessage {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  profileAddress String   // The wallet address or handle of the profile this message was left on (lowercase)
+  authorAddress  String?  // The wallet address of the author if signed in
+  authorName     String   // Display name or handle of the author
+  content        String
+  createdAt      DateTime @default(now())
+
+  @@index([profileAddress])
+}
+
+model Badge {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  name        String      @unique
+  description String
+  icon        String      // Emoji or icon identifier
+  rarity      String      @default("Common") // Common, Rare, Epic, Legendary
+  bg          String?     // Tailwind gradient classes
+  createdAt   DateTime    @default(now())
+  userBadges  UserBadge[]
+}
+
+model UserBadge {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  badgeId   String   @db.ObjectId
+  badge     Badge    @relation(fields: [badgeId], references: [id])
+  awardedBy String?  // Admin address or team identifier
+  reason    String?  // Reason for awarding
+  awardedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+}
+

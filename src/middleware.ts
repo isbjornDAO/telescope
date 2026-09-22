@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { isAdmin } from "@/lib/auth";
+import { isAdmin, isAdminWallet } from "@/lib/auth";
 import { getWalletAddressCookie } from "@/lib/cookies";
 import { NextRequest } from "next/server";
 
@@ -45,12 +45,16 @@ export async function middleware(request: Request) {
       hasToken: !!token,
       walletAddress,
       discordId,
-      isAdmin: discordId ? isAdmin(discordId) : false
+      isAdmin: (discordId && isAdmin(discordId)) || (walletAddress && isAdminWallet(walletAddress))
     });
 
     const isAdminRoute = request.url.includes("/admin") || request.url.includes("/api/admin");
 
     if (isAdminRoute) {
+      if (walletAddress && isAdminWallet(walletAddress)) {
+        return NextResponse.next();
+      }
+
       // If we have a Discord ID and can confirm they're not admin, redirect
       if (discordId && !isAdmin(discordId)) {
         console.log("❌ User is not admin, redirecting to home");

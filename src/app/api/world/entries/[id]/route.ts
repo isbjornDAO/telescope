@@ -24,7 +24,9 @@ export const GET = handle(async (req: NextRequest, { params }: { params: { id: s
       retentionReports: { orderBy: { reportedAt: "desc" }, take: 12, select: { activeCount: true, walletCount: true, reportedAt: true } },
     },
   });
-  if (!entry || entry.status === "DRAFT") throw new WorldError("No such entry.", 404);
+  if (!entry || entry.status === "DRAFT") {
+    throw new WorldError("No such entry.", 404);
+  }
   const closed = entry.season.status === "CLOSED" || entry.season.status === "VESTED";
   const session = getWorldSession(req);
   const me = session ? await prisma.user.findFirst({ where: { address: { equals: session.address, mode: "insensitive" } }, select: { id: true } }) : null;

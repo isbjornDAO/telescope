@@ -147,7 +147,7 @@ export function ConnectDiscordButton() {
 
     return (<Button
         onClick={handleConnectDiscord}
-        className="snow-button w-full md:w-auto mt-2 md:mt-0"
+        className="retro-btn-blue w-full md:w-auto mt-2 md:mt-0"
     >
         Connect Discord
     </Button>);

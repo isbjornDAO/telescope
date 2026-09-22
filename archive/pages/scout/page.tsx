@@ -65,7 +65,7 @@ function ScoutInner() {
         <div className="space-y-6">
           <Frost>
             <SectionTitle icon={<Radar className="h-4 w-4 text-sky-500" />} right={
-              <Button size="sm" className="snow-button" onClick={() => run.mutate(undefined)} disabled={run.isPending || data.intents.filter((i) => i.active).length === 0}>
+              <Button size="sm" className="retro-btn-blue" onClick={() => run.mutate(undefined)} disabled={run.isPending || data.intents.filter((i) => i.active).length === 0}>
                 <Send className="h-3.5 w-3.5 mr-1" /> {run.isPending ? "Roaming…" : "Send the scout out"}
               </Button>
             }>What you are looking for</SectionTitle>
@@ -156,7 +156,7 @@ function NewIntent() {
       <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="tags, comma separated: solidity, zk, records, payments" />
       <Input value={minTrust} onChange={(e) => setMinTrust(e.target.value)} placeholder="minimum trust score of a match (optional, 0–1.5)" type="number" step="0.1" min="0" max="1.5" />
       {create.error && <p className="text-xs text-red-600">{(create.error as Error).message}</p>}
-      <Button size="sm" className="snow-button" onClick={() => create.mutate(undefined)} disabled={create.isPending || text.length < 10}>Save intent</Button>
+      <Button size="sm" className="retro-btn-blue" onClick={() => create.mutate(undefined)} disabled={create.isPending || text.length < 10}>Save intent</Button>
     </div>
   );
 }
@@ -203,7 +203,7 @@ function MatchCard({ m }: { m: Match }) {
               <Input value={history} onChange={(e) => setHistory(e.target.value)} placeholder="Chosen history (optional)" />
               {respond.error && <p className="text-xs text-red-600">{(respond.error as Error).message}</p>}
               <div className="flex gap-2">
-                <Button size="sm" className="snow-button" onClick={() => respond.mutate("accept")} disabled={respond.isPending || !name || !contact}><Check className="h-3.5 w-3.5 mr-1" /> Accept</Button>
+                <Button size="sm" className="retro-btn-blue" onClick={() => respond.mutate("accept")} disabled={respond.isPending || !name || !contact}><Check className="h-3.5 w-3.5 mr-1" /> Accept</Button>
                 <Button size="sm" variant="outline" onClick={() => respond.mutate("decline")} disabled={respond.isPending}><X className="h-3.5 w-3.5 mr-1" /> Decline</Button>
               </div>
             </div>

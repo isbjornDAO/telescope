@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { handle, ok, requireCronSecret } from "@/lib/world/api";
+import { requireWorldAdmin } from "@/lib/world/session";
 import { recomputeTrustScores } from "@/lib/world/trust-db";
 import { runRetentionChecks, tickSeasons } from "@/lib/world/seasons";
 import { cleanupScout } from "@/lib/world/scout";
@@ -9,11 +10,15 @@ export const maxDuration = 60;
 
 /**
  * The world's heartbeat. Run nightly (vercel.json cron) or by hand with the
- * cron secret: season transitions, round open/close, trust recompute,
+ * cron secret / world admin: season transitions, round open/close, trust recompute,
  * retention vesting, scout log retention.
  */
 async function tick(req: NextRequest) {
-  requireCronSecret(req);
+  try {
+    requireCronSecret(req);
+  } catch {
+    await requireWorldAdmin(req);
+  }
   const seasons = await tickSeasons();
   const trust = await recomputeTrustScores();
   const retention = await runRetentionChecks();

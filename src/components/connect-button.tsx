@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, LogOut, User } from "lucide-react";
+import { ChevronDown, LogOut, User, Wallet } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAccount, useDisconnect } from "wagmi";
 import { useUserStats } from "@/hooks/use-user-stats";
@@ -20,12 +19,49 @@ import { Address } from "viem";
 import { setWalletAddressCookie } from "@/lib/cookies";
 import { getXpProgress } from "@/lib/xp";
 
+/**
+ * Loading skeleton matching the exact footprint of the retro connection button.
+ */
+function ConnectButtonSkeleton({ isReconnecting = false }: { isReconnecting?: boolean }) {
+  if (isReconnecting) {
+    return (
+      <div
+        className="retro-btn-blue select-none pointer-events-none opacity-85 animate-pulse min-w-[150px] justify-between gap-2"
+        aria-hidden="true"
+      >
+        <div className="h-5 w-5 rounded-[3px] bg-white/30 shrink-0" />
+        <div className="w-20 h-3 rounded bg-white/25" />
+        <div className="w-8 h-4 rounded bg-black/15 shrink-0" />
+        <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-40" />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="retro-btn-blue select-none pointer-events-none opacity-90 animate-pulse min-w-[142px]"
+      aria-hidden="true"
+    >
+      <Wallet className="w-4 h-4 shrink-0 opacity-80" />
+      <span className="opacity-90">Connect Wallet</span>
+    </div>
+  );
+}
+
 export const ConnectButton = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const { disconnect } = useDisconnect();
-  const { address, isConnected } = useAccount();
-  const { data: userStats } = useUserStats(address as Address, isConnected);
+  const { address, isConnected, status } = useAccount();
+  const { data: userStats, isLoading: isUserStatsLoading } = useUserStats(
+    address as Address,
+    isConnected
+  );
   const { data: discordUser } = useUserDiscord(userStats?.discordId || "");
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   // Set cookie when wallet connects
   useEffect(() => {
@@ -33,6 +69,16 @@ export const ConnectButton = () => {
       setWalletAddressCookie(address);
     }
   }, [address, isConnected]);
+
+  // Initial SSR or pre-hydration render: display static button skeleton immediately
+  if (!hasMounted) {
+    return <ConnectButtonSkeleton />;
+  }
+
+  // Wagmi is in the process of reconnecting previous session: show account skeleton
+  if (status === "reconnecting") {
+    return <ConnectButtonSkeleton isReconnecting />;
+  }
 
   return (
     <RainbowConnectButton.Custom>
@@ -53,64 +99,56 @@ export const ConnectButton = () => {
           progress: progress,
         };
 
-        // Note: If your app doesn't use authentication, you
-        // can remove all 'authenticationStatus' checks
         const ready = mounted && authenticationStatus !== "loading";
         const connected =
           ready &&
           account &&
           chain &&
           (!authenticationStatus || authenticationStatus === "authenticated");
+
+        if (!ready) {
+          return <ConnectButtonSkeleton isReconnecting={status === "connecting"} />;
+        }
+
         return (
-          <div
-            {...(!ready && {
-              "aria-hidden": true,
-              style: {
-                opacity: 0,
-                pointerEvents: "none",
-                userSelect: "none",
-              },
-            })}
-          >
+          <div>
             {(() => {
               if (!connected) {
                 return (
-                  <Button
+                  <button
                     onClick={openConnectModal}
                     type="button"
-                    className="snow-button"
+                    className="retro-btn-blue"
                   >
-                    Connect Wallet
-                  </Button>
+                    <Wallet className="w-4 h-4 shrink-0" />
+                    <span>Connect Wallet</span>
+                  </button>
                 );
               }
               if (chain.unsupported) {
                 return (
-                  <Button
+                  <button
                     onClick={openChainModal}
-                    variant="destructive"
                     type="button"
+                    className="retro-btn-destructive"
                   >
                     Wrong network
-                  </Button>
+                  </button>
                 );
               }
               return (
                 <div style={{ display: "flex", gap: 12 }}>
                   <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="snow-button w-full justify-between gap-2 hover:text-white"
+                      <button
+                        type="button"
+                        className="retro-btn-blue w-full justify-between gap-2"
                       >
-                        {/* Face and level ride on the button itself. They used
-                            to be one tap away inside the menu, which is an odd
-                            place to keep the two things that say who you are
-                            and how far you have got. */}
-                        <Avatar className="h-6 w-6 flex-shrink-0 ring-1 ring-white/40">
-                          <AvatarImage src={discordUser?.avatar_url} alt="" />
-                          <AvatarFallback className="bg-white/20 text-white">
-                            <User className="h-3.5 w-3.5" />
+                        {/* Face and level ride on the button itself */}
+                        <Avatar className="h-5 w-5 flex-shrink-0 rounded-[3px] ring-1 ring-black/10">
+                          <AvatarImage src={discordUser?.avatar_url} alt="" className="rounded-[3px]" />
+                          <AvatarFallback className="bg-white/30 text-white text-[10px] font-bold rounded-[3px]">
+                            <User className="h-3 w-3" />
                           </AvatarFallback>
                         </Avatar>
                         {/* The name is the first thing to go when the header
@@ -119,15 +157,19 @@ export const ConnectButton = () => {
                         <span className="hidden sm:inline max-w-[9rem] truncate">
                           {discordUser?.username || userStats?.username || userStats?.discordId || account.displayName}
                         </span>
-                        <span className="flex-shrink-0 rounded-md bg-white/20 px-1.5 py-0.5 text-xs font-semibold tabular-nums">
-                          Lv {account.level}
+                        <span className="flex-shrink-0 rounded bg-black/10 px-1.5 py-0.5 text-[10px] font-bold tabular-nums">
+                          {isUserStatsLoading && !userStats ? (
+                            <span className="inline-block w-6 h-2.5 bg-white/30 animate-pulse rounded" />
+                          ) : (
+                            `Lv ${account.level}`
+                          )}
                         </span>
                         <ChevronDown
-                          className={`h-4 w-4 flex-shrink-0 transition-transform ${
+                          className={`h-3.5 w-3.5 flex-shrink-0 transition-transform ${
                             isOpen ? "rotate-180" : ""
                           }`}
                         />
-                      </Button>
+                      </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                       <DropdownMenuItem className="flex flex-col items-start">

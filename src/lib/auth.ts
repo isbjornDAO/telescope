@@ -26,9 +26,18 @@ export const ADMIN_DISCORD_IDS = [
   "1078316901953966132"
 ] as const;
 
+export const ADMIN_WALLETS = [
+  "0x2834f712f4d3badf695f313bdeea42d349bb1fac",
+] as const;
+
 export function isAdmin(discordId: string | undefined): boolean {
   if (!discordId) return false;
   return ADMIN_DISCORD_IDS.includes(discordId as typeof ADMIN_DISCORD_IDS[number]);
+}
+
+export function isAdminWallet(address: string | undefined): boolean {
+  if (!address) return false;
+  return ADMIN_WALLETS.includes(address.toLowerCase() as typeof ADMIN_WALLETS[number]);
 }
 
 export const authOptions: NextAuthOptions = {
