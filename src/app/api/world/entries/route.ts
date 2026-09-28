@@ -20,7 +20,8 @@ const schema = z.object({
   body: z.string().max(60000).optional(),
   url: z.string().url().optional(),
   repoUrl: z.string().url().optional(),
-  deployedOn: z.enum(["C-Chain", "L1", "Iggy"]).optional(),
+  deployedOn: z.enum(["Avalanche", "C-Chain", "L1", "Iggy", "Chainlink", "Midnight", "Other"]).optional(),
+  researchEventId: z.string().optional(),
   crewSlug: z.string().optional(),
   regionSlug: z.string().optional(),
   ethicsStatement: z.string().max(4000).optional(),
@@ -31,10 +32,10 @@ const schema = z.object({
 });
 
 /**
- * Enter a tournament. GTM: crews only, deployed on Avalanche, with a
- * roadmap and a definition of a meaningful transaction. Local Systems: a
- * design with an ethics statement and the community it serves. Research
- * Papers: private; reviewers never see who wrote it.
+ * Enter a tournament. GTM: a working product (default Avalanche; Chainlink,
+ * Midnight, and other destinations allowed) with a link. Local Systems: a
+ * design with an ethics statement. Research Papers: private; reviewers never
+ * see who wrote it. When researchEventId is set, the entry joins that bounty.
  */
 export const POST = handle(async (req: NextRequest) => {
   const user = await requireWorldUser(req);
@@ -61,6 +62,14 @@ export const POST = handle(async (req: NextRequest) => {
     if (body.allianceId && PROPOSALS.alliancesCannotPoolGtm) throw new WorldError("Teams enter this one separately.", 422);
   }
   if (tournament === "RESEARCH_PAPERS" && !body.body) throw new WorldError("Paste the text of your paper.", 422);
+
+  let researchEventId: string | undefined;
+  if (body.researchEventId) {
+    const event = await prisma.researchEvent.findUnique({ where: { id: body.researchEventId } });
+    if (!event) throw new WorldError("No such research event.", 404);
+    if (event.status !== "LIVE") throw new WorldError("That research bounty is not open.", 409);
+    researchEventId = event.id;
+  }
 
   let regionId: string | undefined;
   if (body.regionSlug) {
@@ -91,6 +100,7 @@ export const POST = handle(async (req: NextRequest) => {
       factionId,
       allianceId,
       regionId,
+      researchEventId,
       ethicsStatement: body.ethicsStatement,
       roadmap: body.roadmap,
       metrics: [],

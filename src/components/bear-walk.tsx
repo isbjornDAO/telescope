@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import {
   Play,
   Pause,
@@ -21,6 +22,10 @@ export interface BearWalkProps {
   className?: string;
   defaultSize?: number;
   initialPatrol?: boolean;
+  /** Bare stage — bear walks with no control chrome. */
+  immersive?: boolean;
+  /** Pin to the bottom of the viewport (outside page chrome). */
+  screenWalk?: boolean;
 }
 
 const BEAR_MESSAGES = [
@@ -35,9 +40,12 @@ export function BearWalk({
   className,
   defaultSize = 140,
   initialPatrol = true,
+  immersive = false,
+  screenWalk = false,
 }: BearWalkProps) {
   const characterRef = useRef<AnimatedCharacterRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   const [currentAnim, setCurrentAnim] = useState<CharacterAnimation>("walk");
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
@@ -47,17 +55,18 @@ export function BearWalk({
   const [currentFrame, setCurrentFrame] = useState<number>(1);
   const [speechBubble, setSpeechBubble] = useState<string | null>(null);
 
-  // Position and direction for patrol mode
   const [posX, setPosX] = useState<number>(20);
   const [direction, setDirection] = useState<1 | -1>(1);
   const directionRef = useRef<1 | -1>(1);
 
-  // Keep directionRef in sync
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     directionRef.current = direction;
   }, [direction]);
 
-  // Patrol movement loop
   useEffect(() => {
     if (!isPlaying || !patrolMode || currentAnim !== "walk") return;
 
@@ -72,7 +81,7 @@ export function BearWalk({
       if (container) {
         const containerWidth = container.clientWidth;
         const bearWidth = Math.round((size * 140) / 220);
-        const padding = 20;
+        const padding = immersive || screenWalk ? 4 : 20;
         const minX = padding;
         const maxX = Math.max(minX, containerWidth - bearWidth - padding);
 
@@ -99,7 +108,15 @@ export function BearWalk({
 
     animId = requestAnimationFrame(moveStep);
     return () => cancelAnimationFrame(animId);
-  }, [isPlaying, patrolMode, currentAnim, speedMultiplier, size]);
+  }, [
+    isPlaying,
+    patrolMode,
+    currentAnim,
+    speedMultiplier,
+    size,
+    immersive,
+    screenWalk,
+  ]);
 
   const handleTogglePlay = () => {
     if (isPlaying) {
@@ -115,6 +132,8 @@ export function BearWalk({
     setCurrentAnim("jump");
     characterRef.current?.jump();
     setIsPlaying(true);
+
+    if (immersive || screenWalk) return;
 
     const msg = BEAR_MESSAGES[Math.floor(Math.random() * BEAR_MESSAGES.length)];
     setSpeechBubble(msg);
@@ -136,10 +155,110 @@ export function BearWalk({
   const effectiveFps = Math.round(currentConfig.fps * speedMultiplier);
   const bearWidth = Math.round((size * 140) / 220);
 
-  // Shadow styling: scales down and fades when airborne in frame 4 (index 3) of jump
   const isAirborne = currentAnim === "jump" && currentFrame === 4;
   const isCrouched =
-    currentAnim === "jump" && (currentFrame === 2 || currentFrame === 3 || currentFrame === 6);
+    currentAnim === "jump" &&
+    (currentFrame === 2 || currentFrame === 3 || currentFrame === 6);
+
+  const isBare = immersive || screenWalk;
+
+  const stage = (
+    <div
+      ref={containerRef}
+      className={cn(
+        "relative w-full overflow-hidden",
+        isBare
+          ? "bg-transparent"
+          : "bg-gradient-to-b from-sky-50/60 to-zinc-100/80 dark:from-zinc-900/60 dark:to-zinc-950/80 border-t border-zinc-200/80 dark:border-zinc-800"
+      )}
+      style={{ height: size + (isBare ? 12 : 45) }}
+    >
+      {!isBare && (
+        <>
+          <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-white/90 to-transparent dark:from-zinc-900/90 pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-3 border-b-2 border-dashed border-sky-200/60 dark:border-zinc-700/60 pointer-events-none" />
+          <div className="absolute top-2 left-8 text-sky-200 dark:text-zinc-700 text-xs pointer-events-none">
+            ❄
+          </div>
+          <div className="absolute top-4 right-14 text-sky-200 dark:text-zinc-700 text-[10px] pointer-events-none">
+            ❄
+          </div>
+        </>
+      )}
+
+      <div
+        className="absolute bottom-0 select-none cursor-pointer"
+        style={{
+          transform: patrolMode
+            ? `translateX(${posX}px)`
+            : `translateX(calc(50% - ${bearWidth / 2}px))`,
+          transformOrigin: "bottom center",
+          height: size,
+          width: bearWidth,
+        }}
+        onClick={triggerJump}
+        title={isBare ? undefined : "Click the bear to make him jump!"}
+        aria-label="Isbjörn — click to jump"
+      >
+        {speechBubble && (
+          <div className="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-1 rounded-full bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 text-xs font-semibold shadow-md border border-zinc-200 dark:border-zinc-700 pointer-events-none animate-in fade-in zoom-in-95 duration-150 z-30">
+            {speechBubble}
+          </div>
+        )}
+
+        <div
+          className={cn(
+            "absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-2 bg-zinc-900/20 dark:bg-black/40 rounded-full blur-[1.5px] transition-all duration-100",
+            isAirborne
+              ? "w-1/2 opacity-30 scale-75"
+              : isCrouched
+                ? "w-4/5 opacity-80"
+                : "w-3/4 opacity-60"
+          )}
+        />
+
+        <AnimatedCharacter
+          ref={characterRef}
+          animation={currentAnim}
+          size={size}
+          fps={effectiveFps}
+          autoPlay={isPlaying}
+          direction={patrolMode ? direction : 1}
+          onAnimationComplete={handleAnimationComplete}
+          onFrameChange={handleFrameChange}
+        />
+      </div>
+
+      {!isBare && (
+        <div className="absolute right-3 bottom-1 text-[10px] text-muted-foreground/70 pointer-events-none">
+          Click bear or press Jump 🐾
+        </div>
+      )}
+    </div>
+  );
+
+  if (screenWalk) {
+    if (!mounted) return null;
+    return createPortal(
+      <div
+        className={cn(
+          "pointer-events-none fixed inset-x-0 bottom-0 z-[200] select-none",
+          className
+        )}
+      >
+        <div className="pointer-events-auto w-full">{stage}</div>
+      </div>,
+      document.body
+    );
+  }
+
+  if (immersive) {
+    return (
+      <div className={cn("w-full select-none overflow-hidden", className)}>
+        {stage}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -148,7 +267,6 @@ export function BearWalk({
         className
       )}
     >
-      {/* Title Bar */}
       <div className="retro-box-title px-3.5 sm:px-4 py-2 flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           <Footprints className="h-4 w-4 text-[#2689BF] dark:text-[#52aae0] shrink-0" />
@@ -163,9 +281,7 @@ export function BearWalk({
           </span>
         </div>
 
-        {/* Action Controls */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          {/* Jump Trigger Button */}
           <button
             onClick={triggerJump}
             className="retro-btn retro-btn-primary h-7 px-3 text-xs flex items-center gap-1 font-bold shadow-sm"
@@ -199,7 +315,11 @@ export function BearWalk({
               "retro-btn h-7 px-2.5 text-xs flex items-center gap-1 font-semibold",
               patrolMode ? "retro-btn-primary" : "retro-btn-gray"
             )}
-            title={patrolMode ? "Switch to walking in place" : "Switch to patrolling across"}
+            title={
+              patrolMode
+                ? "Switch to walking in place"
+                : "Switch to patrolling across"
+            }
           >
             <MoveHorizontal className="w-3.5 h-3.5" />
             <span>{patrolMode ? "Patrolling" : "In-Place"}</span>
@@ -233,70 +353,7 @@ export function BearWalk({
         </div>
       </div>
 
-      {/* Walking / Jumping Stage */}
-      <div
-        ref={containerRef}
-        className="relative w-full overflow-hidden bg-gradient-to-b from-sky-50/60 to-zinc-100/80 dark:from-zinc-900/60 dark:to-zinc-950/80 border-t border-zinc-200/80 dark:border-zinc-800"
-        style={{ height: size + 45 }}
-      >
-        {/* Subtle Arctic Terrain Ground Line */}
-        <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-white/90 to-transparent dark:from-zinc-900/90 pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-3 border-b-2 border-dashed border-sky-200/60 dark:border-zinc-700/60 pointer-events-none" />
-
-        {/* Ambient snowflakes */}
-        <div className="absolute top-2 left-8 text-sky-200 dark:text-zinc-700 text-xs pointer-events-none">
-          ❄
-        </div>
-        <div className="absolute top-4 right-14 text-sky-200 dark:text-zinc-700 text-[10px] pointer-events-none">
-          ❄
-        </div>
-
-        {/* Bear Character */}
-        <div
-          className="absolute bottom-3 select-none cursor-pointer"
-          style={{
-            transform: patrolMode
-              ? `translateX(${posX}px)`
-              : `translateX(calc(50% - ${bearWidth / 2}px))`,
-            transformOrigin: "bottom center",
-            height: size,
-            width: bearWidth,
-          }}
-          onClick={triggerJump}
-          title="Click the bear to make him jump!"
-        >
-          {/* Speech Bubble */}
-          {speechBubble && (
-            <div className="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-1 rounded-full bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 text-xs font-semibold shadow-md border border-zinc-200 dark:border-zinc-700 pointer-events-none animate-in fade-in zoom-in-95 duration-150 z-30">
-              {speechBubble}
-            </div>
-          )}
-
-          {/* Dynamic Ground Shadow */}
-          <div
-            className={cn(
-              "absolute -bottom-1 left-1/2 -translate-x-1/2 h-2 bg-zinc-900/20 dark:bg-black/40 rounded-full blur-[1.5px] transition-all duration-100",
-              isAirborne ? "w-1/2 opacity-30 scale-75" : isCrouched ? "w-4/5 opacity-80" : "w-3/4 opacity-60"
-            )}
-          />
-
-          <AnimatedCharacter
-            ref={characterRef}
-            animation={currentAnim}
-            size={size}
-            fps={effectiveFps}
-            autoPlay={isPlaying}
-            direction={patrolMode ? direction : 1}
-            onAnimationComplete={handleAnimationComplete}
-            onFrameChange={handleFrameChange}
-          />
-        </div>
-
-        {/* Helper text */}
-        <div className="absolute right-3 bottom-1 text-[10px] text-muted-foreground/70 pointer-events-none">
-          Click bear or press Jump 🐾
-        </div>
-      </div>
+      {stage}
     </div>
   );
 }

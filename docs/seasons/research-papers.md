@@ -1,12 +1,14 @@
 # Research Papers
 
-**For:** research and writing that supports the season's research question.
+**For:** research and writing that advances strategic questions about governance, finance, infrastructure, privacy, communication, and related domains. You do not need Avalanche interest to submit.
 
-Each season sets one research question. Entries are papers — technical, economic, social, or ethical — that advance it. The question is chosen so that its answers can become Local Systems briefs the following season.
+Research lives as its own product surface (`/research`): continuous bounty events with essay-style terms (deadline, minimum word count, prize). When one event closes, the next queued event goes live. Over time this becomes a numbered, citable archive — organised like ACPs — that feeds Local Systems briefs and GTM builds. Curated ACP links sit on the same shelf for strategic context.
+
+Seasonal Research Papers tournaments still exist as the competitive review path; the Research tab is the ongoing library and bounty series.
 
 ## Format
 
-Submissions are **private**. Reviewers see the paper, not the author, crew, faction or region. Results are published at the end of the season with authorship revealed, unless the author chooses to remain pseudonymous.
+Submissions are **private**. Reviewers see the paper, not the author, crew, faction or region. Results are published when the event (or season) closes with authorship revealed, unless the author chooses to remain pseudonymous.
 
 ## Who decides
 
@@ -20,4 +22,4 @@ Submissions are **private**. Reviewers see the paper, not the author, crew, fact
 
 ## Why it exists
 
-Research is where lasting ideas start. Keeping submissions private removes clout from the equation and lets a first-season crew with no standing beat a famous faction on the strength of the work. Winning papers become the raw material for next season's Local Systems, which is how the world's ideas move from thought to design to product.
+Research is where lasting ideas start. Keeping submissions private removes clout from the equation. Winning papers become the raw material for Local Systems and for tools that may ship on Avalanche, Chainlink, Midnight, or elsewhere — Team1 funds prizes; the network that settles the tool is chosen by the builders.

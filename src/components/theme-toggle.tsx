@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -24,14 +24,16 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     );
   }
 
+  const isDark = resolvedTheme === "dark";
+
   return (
     <button
       type="button"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
       className={`retro-btn-secondary ${className}`}
-      aria-label="Toggle theme"
+      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
     >
-      {theme === "dark" ? (
+      {isDark ? (
         <Moon className="h-4 w-4" />
       ) : (
         <SunMedium className="h-4 w-4" />

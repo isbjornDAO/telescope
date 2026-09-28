@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Card } from "@/components/ui/card";
+import { MessageSquarePlus } from "lucide-react";
 import { AudienceTag } from "@/components/forum/audience-picker";
 import { Composer } from "@/components/forum/composer";
 import { ThreadCardGridSkeleton } from "@/components/ui/retro-skeletons";
@@ -112,54 +112,67 @@ export default function BoardPage() {
 
       {loading ? (
         <ThreadCardGridSkeleton count={10} />
+      ) : threads.length === 0 ? (
+        <div className="retro-box flex flex-col items-center justify-center text-center px-6 py-16 sm:py-20 min-h-[280px] sm:min-h-[320px]">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 mb-4">
+            <MessageSquarePlus className="h-6 w-6" />
+          </div>
+          <p className="text-base font-semibold text-zinc-800 dark:text-zinc-100">
+            No threads in /{boardName}/ yet
+          </p>
+          <p className="mt-1.5 text-sm text-muted-foreground max-w-sm">
+            {isConnected
+              ? "Start the first conversation on this board."
+              : "Connect your wallet to create the first thread."}
+          </p>
+          {isConnected && !showNewThread ? (
+            <button
+              type="button"
+              onClick={() => setShowNewThread(true)}
+              className="retro-btn retro-btn-green mt-5 px-4 py-2 text-xs font-bold uppercase tracking-wider"
+            >
+              New Thread
+            </button>
+          ) : null}
+        </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-        {threads.map((thread) => (
-          <Link key={thread.id} href={`/forum/thread/${thread.id}`}>
-            <div className="retro-box p-3 hover:shadow-md transition h-full flex flex-col">
-              {/* Thread Image */}
-              {thread.posts[0]?.imageHash && (
-                <div className="w-full aspect-square overflow-hidden rounded bg-zinc-100 mb-2 border border-zinc-200 dark:border-zinc-700">
-                  <img
-                    src={thread.posts[0].imageHash}
-                    alt={thread.subject || 'Thread image'}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
+          {threads.map((thread) => (
+            <Link key={thread.id} href={`/forum/thread/${thread.id}`}>
+              <div className="retro-box p-3 hover:shadow-md transition h-full flex flex-col">
+                {thread.posts[0]?.imageHash && (
+                  <div className="w-full aspect-square overflow-hidden rounded bg-zinc-100 mb-2 border border-zinc-200 dark:border-zinc-700">
+                    <img
+                      src={thread.posts[0].imageHash}
+                      alt={thread.subject || "Thread image"}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
 
-              {/* Thread Info */}
-              <div className="space-y-1 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="font-bold text-xs line-clamp-2 min-h-[2rem] text-zinc-800 dark:text-zinc-100">
-                    {thread.subject || 'No Subject'}
-                  </h3>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {thread.posts[0]?.comment}
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs pt-2">
-                  <span className="retro-comments-badge text-zinc-700 dark:text-zinc-200">
-                    {thread.replyCount} {thread.replyCount === 1 ? "reply" : "replies"}
-                  </span>
-                  {thread.restricted && thread.audienceLabel && <AudienceTag label={thread.audienceLabel} />}
+                <div className="space-y-1 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-bold text-xs line-clamp-2 min-h-[2rem] text-zinc-800 dark:text-zinc-100">
+                      {thread.subject || "No Subject"}
+                    </h3>
+                    <p className="text-xs text-muted-foreground line-clamp-2">
+                      {thread.posts[0]?.comment}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs pt-2">
+                    <span className="retro-comments-badge text-zinc-700 dark:text-zinc-200">
+                      {thread.replyCount}{" "}
+                      {thread.replyCount === 1 ? "reply" : "replies"}
+                    </span>
+                    {thread.restricted && thread.audienceLabel && (
+                      <AudienceTag label={thread.audienceLabel} />
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-      )}
-
-      {!loading && threads.length === 0 && (
-        <Card className="p-12 text-center">
-          <p className="text-muted-foreground mb-4">No threads yet. Be the first to post!</p>
-          {!address && (
-            <p className="text-sm text-muted-foreground">
-              Connect your wallet to create a thread.
-            </p>
-          )}
-        </Card>
+            </Link>
+          ))}
+        </div>
       )}
       </div>
     </div>
