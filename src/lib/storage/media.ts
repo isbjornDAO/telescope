@@ -29,7 +29,7 @@ export function inspectMedia(contentType: string, size: number): MediaCheck {
       error: "Use a JPEG, PNG, GIF, WebP, AVIF, MP4, WebM, or MOV file.",
     };
   }
-  if (!Number.isFinite(size) || size <= 0) {
+  if (!Number.isInteger(size) || size <= 0) {
     return { ok: false, error: "That file is empty." };
   }
   const limit = spec.kind === "video" ? VIDEO_MAX_BYTES : IMAGE_MAX_BYTES;
@@ -39,6 +39,48 @@ export function inspectMedia(contentType: string, size: number): MediaCheck {
     return { ok: false, error: `${noun} must be under ${mb}MB.` };
   }
   return { ok: true, ext: spec.ext, kind: spec.kind };
+}
+
+/**
+ * A new attachment may only be an object this app stored under the public R2 host.
+ * Query strings are dropped so a signed URL cannot be smuggled in as the post URL.
+ */
+export function acceptedAttachment(
+  url: string,
+  publicBase: string | undefined
+): { ok: true; url: string } | { ok: false; error: string } {
+  const rejected = { ok: false as const, error: "That attachment is not allowed." };
+  if (!publicBase) return { ok: false, error: "Media storage is not configured." };
+  let parsed: URL;
+  let base: URL;
+  try {
+    parsed = new URL(url);
+    base = new URL(publicBase);
+  } catch {
+    return rejected;
+  }
+  if (
+    parsed.protocol !== "https:" ||
+    parsed.username !== "" ||
+    parsed.password !== "" ||
+    parsed.origin !== base.origin ||
+    !parsed.pathname.startsWith("/media/") ||
+    parsed.pathname.includes("..")
+  ) {
+    return rejected;
+  }
+  return { ok: true, url: `${parsed.origin}${parsed.pathname}` };
+}
+
+export function resolveAttachment(
+  value: unknown,
+  publicBase: string | undefined
+): { ok: true; url: string | null } | { ok: false; error: string } {
+  if (value == null || value === "") return { ok: true, url: null };
+  if (typeof value !== "string") {
+    return { ok: false, error: "That attachment is not allowed." };
+  }
+  return acceptedAttachment(value, publicBase);
 }
 
 export function isVideoUrl(url: string): boolean {

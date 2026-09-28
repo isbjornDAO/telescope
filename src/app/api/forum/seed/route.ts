@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { WorldError } from "@/lib/world/errors";
+import { requirePlatformAdmin } from "@/lib/world/session";
 
 // Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
@@ -126,21 +128,26 @@ async function seedBoards() {
     });
   } catch (error) {
     console.error("Error seeding boards:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to seed boards",
-        details: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to seed boards" }, { status: 500 });
   }
 }
 
-export async function GET() {
+async function authorizedSeed(request: NextRequest) {
+  try {
+    await requirePlatformAdmin(request);
+  } catch (error) {
+    if (error instanceof WorldError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    throw error;
+  }
   return seedBoards();
 }
 
-export async function POST() {
-  return seedBoards();
+export async function GET(request: NextRequest) {
+  return authorizedSeed(request);
+}
+
+export async function POST(request: NextRequest) {
+  return authorizedSeed(request);
 }

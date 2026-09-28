@@ -1,10 +1,21 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { presignMediaUpload } from "@/lib/storage/r2";
+import { WorldError } from "@/lib/world/errors";
+import { requireWorldUser } from "@/lib/world/session";
 
 // Signs a direct upload. Stays dynamic so a missing R2 key is a runtime miss, not a build failure.
 export const dynamic = "force-dynamic";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  try {
+    await requireWorldUser(request);
+  } catch (error) {
+    if (error instanceof WorldError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    throw error;
+  }
+
   let body: unknown;
   try {
     body = await request.json();

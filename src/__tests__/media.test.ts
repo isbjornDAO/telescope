@@ -1,4 +1,11 @@
-import { IMAGE_MAX_BYTES, VIDEO_MAX_BYTES, inspectMedia, isVideoUrl } from "@/lib/storage/media"
+import {
+  IMAGE_MAX_BYTES,
+  VIDEO_MAX_BYTES,
+  acceptedAttachment,
+  inspectMedia,
+  isVideoUrl,
+  resolveAttachment,
+} from "@/lib/storage/media"
 
 describe("inspectMedia", () => {
   it("accepts a jpeg under the image cap", () => {
@@ -28,6 +35,28 @@ describe("inspectMedia", () => {
 
   it("refuses an empty file", () => {
     expect(inspectMedia("image/gif", 0).ok).toBe(false)
+  })
+
+  it("refuses a non-integer size so the signed upload cannot be padded", () => {
+    expect(inspectMedia("image/png", 1.5).ok).toBe(false)
+  })
+})
+
+describe("acceptedAttachment", () => {
+  const base = "https://pub-example.r2.dev"
+
+  it("keeps an object stored under the public host", () => {
+    expect(acceptedAttachment(`${base}/media/2026/09/a.jpg?x=1`, base)).toEqual({
+      ok: true,
+      url: `${base}/media/2026/09/a.jpg`,
+    })
+  })
+
+  it("refuses other hosts and non-https urls", () => {
+    expect(acceptedAttachment("https://evil.example/media/a.jpg", base).ok).toBe(false)
+    expect(acceptedAttachment("javascript:alert(1)", base).ok).toBe(false)
+    expect(acceptedAttachment(`${base}/other/a.jpg`, base).ok).toBe(false)
+    expect(resolveAttachment(null, base)).toEqual({ ok: true, url: null })
   })
 })
 

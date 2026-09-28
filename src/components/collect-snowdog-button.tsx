@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Address } from "viem";
 import { useToast } from "@/hooks/use-toast";
+import { useWorldSession } from "@/hooks/use-world";
 import Image from "next/image";
 
 interface CollectSnowdogButtonProps {
@@ -11,6 +12,7 @@ interface CollectSnowdogButtonProps {
 
 export function CollectSnowdogButton({ address }: CollectSnowdogButtonProps) {
   const { toast } = useToast();
+  const world = useWorldSession();
   const [claiming, setClaiming] = useState(false);
   const [checking, setChecking] = useState(true);
   const [hasClaimed, setHasClaimed] = useState(false);
@@ -106,6 +108,7 @@ export function CollectSnowdogButton({ address }: CollectSnowdogButtonProps) {
     setClaiming(true);
 
     try {
+      if (!world.isLoading && !world.isSignedIn) await world.signIn.mutateAsync();
       const response = await fetch("/api/collectables/claim", {
         method: "POST",
         headers: {

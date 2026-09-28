@@ -61,6 +61,7 @@ export async function presignMediaUpload(input: {
       Bucket: cfg.bucket,
       Key: key,
       ContentType: input.contentType,
+      ContentLength: input.size,
     }),
     { expiresIn: 120 }
   );

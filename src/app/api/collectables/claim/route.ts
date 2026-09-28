@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { awardCollectableByAddress, hasCollectable } from "@/lib/collectables";
+import { WorldError } from "@/lib/world/errors";
+import { requireWorldUser } from "@/lib/world/session";
 
 // Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
@@ -9,28 +11,15 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await requireWorldUser(request);
     const body = await request.json();
-    const { walletAddress, collectableId } = body;
+    const { collectableId } = body;
 
-    if (!walletAddress || !collectableId) {
+    if (!collectableId) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
-    }
-
-    // Find or create user
-    let user = await prisma.user.findUnique({
-      where: { address: walletAddress.toLowerCase() },
-    });
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          address: walletAddress.toLowerCase(),
-          username: `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`,
-        },
-      });
     }
 
     // Find the collectable
@@ -55,7 +44,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Award the collectable
-    const result = await awardCollectableByAddress(walletAddress, collectableId);
+    const result = await awardCollectableByAddress(user.address, collectableId);
 
     if (!result) {
       return NextResponse.json(
@@ -69,6 +58,9 @@ export async function POST(request: NextRequest) {
       collectable: result,
     });
   } catch (error) {
+    if (error instanceof WorldError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error claiming collectable:", error);
     return NextResponse.json(
       { error: "Internal server error" },

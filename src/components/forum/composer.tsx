@@ -3,6 +3,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useAccount } from "wagmi";
+import { useWorldSession } from "@/hooks/use-world";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -61,6 +62,7 @@ export function Composer({
   className?: string;
 }) {
   const { address, isConnected } = useAccount();
+  const world = useWorldSession();
   const { openConnectModal } = useConnectModal();
   const [comment, setComment] = useState("");
   const [subject, setSubject] = useState("");
@@ -152,10 +154,11 @@ export function Composer({
   }
 
   async function send() {
-    if (!ready) return;
+    if (!ready || !address) return;
     setSending(true);
     setError(null);
     try {
+      if (!world.isLoading && !world.isSignedIn) await world.signIn.mutateAsync();
       let uploadedImageUrl: string | null = null;
       if (imageFile) {
         uploadedImageUrl = await uploadMedia(imageFile);

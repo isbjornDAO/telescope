@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { findOrCreateUser } from "@/lib/user";
 import { calculateLevel } from "@/lib/xp";
+import { WorldError } from "@/lib/world/errors";
+import { requireWorldUser } from "@/lib/world/session";
 
 const voteSchema = z.object({
-  walletAddress: z
-    .string()
-    .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
   type: z.enum(["like", "dislike"]),
 });
 
@@ -15,6 +13,16 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { projectId: string } }
 ) {
+  let actor;
+  try {
+    actor = await requireWorldUser(req);
+  } catch (error) {
+    if (error instanceof WorldError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    throw error;
+  }
+
   console.log("🔵 Vote request received", { projectId: params.projectId });
 
   // === Voting Lock Start ===
@@ -31,9 +39,9 @@ export async function POST(
   const transaction = await prisma.$transaction(async (prisma) => {
     try {
       const body = await req.json();
-      const { walletAddress, type } = voteSchema.parse(body);
+      const { type } = voteSchema.parse(body);
 
-      const user = await findOrCreateUser(walletAddress);
+      const user = actor;
       console.log("🔵 User found/created:", { userId: user.id });
 
       // Verify user has Discord connected

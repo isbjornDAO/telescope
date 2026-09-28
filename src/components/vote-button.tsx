@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useAccount } from "wagmi";
+import { useWorldSession } from "@/hooks/use-world";
 import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -22,6 +23,7 @@ export function VoteButton({
   isGloballyDisabled,
 }: VoteButtonProps) {
   const { address, isConnected } = useAccount();
+  const world = useWorldSession();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [voteStatus, setVoteStatus] = useState<{
     hasVoted: boolean;
@@ -131,6 +133,7 @@ export function VoteButton({
     setIsLoading(true);
 
     try {
+      if (!world.isLoading && !world.isSignedIn) await world.signIn.mutateAsync();
       const response = await fetch(`/api/projects/${projectId}/vote`, {
         method: "POST",
         headers: {

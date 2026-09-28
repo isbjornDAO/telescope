@@ -38,6 +38,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { useAccount } from "wagmi";
+import { useWorldSession } from "@/hooks/use-world";
 import { AudienceTag, WithheldPost } from "@/components/forum/audience-picker";
 import { ThreadDetailSkeleton } from "@/components/ui/retro-skeletons";
 import { RetroPixelAvatar } from "@/components/retro-pixel-avatar";
@@ -524,6 +525,7 @@ export default function ThreadPage() {
   const params = useParams();
   const queryClient = useQueryClient();
   const { address } = useAccount();
+  const world = useWorldSession();
   const { toast } = useToast();
   const threadId = params.threadId as string;
   const replyInputRef = useRef<HTMLTextAreaElement>(null);
@@ -725,6 +727,7 @@ export default function ThreadPage() {
 
     setReplying(true);
     try {
+      if (!world.isLoading && !world.isSignedIn) await world.signIn.mutateAsync();
       let uploadedImageUrl = null;
 
       if (imageFile) {
