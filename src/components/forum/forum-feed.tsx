@@ -16,6 +16,7 @@ import {
 import { useForumFeed, FeedThread } from "@/hooks/use-forum";
 import { AudienceTag } from "@/components/forum/audience-picker";
 import { cn } from "@/lib/utils";
+import { PostMedia } from "@/components/forum/post-media";
 
 interface ForumFeedProps {
   initialBoard?: string | null;
@@ -250,9 +251,10 @@ function FeedItem({ thread }: { thread: FeedThread }) {
         <div className="pt-0.5">
           <Link href={`/forum/thread/${thread.id}`} className="inline-block group">
             <div className="relative max-w-xs sm:max-w-sm max-h-[200px] rounded border border-zinc-200 dark:border-zinc-700 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-              <img
+              <PostMedia
                 src={op.imageHash}
                 alt={thread.subject || "Post attachment"}
+                interactive={false}
                 className="w-full h-full max-h-[200px] object-cover group-hover:opacity-95 transition-opacity"
               />
             </div>

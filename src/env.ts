@@ -21,6 +21,11 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string().min(1).optional(),
     DISCORD_BOT_TOKEN: z.string().min(1).optional(),
     NEXTAUTH_SECRET: z.string().min(1).optional(),
+    R2_ACCOUNT_ID: z.string().min(1).optional(),
+    R2_ACCESS_KEY_ID: z.string().min(1).optional(),
+    R2_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+    R2_BUCKET_NAME: z.string().min(1).optional(),
+    R2_PUBLIC_URL: z.string().url().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url().optional(),
@@ -33,6 +38,11 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    R2_ACCOUNT_ID: process.env.R2_ACCOUNT_ID,
+    R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
+    R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,
+    R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
+    R2_PUBLIC_URL: process.env.R2_PUBLIC_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_ENVIRONMENT: process.env.NEXT_PUBLIC_ENVIRONMENT,
     NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID:
@@ -54,6 +64,12 @@ export function serverFeatures() {
     discordLogin: !!env.DISCORD_CLIENT_ID && !!env.DISCORD_CLIENT_SECRET,
     discordBot: !!env.DISCORD_BOT_TOKEN,
     database: !!env.DATABASE_URL,
+    mediaStorage:
+      !!env.R2_ACCOUNT_ID &&
+      !!env.R2_ACCESS_KEY_ID &&
+      !!env.R2_SECRET_ACCESS_KEY &&
+      !!env.R2_BUCKET_NAME &&
+      !!env.R2_PUBLIC_URL,
   } as const;
 }
 
@@ -71,5 +87,6 @@ export function missingEnvSummary(): string[] {
   if (!f.discordLogin) missing.push("DISCORD_CLIENT_ID / DISCORD_CLIENT_SECRET — Discord sign-in");
   if (!f.discordBot) missing.push("DISCORD_BOT_TOKEN — Discord events and notifications");
   if (!clientFeatures.walletConnect) missing.push("NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID — WalletConnect wallets");
+  if (!f.mediaStorage) missing.push("R2_ACCOUNT_ID / R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_BUCKET_NAME / R2_PUBLIC_URL — image and video uploads");
   return missing;
 }

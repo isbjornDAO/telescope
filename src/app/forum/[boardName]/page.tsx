@@ -6,6 +6,7 @@ import Link from "next/link";
 import { MessageSquarePlus } from "lucide-react";
 import { AudienceTag } from "@/components/forum/audience-picker";
 import { Composer } from "@/components/forum/composer";
+import { PostMedia } from "@/components/forum/post-media";
 import { ThreadCardGridSkeleton } from "@/components/ui/retro-skeletons";
 import { useAccount } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
@@ -142,9 +143,10 @@ export default function BoardPage() {
               <div className="retro-box p-3 hover:shadow-md transition h-full flex flex-col">
                 {thread.posts[0]?.imageHash && (
                   <div className="w-full aspect-square overflow-hidden rounded bg-zinc-100 mb-2 border border-zinc-200 dark:border-zinc-700">
-                    <img
+                    <PostMedia
                       src={thread.posts[0].imageHash}
                       alt={thread.subject || "Thread image"}
+                      interactive={false}
                       className="w-full h-full object-cover"
                     />
                   </div>

@@ -22,6 +22,8 @@ import {
   type AudienceOptions,
 } from "@/components/forum/audience-picker";
 import { EVERYONE, serializeAudience, describeAudience, type Audience } from "@/lib/world/audience";
+import { inspectMedia, MEDIA_ACCEPT } from "@/lib/storage/media";
+import { uploadMedia } from "@/lib/storage/upload-media";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
@@ -114,26 +116,25 @@ export function Composer({
   const ready = comment.trim().length > 0 && isConnected && !sending;
 
   function handleImageSelect(file: File) {
-    if (!file.type.startsWith("image/")) {
-      setError("Please select an image file");
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      setError("Image must be under 10MB");
+    const checked = inspectMedia(file.type, file.size);
+    if (!checked.ok) {
+      setError(checked.error);
       return;
     }
     setError(null);
     setImageFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    setImagePreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
   }
 
   function removeImage() {
+    setImagePreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
     setImageFile(null);
-    setImagePreview(null);
   }
 
   function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
@@ -157,17 +158,7 @@ export function Composer({
     try {
       let uploadedImageUrl: string | null = null;
       if (imageFile) {
-        const formData = new FormData();
-        formData.append("file", imageFile);
-        const uploadRes = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadData = await uploadRes.json();
-        if (!uploadData.url) {
-          throw new Error(uploadData.error || "Image upload failed");
-        }
-        uploadedImageUrl = uploadData.url;
+        uploadedImageUrl = await uploadMedia(imageFile);
       }
 
       const res = await fetch(`/api/forum/boards/${boardName}/threads`, {
@@ -188,7 +179,10 @@ export function Composer({
       setSubject("");
       setShowTitle(false);
       setImageFile(null);
-      setImagePreview(null);
+      setImagePreview((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
       setAudience(EVERYONE);
       setIsPrivacyOpen(false);
       setIsTitleOpen(false);
@@ -256,7 +250,11 @@ export function Composer({
         {imagePreview && (
           <div className="px-3 pb-2 flex items-center gap-2">
             <div className="relative inline-flex items-center gap-1.5 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded border border-zinc-200 dark:border-zinc-700 text-xs">
-              <img src={imagePreview} alt="Preview" className="h-5 w-5 object-cover rounded" />
+              {imageFile?.type.startsWith("video/") ? (
+                <video src={imagePreview} muted className="h-5 w-5 object-cover rounded" />
+              ) : (
+                <img src={imagePreview} alt="Preview" className="h-5 w-5 object-cover rounded" />
+              )}
               <span className="truncate max-w-[160px] text-zinc-700 dark:text-zinc-300 font-medium">
                 {imageFile?.name || "image"}
               </span>
@@ -276,7 +274,7 @@ export function Composer({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*,image/gif"
+          accept={MEDIA_ACCEPT}
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) handleImageSelect(file);
@@ -459,7 +457,11 @@ export function Composer({
                   {imagePreview && (
                     <div className="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800/90 border-b border-zinc-200 dark:border-zinc-700 flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2 truncate">
-                        <img src={imagePreview} alt="Attached" className="h-5 w-5 object-cover rounded border" />
+                        {imageFile?.type.startsWith("video/") ? (
+                          <video src={imagePreview} muted className="h-5 w-5 object-cover rounded border" />
+                        ) : (
+                          <img src={imagePreview} alt="Attached" className="h-5 w-5 object-cover rounded border" />
+                        )}
                         <span className="truncate text-zinc-700 dark:text-zinc-300">{imageFile?.name || "Image attached"}</span>
                       </div>
                       <button
@@ -530,7 +532,7 @@ export function Composer({
                     <input
                       ref={bottomFileInputRef}
                       type="file"
-                      accept="image/*,image/gif"
+                      accept={MEDIA_ACCEPT}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) handleImageSelect(file);
