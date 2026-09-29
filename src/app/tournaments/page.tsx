@@ -114,7 +114,7 @@ export default function TournamentsPage() {
                   <p className="text-sm text-sky-100/90 max-w-2xl mt-1 drop-shadow-sm line-clamp-2">
                     {live
                       ? live.theme
-                      : "The competitive arena of isbjornDAO. Research, design, and ship on Avalanche."}
+                      : "The competitive arena of Telescope. Research, design, and ship on Avalanche."}
                   </p>
                 )}
               </div>

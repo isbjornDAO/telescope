@@ -14,7 +14,7 @@ export function Footer() {
         <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center text-[11px] text-zinc-600 dark:text-zinc-400 font-medium text-center sm:text-left">
             <span>
-              Copyright © <b>Telescope</b> · Powered by Isbjorn DAO
+              Copyright © <b>Telescope</b> · Built with 🐻‍❄️ by Isbjorn
             </span>
           </div>
 
