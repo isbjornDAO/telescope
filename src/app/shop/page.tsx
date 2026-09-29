@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useAccount } from "wagmi";
+import { useWorldSession } from "@/hooks/use-world";
 import { Address } from "viem";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +29,7 @@ interface Reward {
 
 export default function ClaimPage() {
   const { address, isConnected } = useAccount();
+  const world = useWorldSession();
   const { toast } = useToast();
   const { data: userStats, isLoading: isUserStatsLoading, refetch: refetchUserStats } = useUserStats(
     address as Address,
@@ -100,6 +102,7 @@ export default function ClaimPage() {
 
     setClaiming(rewardId);
     try {
+      if (!world.isLoading && !world.isSignedIn) await world.signIn.mutateAsync();
       const response = await fetch("/api/rewards/claim", {
         method: "POST",
         headers: {

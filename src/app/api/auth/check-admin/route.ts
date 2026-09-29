@@ -1,60 +1,25 @@
-import { NextResponse } from "next/server";
-import { isAdmin, isAdminWallet } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isAdminWallet } from "@/lib/auth";
+import { getWorldSession, isPlatformAdmin } from "@/lib/world/session";
 
-// Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const walletAddress = searchParams.get("walletAddress");
+    const session = getWorldSession(request);
+    if (!session) return NextResponse.json({ isAdmin: false });
 
-    if (!walletAddress) {
-      return NextResponse.json(
-        { isAdmin: false, error: "Wallet address is required" },
-        { status: 400 }
-      );
+    const user = await prisma.user.findFirst({
+      where: { address: { equals: session.address, mode: "insensitive" } },
+    });
+    if (!user) {
+      return NextResponse.json({ isAdmin: isAdminWallet(session.address) });
     }
 
-    if (isAdminWallet(walletAddress)) {
-      return NextResponse.json({ 
-        isAdmin: true,
-        discordId: "1078316901953966132" 
-      });
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { address: walletAddress },
-    });
-
-    console.log("🔒 Admin check for user:", {
-      walletAddress,
-      hasUser: !!user,
-      discordId: user?.discordId,
-    });
-
-    if (!user?.discordId) {
-      return NextResponse.json(
-        { isAdmin: false, error: "No Discord account connected" },
-        { status: 200 }
-      );
-    }
-
-    // Check if user is admin
-    const adminStatus = isAdmin(user.discordId);
-    console.log("🔒 Admin status:", { discordId: user.discordId, isAdmin: adminStatus });
-
-    return NextResponse.json({ 
-      isAdmin: adminStatus,
-      discordId: user.discordId 
-    });
+    return NextResponse.json({ isAdmin: isPlatformAdmin(user) });
   } catch (error) {
     console.error("Error checking admin status:", error);
-    return NextResponse.json(
-      { isAdmin: false, error: "Failed to check admin status" },
-      { status: 500 }
-    );
+    return NextResponse.json({ isAdmin: false }, { status: 500 });
   }
-} 
+}

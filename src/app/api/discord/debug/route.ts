@@ -1,12 +1,23 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/env";
+import { WorldError } from "@/lib/world/errors";
+import { requirePlatformAdmin } from "@/lib/world/session";
 
 // Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
 
 const DISCORD_API_URL = "https://discord.com/api/v10";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  try {
+    await requirePlatformAdmin(request);
+  } catch (error) {
+    if (error instanceof WorldError) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    throw error;
+  }
+
   console.log("\n=== DISCORD DEBUG API ROUTE ===");
 
   const debugInfo: any = {
@@ -127,7 +138,6 @@ export async function GET() {
     debugInfo.errors.push({
       type: "general_error",
       error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
     });
   }
 

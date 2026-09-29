@@ -11,16 +11,18 @@ import { Info } from "lucide-react";
 const faqItems = [
   {
     question: "What is Telescope?",
-    answer: "A tool for Avalanche users to discover stars onchain.",
+    answer:
+      "Isbjorn's discovery world for projects, artists, and developers. Find who is building, argue what is worth building next, publish research, and compete in seasons — with polar bear and Arctic conservation as the reason behind it.",
   },
   {
     question: "What do I do?",
-    answer: "Currently, you can interact once a day for 1 XP by posting on the forum.",
+    answer:
+      "Talk on the forum, enter research bounties, pin what you are building on the projects board, or compete in tournaments. Posting stays one tap.",
   },
   {
     question: "What is XP for?",
     answer:
-      "XP gives you points to spend on WLs & airdrops provided by Avalanche projects.",
+      "XP tracks participation — voting streaks, spotlights, and season activity. Season rewards and shop claims use it; the deeper prize is standing earned through research, design, and shipped work.",
   },
   {
     question: "How can I redeem points?",
@@ -33,8 +35,9 @@ const faqItems = [
       "Yes, but only one wallet can connect with your Discord account to redeem rewards.",
   },
   {
-    question: "How long is voting?",
-    answer: "Voting epochs last for 1 month, then results become immortalised.",
+    question: "Where does conservation come in?",
+    answer:
+      "Isbjorn funds Arctic missions — Churchill, Svalbard, and beyond. Every season on Telescope maps toward that journey.",
   },
 ];
 

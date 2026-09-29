@@ -13,19 +13,9 @@ export function useAdminStatus(address: Address | undefined, isConnected: boolea
     queryFn: async () => {
       if (!address) throw new Error("No address provided");
       
-      const response = await fetch(`/api/auth/check-admin?walletAddress=${address}`);
-      if (!response.ok) {
-        throw new Error("Failed to check admin status");
-      }
-      
-      const data = await response.json();
-      console.log("🔒 Admin status response:", data);
-      
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      
-      return data;
+      const response = await fetch("/api/auth/check-admin");
+      const data = await response.json().catch(() => ({ isAdmin: false }));
+      return { isAdmin: Boolean(data.isAdmin) };
     },
     enabled: !!address && isConnected,
     retry: false,

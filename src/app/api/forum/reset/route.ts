@@ -1,26 +1,24 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { WorldError } from "@/lib/world/errors";
+import { requirePlatformAdmin } from "@/lib/world/session";
 
-// Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Delete all boards (this will cascade delete threads and posts)
+    await requirePlatformAdmin(request);
     await prisma.board.deleteMany({});
 
     return NextResponse.json({
       success: true,
-      message: "All forum data deleted. Visit /api/forum/seed to recreate boards."
+      message: "All forum data deleted. Visit /api/forum/seed to recreate boards.",
     });
   } catch (error) {
+    if (error instanceof WorldError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error resetting forum:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to reset forum",
-        details: error instanceof Error ? error.message : String(error)
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to reset forum" }, { status: 500 });
   }
 }

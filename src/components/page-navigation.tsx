@@ -3,7 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, MessageSquare, Calendar, Gift, ChevronDown, Search, ShieldCheck, type LucideIcon } from "lucide-react";
+import {
+  Home,
+  MessageSquare,
+  Layers,
+  Calendar,
+  Gift,
+  ChevronDown,
+  Search,
+  ShieldCheck,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAccount } from "wagmi";
 import { Address } from "viem";
@@ -32,6 +42,8 @@ export interface TabItem {
  * - Clean icons with opacity transition
  * - Dropdown submenus on hover
  * - Integrated search bar on the right
+ *
+ * Tabs: Home, Forum, Build (Research · Projects · Tournaments), Calendar, Shop.
  */
 export const TABS: TabItem[] = [
   {
@@ -56,6 +68,24 @@ export const TABS: TabItem[] = [
       { href: "/forum/defi", label: "DeFi" },
       { href: "/forum/eco", label: "Ecosystem" },
       { href: "/forum/gov", label: "Governance" },
+    ],
+  },
+  {
+    href: "/research",
+    label: "Build",
+    icon: Layers,
+    badgeColor: "bg-[#2689BF]",
+    textColor: "text-[#2689BF] dark:text-[#52aae0]",
+    match: (p: string) =>
+      p.startsWith("/research") ||
+      p.startsWith("/projects") ||
+      p.startsWith("/tournaments") ||
+      p.startsWith("/entries") ||
+      p.startsWith("/rounds"),
+    submenu: [
+      { href: "/research", label: "Research" },
+      { href: "/projects", label: "Projects" },
+      { href: "/tournaments", label: "Tournaments" },
     ],
   },
   {

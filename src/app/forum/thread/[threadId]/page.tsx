@@ -38,12 +38,16 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { useAccount } from "wagmi";
+import { useWorldSession } from "@/hooks/use-world";
 import { AudienceTag, WithheldPost } from "@/components/forum/audience-picker";
 import { ThreadDetailSkeleton } from "@/components/ui/retro-skeletons";
 import { RetroPixelAvatar } from "@/components/retro-pixel-avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { inspectMedia, MEDIA_ACCEPT } from "@/lib/storage/media";
+import { uploadMedia } from "@/lib/storage/upload-media";
+import { PostMedia } from "@/components/forum/post-media";
 
 interface Board {
   id: string;
@@ -521,6 +525,7 @@ export default function ThreadPage() {
   const params = useParams();
   const queryClient = useQueryClient();
   const { address } = useAccount();
+  const world = useWorldSession();
   const { toast } = useToast();
   const threadId = params.threadId as string;
   const replyInputRef = useRef<HTMLTextAreaElement>(null);
@@ -722,21 +727,11 @@ export default function ThreadPage() {
 
     setReplying(true);
     try {
+      if (!world.isLoading && !world.isSignedIn) await world.signIn.mutateAsync();
       let uploadedImageUrl = null;
 
       if (imageFile) {
-        const formData = new FormData();
-        formData.append("file", imageFile);
-
-        const uploadResponse = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        const uploadData = await uploadResponse.json();
-        if (uploadData.url) {
-          uploadedImageUrl = uploadData.url;
-        }
+        uploadedImageUrl = await uploadMedia(imageFile);
       }
 
       const finalComment = quotingPost
@@ -773,7 +768,10 @@ export default function ThreadPage() {
         setComment("");
         setQuotingPost(null);
         setImageFile(null);
-        setImagePreview("");
+        setImagePreview((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return "";
+        });
         if (fileInputRef.current) fileInputRef.current.value = "";
         fetchThread();
       }
@@ -781,7 +779,7 @@ export default function ThreadPage() {
       console.error("Error creating reply:", error);
       toast({
         title: "Error Posting Reply",
-        description: "Failed to send message. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to send message. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -1136,9 +1134,10 @@ export default function ThreadPage() {
                           }
                           className="group/img relative rounded border border-zinc-200 dark:border-zinc-700 overflow-hidden inline-block cursor-pointer shadow-sm hover:shadow-md transition-all max-w-[320px] bg-zinc-50 dark:bg-zinc-900"
                           title="Click to view full image">
-                          <img
+                          <PostMedia
                             src={post.imageHash}
                             alt="Post attachment"
+                            interactive={false}
                             className="w-full h-auto max-h-[360px] object-contain group-hover/img:scale-[1.02] transition-transform duration-200"
                           />
                           <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-colors">
@@ -1450,18 +1449,26 @@ export default function ThreadPage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*,video/*"
+                accept={MEDIA_ACCEPT}
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
-                  if (file) {
-                    setImageFile(file);
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      setImagePreview(reader.result as string);
-                    };
-                    reader.readAsDataURL(file);
+                  if (!file) return;
+                  const checked = inspectMedia(file.type, file.size);
+                  if (!checked.ok) {
+                    toast({
+                      title: "Attachment not added",
+                      description: checked.error,
+                      variant: "destructive",
+                    });
+                    e.target.value = "";
+                    return;
                   }
+                  setImageFile(file);
+                  setImagePreview((prev) => {
+                    if (prev) URL.revokeObjectURL(prev);
+                    return URL.createObjectURL(file);
+                  });
                 }}
               />
               <button
@@ -1544,19 +1551,26 @@ export default function ThreadPage() {
             {imagePreview && (
               <div className="px-3 pb-2 flex items-center gap-2">
                 <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded border border-zinc-200 dark:border-zinc-700 text-xs">
-                  <img
-                    src={imagePreview}
-                    alt="Attachment Preview"
-                    className="h-6 w-6 object-cover rounded"
-                  />
+                  {imageFile?.type.startsWith("video/") ? (
+                    <video src={imagePreview} muted className="h-6 w-6 object-cover rounded" />
+                  ) : (
+                    <img
+                      src={imagePreview}
+                      alt="Attachment Preview"
+                      className="h-6 w-6 object-cover rounded"
+                    />
+                  )}
                   <span className="truncate max-w-[160px] text-[11px] text-zinc-700 dark:text-zinc-300 font-medium">
                     {imageFile?.name || "image"}
                   </span>
                   <button
                     type="button"
                     onClick={() => {
+                      setImagePreview((prev) => {
+                        if (prev) URL.revokeObjectURL(prev);
+                        return "";
+                      });
                       setImageFile(null);
-                      setImagePreview("");
                       if (fileInputRef.current) fileInputRef.current.value = "";
                     }}
                     className="text-zinc-400 hover:text-rose-600 transition-colors ml-1 p-0.5"
@@ -1654,7 +1668,7 @@ export default function ThreadPage() {
 
             {/* Lightbox Image Preview Body */}
             <div className="p-3 sm:p-4 flex items-center justify-center overflow-auto max-h-[80vh] bg-zinc-50/70 dark:bg-zinc-950/60">
-              <img
+              <PostMedia
                 src={activeLightboxImage.url}
                 alt={activeLightboxImage.fileName}
                 className="max-w-full max-h-[74vh] object-contain rounded border border-zinc-200/60 dark:border-zinc-800/60 shadow-xs"

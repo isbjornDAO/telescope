@@ -19,7 +19,7 @@ export function VoteLockSwitch() {
 
   const fetchVoteLockStatus = async () => {
     try {
-      const response = await fetch(`/api/admin/vote-lock?walletAddress=${address}`);
+      const response = await fetch("/api/admin/vote-lock");
       if (!response.ok) throw new Error("Failed to fetch vote lock status");
       const data = await response.json();
       setIsLocked(data.voteLock);
@@ -38,7 +38,7 @@ export function VoteLockSwitch() {
   const handleToggle = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/admin/vote-lock?walletAddress=${address}`, {
+      const response = await fetch("/api/admin/vote-lock", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

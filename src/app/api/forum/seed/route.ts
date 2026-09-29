@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { WorldError } from "@/lib/world/errors";
+import { requirePlatformAdmin } from "@/lib/world/session";
 
 // Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
@@ -8,7 +10,7 @@ const INITIAL_BOARDS = [
   {
     name: "gen",
     title: "General",
-    description: "General community discussion & Avalanche topics"
+    description: "Community discussion on governance, finance, and building for the future"
   },
   {
     name: "tech",
@@ -78,7 +80,7 @@ const INITIAL_BOARDS = [
   {
     name: "eco",
     title: "Ecosystem Projects",
-    description: "Projects building on Avalanche"
+    description: "Projects building tools for governance, finance, and local systems"
   },
   {
     name: "reg",
@@ -88,12 +90,12 @@ const INITIAL_BOARDS = [
   {
     name: "bridge",
     title: "Newcomers",
-    description: "Arriving to Avalanche"
+    description: "Just arrived — ask anything about Telescope and the world we are building"
   },
   {
     name: "avax_art",
-    title: "Post Your AVAX Artwork",
-    description: "hi ava artists, let's see your work! include salvor link if it's a collection"
+    title: "Post Your Artwork",
+    description: "Share your art; include a marketplace link if it is a collection"
   },
   {
     name: "b",
@@ -126,21 +128,26 @@ async function seedBoards() {
     });
   } catch (error) {
     console.error("Error seeding boards:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to seed boards",
-        details: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to seed boards" }, { status: 500 });
   }
 }
 
-export async function GET() {
+async function authorizedSeed(request: NextRequest) {
+  try {
+    await requirePlatformAdmin(request);
+  } catch (error) {
+    if (error instanceof WorldError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    throw error;
+  }
   return seedBoards();
 }
 
-export async function POST() {
-  return seedBoards();
+export async function GET(request: NextRequest) {
+  return authorizedSeed(request);
+}
+
+export async function POST(request: NextRequest) {
+  return authorizedSeed(request);
 }

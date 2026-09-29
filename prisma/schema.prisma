@@ -66,6 +66,7 @@ model User {
   entriesAuthored Entry[]        @relation("EntryAuthor")
   tags            String[]       @default([])
   badges          UserBadge[]
+  builderProjects BuilderProject[]
 }
 
 // ─────────────────────────────────────────────────────────────────────
@@ -147,6 +148,31 @@ enum MatchStatus {
   MATCHED
   DECLINED
   EXPIRED
+}
+
+enum ResearchEventStatus {
+  QUEUED
+  LIVE
+  CLOSED
+}
+
+enum BuilderProjectCategory {
+  COMMUNICATION
+  DATA_INFRASTRUCTURE
+  PRIVACY_SECURITY
+  LOCAL_INFRASTRUCTURE
+  GOVERNANCE
+  FINANCE
+  CONSERVATION
+  OTHER
+}
+
+enum BuilderProjectColumn {
+  EXPLORING
+  BUILDING
+  SHIPPING
+  LIVE
+  PAUSED
 }
 
 enum ScoutMessageType {
@@ -341,9 +367,10 @@ model Crew {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  members CrewMember[]
-  entries Entry[]
-  proofs  Proof[]
+  members         CrewMember[]
+  entries         Entry[]
+  proofs          Proof[]
+  builderProjects BuilderProject[]
 }
 
 model CrewMember {
@@ -442,12 +469,15 @@ model Season {
   sponsors             String[]     @default([])
   retentionCheckAt     DateTime? // endsAt + 90 days
   standingDecayApplied Boolean      @default(false)
+  journeyId            String?
+  journey              ConservationJourney? @relation(fields: [journeyId], references: [id])
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
 
-  rounds  Round[]
-  entries Entry[]
-  intents ScoutIntent[]
+  rounds         Round[]
+  entries        Entry[]
+  intents        ScoutIntent[]
+  researchEvents ResearchEvent[]
 }
 
 model Round {
@@ -483,7 +513,7 @@ model Entry {
   body                   String? // design doc / paper text (markdown)
   url                    String? // live product
   repoUrl                String?
-  deployedOn             String? // C-Chain | L1 | Iggy
+  deployedOn             String? // Avalanche | C-Chain | L1 | Iggy | Chainlink | Midnight | Other
   authorId               String
   author                 User        @relation("EntryAuthor", fields: [authorId], references: [id])
   crewId                 String?
@@ -494,6 +524,8 @@ model Entry {
   alliance               Alliance?   @relation(fields: [allianceId], references: [id])
   regionId               String? // LS: the community it serves
   region                 Region?     @relation(fields: [regionId], references: [id])
+  researchEventId        String?
+  researchEvent          ResearchEvent? @relation(fields: [researchEventId], references: [id])
   ethicsStatement        String? // LS: who it serves, who it could harm
   roadmap                Json? // GTM: [{ milestone, due, done }]
   metrics                Json? // GTM: [{ label, value, at }]
@@ -516,6 +548,7 @@ model Entry {
   retentionReports RetentionReport[]
 
   @@index([seasonId, tournament, status])
+  @@index([researchEventId])
 }
 
 // A ballot is one voter's full allocation for one round, stored encrypted.
@@ -881,5 +914,68 @@ model UserBadge {
 
   @@unique([userId, badgeId])
   @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Research events, conservation journeys, builder project board
+// ─────────────────────────────────────────────────────────────────────
+
+model ConservationJourney {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  story     String
+  howItMaps String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  seasons        Season[]
+  researchEvents ResearchEvent[]
+}
+
+model ResearchEvent {
+  id           String              @id @default(cuid())
+  number       Int                 @unique
+  question     String
+  terms        String
+  minWordCount Int                 @default(1500)
+  deadline     DateTime
+  bounty       String
+  category     String?
+  status       ResearchEventStatus @default(QUEUED)
+  seasonId     String?
+  season       Season?             @relation(fields: [seasonId], references: [id])
+  journeyId    String?
+  journey      ConservationJourney? @relation(fields: [journeyId], references: [id])
+  nextEventId  String?
+  closedAt     DateTime?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  entries Entry[]
+
+  @@index([status])
+}
+
+model BuilderProject {
+  id                 String                 @id @default(cuid())
+  ownerId            String
+  owner              User                   @relation(fields: [ownerId], references: [id])
+  title              String
+  summary            String
+  category           BuilderProjectCategory @default(OTHER)
+  column             BuilderProjectColumn   @default(EXPLORING)
+  repoUrl            String?
+  liveUrl            String?
+  researchEntryId    String?
+  tournamentEntryId  String?
+  crewId             String?
+  crew               Crew?                  @relation(fields: [crewId], references: [id])
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  @@index([column, category])
+  @@index([ownerId])
 }
 

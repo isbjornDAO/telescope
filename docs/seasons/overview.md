@@ -7,8 +7,8 @@ Each season runs three tournaments at once:
 | Tournament | What it rewards | Who decides | Submissions |
 | --- | --- | --- | --- |
 | [Local Systems](local-systems.md) | Design quality and ethics of decentralised initiatives and local community development | A panel of Elders | Public |
-| [Research Papers](research-papers.md) | Research that advances the season's research question | Blind review | Private |
-| [GTM](gtm.md) | The best dapp on Avalanche this season | Community vote, weighted by trust | Public |
+| [Research Papers](research-papers.md) | Research that advances live bounty questions (and seasonal questions) | Blind review | Private; continuous series on `/research` |
+| [GTM](gtm.md) | The best shipped tool this season | Community vote, weighted by trust | Public |
 
 ## Three kinds of legitimacy
 

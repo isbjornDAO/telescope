@@ -2,10 +2,12 @@
 
 Builder's Hub is Avalanche's developer platform: academy content, documentation, starter kits, grants, hackathon announcements and builder spotlights. It is where developers onboarded globally and at in-person events build products and showcase them.
 
-Telescope is its casual companion. Builder's Hub is the formal side; Telescope is the informal side. The division is clean:
+Telescope is its casual companion — and the place that is **social** about building. Builder's Hub stores applications and proofs; Telescope shows what everyone is working on at once (the Projects board), argues about what is worth building (Forum + Research), and runs tournaments.
 
-- **Builder's Hub** — prove what you built.
-- **Telescope** — find who to build with, and argue about what is worth building.
+The division:
+
+- **Builder's Hub** — prove what you built; formal onboarding and grants.
+- **Telescope** — find who to build with, see the board of live work, publish research, compete.
 
 ## Integration, both directions
 
@@ -17,4 +19,4 @@ Isbjorn has a working relationship with the Builder's Hub developers. Tools are 
 
 ## What Telescope does not duplicate
 
-Documentation, courses, starter kits, grants administration. Telescope links to these; it does not rebuild them.
+Documentation, courses, starter kits, grants administration. Telescope links to these; it does not rebuild them. The Projects kanban is not a second Builder's Hub — it is a large shared view of work in motion, organised by category.

@@ -7,7 +7,7 @@ import { Moon, Sun } from "lucide-react";
 
 export function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -17,13 +17,15 @@ export function ThemeSwitcher() {
     return null;
   }
 
+  const isDark = resolvedTheme === "dark";
+
   return (
     <Button
       size="icon"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      aria-label="Toggle theme"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
     >
-      {theme === "dark" ? (
+      {isDark ? (
         <Sun className="h-5 w-5" />
       ) : (
         <Moon className="h-5 w-5" />

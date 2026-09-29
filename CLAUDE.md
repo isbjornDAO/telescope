@@ -1,10 +1,13 @@
 # Telescope
 
-Four tabs, nothing else: **Forum**, **Tournaments**, **Calendar**, **Shop**.
+Tabs: **Home**, **Forum**, **Build**, **Calendar**, **Shop**.
 
-You land on the forum and start talking. No onboarding, no preamble. Keep it
-that way: if a change adds a step before someone can post or enter, it is the
-wrong change.
+Build’s submenu is Research · Projects · Tournaments (routes stay
+`/research`, `/projects`, `/tournaments`).
+
+Home is the strategic vision page. Forum is where you land to talk — no
+onboarding, no preamble before posting. If a change adds a step before someone
+can post or enter, it is the wrong change.
 
 Background on the tournament rules lives in `docs/`. Read it when you touch
 scoring or voting; you do not need it for anything else.
@@ -19,14 +22,25 @@ scoring or voting; you do not need it for anything else.
 ## Where things are
 
 - `src/components/page-navigation.tsx` — `TABS` is the single source of truth for navigation. The navbar reads it too.
-- `src/app/page.tsx` — the forum. The landing page and `/forum` render the same thing.
-- `src/app/tournaments/` — seasons, brackets, entries.
+- `src/app/page.tsx` — vision homepage. `/forum` is the conversation (composer first).
+- `src/app/research/` — continuous research bounties, paper archive, ACP shelf.
+- `src/app/projects/` — public builder kanban (not the shop/admin Project directory).
+- `src/app/tournaments/` — seasons, brackets, entries (GTM + Local Systems; Research links out).
 - `src/app/calendar/`, `src/app/shop/` — unchanged legacy surfaces.
 - `src/lib/world/config.ts` — every tunable number for tournaments. Change numbers here only.
-- `src/lib/world/{trust,voting,retention,scout}.ts` — scoring engines, pure functions with tests.
+- `src/lib/world/{trust,voting,retention,scout,research}.ts` — scoring / succession engines, pure functions with tests.
 - `src/lib/world/{audience,forum-access}.ts` — who can read a post. Pure, tested.
 - `src/app/api/world/**` — API. Privacy rules are enforced here, never in the client.
 - `archive/` — pages and components no longer linked. Excluded from typecheck. Kept so nothing is lost, deleted freely when clearly dead.
+
+## Product thesis
+
+Telescope is the homepage for a strategic development vision: philosophical and
+technical. Topics can be communication, data infrastructure, privacy, local
+systems, governance, finance. You do not need to care about Avalanche to write
+or build. Team1 funds prizes; inspired tools become real on Avalanche,
+Chainlink, Midnight, or elsewhere. Missions and tournaments lead to Arctic
+conservation journeys — the bear is the reason, not the pitch.
 
 ## Rules for changes
 
@@ -44,7 +58,7 @@ scoring or voting; you do not need it for anything else.
   `src/lib/world/audience.ts`.
 - Research paper entries are blind to reviewers: strip author, crew, faction
   and region server-side.
-- Adding a fifth tab is a product decision, not a cleanup. Ask first.
+- Adding a new top-level tab is a product decision, not a cleanup. Ask first.
 
 ## Env
 

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { WorldError } from "@/lib/world/errors";
+import { requireWorldUser } from "@/lib/world/session";
 
 // Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
@@ -7,25 +9,14 @@ export const dynamic = "force-dynamic";
 // POST /api/rewards/claim - Claim a reward
 export async function POST(request: NextRequest) {
   try {
+    const user = await requireWorldUser(request);
     const body = await request.json();
-    const { walletAddress, rewardId } = body;
+    const { rewardId } = body;
 
-    if (!walletAddress || !rewardId) {
+    if (!rewardId) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
-      );
-    }
-
-    // Find user
-    const user = await prisma.user.findUnique({
-      where: { address: walletAddress },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
       );
     }
 
@@ -101,6 +92,9 @@ export async function POST(request: NextRequest) {
       newCoins: user.coins - reward.xpRequired,
     });
   } catch (error) {
+    if (error instanceof WorldError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error claiming reward:", error);
     return NextResponse.json(
       { error: "Failed to claim reward" },

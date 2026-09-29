@@ -12,10 +12,10 @@ export function DisclaimerAlert() {
                     <AlertCircle className="h-4 w-4 stroke-zinc-500" />
                     <div className="flex flex-col">
                         <AlertTitle className="font-bold">
-                            The latest projects on Avalanche
+                            Projects building for governance, finance, and the planet
                         </AlertTitle>
                         <AlertDescription className="text-zinc-500">
-                            Do Your own research. Safe launches with &lt;100 votes will be promoted to Telescope. Isbjorn is not responsible for permanent loss.
+                            Do your own research. Safe launches with &lt;100 votes may be promoted to Telescope. Isbjorn is not responsible for permanent loss.
                         </AlertDescription>
                     </div>
                 </div>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createPublicClient, http, type Address } from "viem";
 import { avalanche } from "viem/chains";
 import { prisma } from "@/lib/prisma";
+import { isAdmin, isAdminWallet } from "@/lib/auth";
 import { hmacHex, randomToken, safeEqualHex } from "@/lib/world/crypto";
 import { WorldError } from "@/lib/world/errors";
 
@@ -159,5 +160,16 @@ export function isWorldAdmin(user: { address: string; discordId?: string | null 
 export async function requireWorldAdmin(req: NextRequest) {
   const user = await requireWorldUser(req);
   if (!isWorldAdmin(user)) throw new WorldError("World admin only.", 403);
+  return user;
+}
+
+/** Signed session plus an admin wallet, world-admin address, or admin Discord id. */
+export function isPlatformAdmin(user: { address: string; discordId?: string | null }): boolean {
+  return isWorldAdmin(user) || isAdminWallet(user.address) || isAdmin(user.discordId ?? undefined);
+}
+
+export async function requirePlatformAdmin(req: NextRequest) {
+  const user = await requireWorldUser(req);
+  if (!isPlatformAdmin(user)) throw new WorldError("Admin only.", 403);
   return user;
 }

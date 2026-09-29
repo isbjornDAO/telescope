@@ -4,8 +4,17 @@ import { SiteConfig } from "@/types";
 export const siteConfig: SiteConfig = {
   name: "Telescope",
   author: "Isbjorn",
-  description: "",
-  keywords: ["web3", "crypto", "avalanche", "defi"],
+  description:
+    "Discover stars building for the planet. Isbjorn's world for research, projects, and tournaments — with Arctic conservation as the reason.",
+  keywords: [
+    "isbjorn",
+    "avalanche",
+    "research",
+    "builders",
+    "conservation",
+    "polar bears",
+    "telescope",
+  ],
   url: {
     base: env.NEXT_PUBLIC_APP_URL || "https://isbjorn.xyz",
     author: "https://gabrielrusso.me",

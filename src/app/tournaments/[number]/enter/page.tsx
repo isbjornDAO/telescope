@@ -17,7 +17,7 @@ const KINDS = [
   {
     v: "GTM",
     l: "GTM: Something I built (Working Product)",
-    hint: "A working product deployed on Avalanche. The community votes with trust-weighted ballots.",
+    hint: "A working product. Default deploy is Avalanche (C-Chain, L1, or Iggy); Chainlink, Midnight, and other destinations are welcome. Trust-weighted community vote.",
     icon: Trophy,
     color: "blue" as const,
   },
@@ -31,7 +31,7 @@ const KINDS = [
   {
     v: "RESEARCH_PAPERS",
     l: "Research Papers: A piece of writing",
-    hint: "Deep research advancing the seasonal research question. Double-blind reviewed without your name.",
+    hint: "Deep research advancing a live research question. Prefer the Research tab for continuous bounties; double-blind reviewed without your name.",
     icon: FileText,
     color: "purple" as const,
   },
@@ -47,6 +47,7 @@ export default function EnterPage() {
   const [summary, setSummary] = useState("");
   const [url, setUrl] = useState("");
   const [body, setBody] = useState("");
+  const [deployedOn, setDeployedOn] = useState("Avalanche");
 
   const submit = useWorldMutation(async () => {
     const res = await worldFetch<{ id: string }>("/api/world/entries", {
@@ -57,7 +58,7 @@ export default function EnterPage() {
         summary,
         url: url || undefined,
         body: body || undefined,
-        deployedOn: tournament === "GTM" ? "C-Chain" : undefined,
+        deployedOn: tournament === "GTM" ? deployedOn : undefined,
       },
     });
     router.push(`/entries/${res.id}`);
@@ -136,17 +137,38 @@ export default function EnterPage() {
               </div>
 
               {tournament === "GTM" && (
-                <div>
-                  <Label className="text-xs uppercase font-bold tracking-wider text-muted-foreground">
-                    Product URL / Demo Link
-                  </Label>
-                  <Input
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="https://myproduct.xyz"
-                    className="mt-1"
-                  />
-                </div>
+                <>
+                  <div>
+                    <Label className="text-xs uppercase font-bold tracking-wider text-muted-foreground">
+                      Product URL / Demo Link
+                    </Label>
+                    <Input
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="https://myproduct.xyz"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs uppercase font-bold tracking-wider text-muted-foreground">
+                      Destination
+                    </Label>
+                    <Select value={deployedOn} onValueChange={setDeployedOn}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Avalanche">Avalanche (default)</SelectItem>
+                        <SelectItem value="C-Chain">Avalanche C-Chain</SelectItem>
+                        <SelectItem value="L1">Avalanche L1</SelectItem>
+                        <SelectItem value="Iggy">Iggy L1</SelectItem>
+                        <SelectItem value="Chainlink">Chainlink</SelectItem>
+                        <SelectItem value="Midnight">Midnight</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
               )}
 
               {tournament !== "GTM" && (

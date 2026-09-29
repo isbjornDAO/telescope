@@ -8,6 +8,9 @@ import { audienceFromBody, canReadThread, distinctPosterCount, ownerOf, readable
 import { describeMissing, isOwner, serializeAudience } from "@/lib/world/audience";
 import { calculateLevel, getRankInfo, getXpForNextLevel, getXpProgress } from "@/lib/xp";
 import { isAdmin, isAdminWallet } from "@/lib/auth";
+import { resolveAttachment } from "@/lib/storage/media";
+import { WorldError } from "@/lib/world/errors";
+import { requireWorldUser } from "@/lib/world/session";
 
 // Never executed at build time: this route touches the database.
 export const dynamic = "force-dynamic";
@@ -208,10 +211,16 @@ export async function POST(
   try {
     const { threadId } = params;
     const body = await request.json();
-    const { comment, imageHash, walletAddress, boardName, anonymous } = body;
+    const { comment, imageHash, boardName, anonymous } = body;
     const audience = audienceFromBody(body);
+    const actor = await requireWorldUser(request);
+    const walletAddress = actor.address;
+    const attachment = resolveAttachment(imageHash, process.env.R2_PUBLIC_URL);
+    if (!attachment.ok) {
+      return NextResponse.json({ error: attachment.error }, { status: 400 });
+    }
 
-    if (!comment || !walletAddress || !boardName) {
+    if (!comment || !boardName) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -265,7 +274,7 @@ export async function POST(
         data: {
           threadId: thread.id,
           comment,
-          imageHash: imageHash || null,
+          imageHash: attachment.url,
           walletAddress,
           posterId,
           isOp: isAnon ? false : isOpPost,
@@ -302,7 +311,7 @@ export async function POST(
         username: user?.username || undefined,
         anonymous: anonymous !== undefined ? anonymous : true,
         preview: comment,
-        imageUrl: imageHash || null,
+        imageUrl: attachment.url,
       }).catch(err => console.error('Discord notification error:', err));
     }
 
@@ -314,6 +323,9 @@ export async function POST(
       newLevel: xpResult.newLevel
     });
   } catch (error) {
+    if (error instanceof WorldError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error creating reply:", error);
     return NextResponse.json(
       { error: "Failed to create reply" },

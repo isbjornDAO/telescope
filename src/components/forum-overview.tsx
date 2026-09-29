@@ -14,7 +14,7 @@ import { BoardListSkeleton } from "@/components/ui/retro-skeletons";
 import { useQueryClient } from "@tanstack/react-query";
 
 /**
- * The forum, which is also the landing page.
+ * The forum conversation surface.
  *
  * Built in this order on purpose: the box you type in, then what people are
  * saying, then the boards. You arrive and you can talk, without scrolling

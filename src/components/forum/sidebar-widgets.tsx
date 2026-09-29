@@ -17,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { AvaxPulseWidget } from "@/components/forum/avax-pulse-widget";
 import { SnowTvWidget } from "@/components/forum/snow-tv-widget";
 import { DispatchesWidget } from "@/components/forum/dispatches-widget";
 import { EcosystemRadarWidget } from "@/components/forum/ecosystem-radar-widget";
@@ -97,9 +96,6 @@ export function SidebarWidgets() {
 
   return (
     <aside className="space-y-6">
-      {/* Widget: Live AVAX Network & Price Pulse */}
-      <AvaxPulseWidget />
-
       {/* Widget: Upcoming Events Box */}
       <div className="retro-box">
         <div className="retro-box-title justify-between px-3.5 sm:px-4">
