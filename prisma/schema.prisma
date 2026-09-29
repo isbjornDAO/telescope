@@ -9,13 +9,12 @@ generator client {
 }
 
 datasource db {
-  provider     = "mongodb"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id             String            @id @default(auto()) @map("_id") @db.ObjectId
+  id             String            @id @default(cuid())
   address        String            @unique
   username       String?
   xp             Int               @default(0) // Total XP earned all-time (for leveling, permanent)
@@ -41,9 +40,9 @@ model User {
   nodeType                  NodeType  @default(NODE)
   trustScore                Float     @default(0) // recomputed nightly, see lib/world/trust.ts
   standing                  Float     @default(0) // season-earned, capped by config
-  regionId                  String?   @db.ObjectId
+  regionId                  String?
   region                    Region?   @relation(fields: [regionId], references: [id])
-  factionId                 String?   @db.ObjectId
+  factionId                 String?
   faction                   Faction?  @relation("FactionMembers", fields: [factionId], references: [id])
   factionJoinedSeasonNumber Int? // moving factions is allowed between seasons only
   anchoredAt                DateTime? // when a region verified this node in person
@@ -193,7 +192,7 @@ enum AdmissionStatus {
 // ─────────────────────────────────────────────────────────────────────
 
 model Region {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String   @id @default(cuid())
   name           String   @unique
   slug           String   @unique
   description    String?
@@ -215,8 +214,8 @@ model Region {
 }
 
 model RegionEvent {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  regionId  String   @db.ObjectId
+  id        String   @id @default(cuid())
+  regionId  String
   region    Region   @relation(fields: [regionId], references: [id])
   name      String
   startsAt  DateTime
@@ -230,10 +229,10 @@ model RegionEvent {
 }
 
 model EventCheckIn {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  eventId     String      @db.ObjectId
+  id          String      @id @default(cuid())
+  eventId     String
   event       RegionEvent @relation(fields: [eventId], references: [id])
-  userId      String      @db.ObjectId
+  userId      String
   user        User        @relation(fields: [userId], references: [id])
   checkedInAt DateTime    @default(now())
 
@@ -245,24 +244,24 @@ model EventCheckIn {
 // ─────────────────────────────────────────────────────────────────────
 
 model Vouch {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  id           String       @id @default(cuid())
   type         VouchType
   weight       Float // link weight from config at creation
   budgetCost   Float // vouch budget spent by the voucher
   status       VouchStatus  @default(ACTIVE)
-  fromUserId   String       @db.ObjectId
+  fromUserId   String
   from         User         @relation("VouchesGiven", fields: [fromUserId], references: [id])
-  toUserId     String       @db.ObjectId
+  toUserId     String
   to           User         @relation("VouchesReceived", fields: [toUserId], references: [id])
   seasonNumber Int? // budget accounting
-  regionId     String?      @db.ObjectId // in-person: attesting region
+  regionId     String? // in-person: attesting region
   region       Region?      @relation(fields: [regionId], references: [id])
-  eventId      String?      @db.ObjectId // in-person: the room
+  eventId      String? // in-person: the room
   event        RegionEvent? @relation(fields: [eventId], references: [id])
   attestedBy   String? // region admin wallet
   attestedAt   DateTime?
-  crewId       String?      @db.ObjectId // shipped-together
-  proofId      String?      @db.ObjectId // shipped-together
+  crewId       String? // shipped-together
+  proofId      String? // shipped-together
   note         String? // shared-vision: what was reviewed (private to both parties)
   fromVisible  Boolean      @default(false) // voucher chose to be visible on the receiver's profile
   toVisible    Boolean      @default(false)
@@ -277,8 +276,8 @@ model Vouch {
 }
 
 model Proof {
-  id           String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String      @db.ObjectId
+  id           String      @id @default(cuid())
+  userId       String
   user         User        @relation(fields: [userId], references: [id])
   source       ProofSource
   kind         ProofKind
@@ -288,7 +287,7 @@ model Proof {
   proofHash    String // sha256 over (source, externalRef, userId): the public proof
   verified     Boolean     @default(false)
   verifiedBy   String? // "builders-hub" | admin wallet
-  crewId       String?     @db.ObjectId
+  crewId       String?
   crew         Crew?       @relation(fields: [crewId], references: [id])
   seasonNumber Int?
   shippedAt    DateTime?
@@ -298,10 +297,10 @@ model Proof {
 }
 
 model SlashingFinding {
-  id              String        @id @default(auto()) @map("_id") @db.ObjectId
-  targetUserId    String        @db.ObjectId
-  proposedById    String        @db.ObjectId
-  regionId        String?       @db.ObjectId
+  id              String        @id @default(cuid())
+  targetUserId    String
+  proposedById    String
+  regionId        String?
   rationale       String // published
   elderApprovals  String[]      @default([]) // Elder user ids
   anchorApprovals String[]      @default([]) // region anchor user ids
@@ -313,9 +312,9 @@ model SlashingFinding {
 }
 
 model ElderAdmission {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  candidateId   String          @db.ObjectId
-  nominatedById String          @db.ObjectId
+  id            String          @id @default(cuid())
+  candidateId   String
+  nominatedById String
   statement     String // expertise and standing outside the world
   approvals     String[]        @default([]) // user ids of Elders / region anchors
   status        AdmissionStatus @default(PROPOSED)
@@ -328,17 +327,17 @@ model ElderAdmission {
 // ─────────────────────────────────────────────────────────────────────
 
 model Crew {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(cuid())
   name        String   @unique
   slug        String   @unique
   description String?
   avatar      String?
-  regionId    String?  @db.ObjectId // region of origin
+  regionId    String? // region of origin
   region      Region?  @relation(fields: [regionId], references: [id])
-  factionId   String?  @db.ObjectId
+  factionId   String?
   faction     Faction? @relation(fields: [factionId], references: [id])
   standing    Float    @default(0)
-  createdById String   @db.ObjectId
+  createdById String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -348,10 +347,10 @@ model Crew {
 }
 
 model CrewMember {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  crewId   String    @db.ObjectId
+  id       String    @id @default(cuid())
+  crewId   String
   crew     Crew      @relation(fields: [crewId], references: [id])
-  userId   String    @db.ObjectId
+  userId   String
   user     User      @relation(fields: [userId], references: [id])
   role     String?
   isLead   Boolean   @default(false)
@@ -363,7 +362,7 @@ model CrewMember {
 }
 
 model Faction {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(cuid())
   name        String   @unique
   slug        String   @unique
   vision      String // what the faction exists to build
@@ -371,7 +370,7 @@ model Faction {
   avatar      String?
   standing    Float    @default(0)
   treasury    Float    @default(0) // ledger balance (Season One: manual payout)
-  founderId   String   @db.ObjectId
+  founderId   String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -382,7 +381,7 @@ model Faction {
 }
 
 model Alliance {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  id           String         @id @default(cuid())
   seasonNumber Int
   name         String
   factionIds   String[]       @default([]) // all parties
@@ -390,7 +389,7 @@ model Alliance {
   terms        String // how standing is shared, in plain words
   shareSplit   Json // { [factionId]: fraction }
   status       AllianceStatus @default(PROPOSED)
-  proposedById String         @db.ObjectId
+  proposedById String
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
@@ -398,8 +397,8 @@ model Alliance {
 }
 
 model TreasuryEntry {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  factionId    String   @db.ObjectId
+  id           String   @id @default(cuid())
+  factionId    String
   faction      Faction  @relation(fields: [factionId], references: [id])
   amount       Float
   reason       String
@@ -409,13 +408,13 @@ model TreasuryEntry {
 }
 
 model StandingEvent {
-  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  id             String         @id @default(cuid())
   targetType     StandingTarget
-  targetId       String         @db.ObjectId
+  targetId       String
   amount         Float // gross amount awarded
   reason         String
   seasonNumber   Int?
-  entryId        String?        @db.ObjectId
+  entryId        String?
   vestsAt        DateTime? // GTM: day 90
   vestedFraction Float? // null until vested; 1.0 for LS/RP
   createdAt      DateTime       @default(now())
@@ -428,7 +427,7 @@ model StandingEvent {
 // ─────────────────────────────────────────────────────────────────────
 
 model Season {
-  id                   String       @id @default(auto()) @map("_id") @db.ObjectId
+  id                   String       @id @default(cuid())
   number               Int          @unique
   name                 String // "Winter I"
   theme                String
@@ -452,8 +451,8 @@ model Season {
 }
 
 model Round {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  seasonId    String      @db.ObjectId
+  id          String      @id @default(cuid())
+  seasonId    String
   season      Season      @relation(fields: [seasonId], references: [id])
   tournament  Tournament
   index       Int // 0 = Open
@@ -475,8 +474,8 @@ model Round {
 }
 
 model Entry {
-  id                     String      @id @default(auto()) @map("_id") @db.ObjectId
-  seasonId               String      @db.ObjectId
+  id                     String      @id @default(cuid())
+  seasonId               String
   season                 Season      @relation(fields: [seasonId], references: [id])
   tournament             Tournament
   title                  String
@@ -485,15 +484,15 @@ model Entry {
   url                    String? // live product
   repoUrl                String?
   deployedOn             String? // C-Chain | L1 | Iggy
-  authorId               String      @db.ObjectId
+  authorId               String
   author                 User        @relation("EntryAuthor", fields: [authorId], references: [id])
-  crewId                 String?     @db.ObjectId
+  crewId                 String?
   crew                   Crew?       @relation(fields: [crewId], references: [id])
-  factionId              String?     @db.ObjectId
+  factionId              String?
   faction                Faction?    @relation(fields: [factionId], references: [id])
-  allianceId             String?     @db.ObjectId
+  allianceId             String?
   alliance               Alliance?   @relation(fields: [allianceId], references: [id])
-  regionId               String?     @db.ObjectId // LS: the community it serves
+  regionId               String? // LS: the community it serves
   region                 Region?     @relation(fields: [regionId], references: [id])
   ethicsStatement        String? // LS: who it serves, who it could harm
   roadmap                Json? // GTM: [{ milestone, due, done }]
@@ -523,8 +522,8 @@ model Entry {
 // voterKey = HMAC(roundId, voterId) so uniqueness is enforced without
 // revealing who voted. entryId is kept only for aggregate counts.
 model Ballot {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  roundId    String   @db.ObjectId
+  id         String   @id @default(cuid())
+  roundId    String
   round      Round    @relation(fields: [roundId], references: [id])
   voterKey   String
   ciphertext String // AES-GCM of { voterId, nodeType, factionId, allianceFactionIds, baseWeight, allocations: [{entryId, share}] }
@@ -534,10 +533,10 @@ model Ballot {
 }
 
 model Review {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  entryId     String     @db.ObjectId
+  id          String     @id @default(cuid())
+  entryId     String
   entry       Entry      @relation(fields: [entryId], references: [id])
-  reviewerId  String     @db.ObjectId
+  reviewerId  String
   reviewer    User       @relation(fields: [reviewerId], references: [id])
   tournament  Tournament
   stage       String // "round" | "final"
@@ -556,10 +555,10 @@ model Review {
 
 // GTM products report their active wallets; only trust-graph wallets count.
 model RetentionReport {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  entryId      String   @db.ObjectId
+  id           String   @id @default(cuid())
+  entryId      String
   entry        Entry    @relation(fields: [entryId], references: [id])
-  reportedById String   @db.ObjectId
+  reportedById String
   walletCount  Int // wallets reported
   activeCount  Int // wallets with trust score > 0, deduplicated
   reportedAt   DateTime @default(now())
@@ -568,10 +567,10 @@ model RetentionReport {
 }
 
 model Feedback {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  entryId   String   @db.ObjectId
+  id        String   @id @default(cuid())
+  entryId   String
   entry     Entry    @relation(fields: [entryId], references: [id])
-  userId    String   @db.ObjectId
+  userId    String
   user      User     @relation(fields: [userId], references: [id])
   body      String
   createdAt DateTime @default(now())
@@ -582,10 +581,10 @@ model Feedback {
 // ─────────────────────────────────────────────────────────────────────
 
 model ScoutIntent {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String     @db.ObjectId
+  id          String     @id @default(cuid())
+  userId      String
   user        User       @relation(fields: [userId], references: [id])
-  seasonId    String?    @db.ObjectId
+  seasonId    String?
   season      Season?    @relation(fields: [seasonId], references: [id])
   type        IntentType
   text        String // private context; only tags + type + proofs leave the scout
@@ -601,11 +600,11 @@ model ScoutIntent {
 }
 
 model ScoutMatch {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  intentAId   String      @db.ObjectId // the asking scout's intent
-  intentBId   String      @db.ObjectId
-  userAId     String      @db.ObjectId
-  userBId     String      @db.ObjectId
+  id          String      @id @default(cuid())
+  intentAId   String // the asking scout's intent
+  intentBId   String
+  userAId     String
+  userBId     String
   status      MatchStatus @default(OFFERED)
   score       Float // fit score computed by the hosted scout
   offer       Json // { claimsA, claimsB, wouldDiscloseA, wouldDiscloseB, reason }
@@ -622,10 +621,10 @@ model ScoutMatch {
 
 // QUERY logs are retained 30 days for abuse detection, then deleted by the cleanup job.
 model ScoutLog {
-  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  id          String           @id @default(cuid())
   type        ScoutMessageType
-  fromUserId  String           @db.ObjectId
-  toUserId    String?          @db.ObjectId
+  fromUserId  String
+  toUserId    String?
   payloadHash String
   paid        Boolean          @default(false)
   createdAt   DateTime         @default(now())
@@ -634,8 +633,8 @@ model ScoutLog {
 }
 
 model ScoutTopUp {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
+  id         String   @id @default(cuid())
+  userId     String
   txHash     String   @unique
   amountUsdc Float
   queries    Int
@@ -643,13 +642,13 @@ model ScoutTopUp {
 }
 
 model Project {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(cuid())
   name        String    @unique
   description String?
   avatar      String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  social      Social?
+  social      Json? // { twitter?, discord?, telegram?, website?, dexscreener?, contractAddress? }
   metadata    Json? // Will store { likes: number, dislikes: number, voters: number }
   votes       Vote[]
   tags        String[]  @default([])
@@ -658,24 +657,24 @@ model Project {
 }
 
 model Vote {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
-  userId    String   @db.ObjectId
+  userId    String
   project   Project? @relation(fields: [projectId], references: [id])
-  projectId String   @db.ObjectId
+  projectId String
   votedDate DateTime @default(now())
   type      String   @default("like") // "like" or "dislike"
 }
 
 model ProjectS1 {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(cuid())
   name        String    @unique
   description String?
   avatar      String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  social      Social?
+  social      Json? // { twitter?, discord?, telegram?, website?, dexscreener?, contractAddress? }
   metadata    Json? // Will store { likes: number, dislikes: number, voters: number }
   votes       VoteS1[]
   tags        String[]  @default([])
@@ -684,34 +683,25 @@ model ProjectS1 {
 }
 
 model VoteS1 {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  id        String     @id @default(cuid())
   createdAt DateTime   @default(now())
   user      User       @relation(fields: [userId], references: [id])
-  userId    String     @db.ObjectId
+  userId    String
   project   ProjectS1? @relation(fields: [projectId], references: [id])
-  projectId String     @db.ObjectId
+  projectId String
   votedDate DateTime   @default(now())
   type      String     @default("like") // "like" or "dislike"
 }
 
-type Social {
-  twitter         String?
-  discord         String?
-  telegram        String?
-  website         String?
-  dexscreener     String?
-  contractAddress String?
-}
-
 model AdminSettings {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(cuid())
   voteLock  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model ArtSubmission {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            String    @id @default(cuid())
   artistAddress String
   artistName    String?
   discordId     String?
@@ -728,17 +718,17 @@ model ArtSubmission {
 }
 
 model ArtVote {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String        @db.ObjectId
+  id           String        @id @default(cuid())
+  userId       String
   user         User          @relation(fields: [userId], references: [id])
-  submissionId String        @db.ObjectId
+  submissionId String
   submission   ArtSubmission @relation(fields: [submissionId], references: [id])
   cohort       Int
   createdAt    DateTime      @default(now())
 }
 
 model CoffeeDonation {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  id               String   @id @default(cuid())
   recipientAddress String
   recipientName    String
   recipientAvatar  String?
@@ -750,7 +740,7 @@ model CoffeeDonation {
 }
 
 model Board {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  id                  String   @id @default(cuid())
   name                String   @unique // e.g., "gen", "meme", "defi"
   title               String // e.g., "General AVAX"
   description         String
@@ -764,9 +754,9 @@ model Board {
 }
 
 model Thread {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  boardId    String    @db.ObjectId
-  board      Board     @relation(fields: [boardId], references: [id])
+  id         String    @id @default(cuid())
+  boardId    String
+  board      Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
   subject    String? // Optional thread title
   bumpedAt   DateTime  @default(now())
   createdAt  DateTime  @default(now())
@@ -785,9 +775,9 @@ model Thread {
 }
 
 model Post {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  threadId      String   @db.ObjectId
-  thread        Thread   @relation(fields: [threadId], references: [id])
+  id            String   @id @default(cuid())
+  threadId      String
+  thread        Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
   comment       String
   imageHash     String? // Optional IPFS hash or image URL
   walletAddress String
@@ -803,7 +793,7 @@ model Post {
 }
 
 model Reward {
-  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  id               String    @id @default(cuid())
   name             String
   description      String
   imageUrl         String
@@ -822,17 +812,17 @@ model Reward {
 }
 
 model Claim {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
+  id         String   @id @default(cuid())
+  userId     String
   user       User     @relation(fields: [userId], references: [id])
-  rewardId   String   @db.ObjectId
+  rewardId   String
   reward     Reward?  @relation(fields: [rewardId], references: [id])
   claimedAt  DateTime @default(now())
   coinsSpent Int // Coins spent at time of claim
 }
 
 model Collectable {
-  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  id               String            @id @default(cuid())
   collectableId    String            @unique // e.g., "snowdog", "puppet", "yak"
   name             String // Display name
   description      String
@@ -845,10 +835,10 @@ model Collectable {
 }
 
 model UserCollectable {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String      @db.ObjectId
+  id            String      @id @default(cuid())
+  userId        String
   user          User        @relation(fields: [userId], references: [id])
-  collectableId String      @db.ObjectId
+  collectableId String
   collectable   Collectable @relation(fields: [collectableId], references: [id])
   acquiredAt    DateTime    @default(now())
   nftMinted     Boolean     @default(false) // Track if NFT has been minted
@@ -858,7 +848,7 @@ model UserCollectable {
 }
 
 model WallMessage {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String   @id @default(cuid())
   profileAddress String   // The wallet address or handle of the profile this message was left on (lowercase)
   authorAddress  String?  // The wallet address of the author if signed in
   authorName     String   // Display name or handle of the author
@@ -869,7 +859,7 @@ model WallMessage {
 }
 
 model Badge {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  id          String      @id @default(cuid())
   name        String      @unique
   description String
   icon        String      // Emoji or icon identifier
@@ -880,10 +870,10 @@ model Badge {
 }
 
 model UserBadge {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  id        String   @id @default(cuid())
+  userId    String
   user      User     @relation(fields: [userId], references: [id])
-  badgeId   String   @db.ObjectId
+  badgeId   String
   badge     Badge    @relation(fields: [badgeId], references: [id])
   awardedBy String?  // Admin address or team identifier
   reason    String?  // Reason for awarding
